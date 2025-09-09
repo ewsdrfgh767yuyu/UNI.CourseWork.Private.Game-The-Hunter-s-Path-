@@ -25,7 +25,15 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
-      <Filter>Source Files\src/</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="entity.h">
+      <Filter>Source Files\src/\entities/</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="CampaignLogic.h">
+      <Filter>Source Files\src/\core/</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
