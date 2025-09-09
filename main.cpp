@@ -1,6 +1,7 @@
 #include <iostream>
+#include <stdexcept> 
 using namespace std;
 
-void main(){
+int main(){
 
 }
