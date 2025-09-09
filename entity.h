@@ -5,6 +5,13 @@ using namespace std;
 
 class Entity {
 public:
+	Entity(int max_hp = 100, int damage = 10, int defense = 0,
+		int attack = 0, int stamina = 1, int initiative = 10,
+		int attack_range = 0)
+		: m_max_healthpoint(max_hp), m_current_healthpoint(max_hp),
+		m_damage(damage), m_defense(defense), m_attack(attack),
+		m_stamina(stamina), m_initiative(initiative),
+		m_attack_range(attack_range){}
 	void setMaxHealthPoint(int max_hp) {
 		if (max_hp > 0) {
 			m_max_healthpoint = max_hp;
@@ -14,7 +21,7 @@ public:
 		}
 	}
 	void setCurrentHealthPoint(int c_hp) {
-		if (m_current_healthpoint >= 0 && c_hp <= m_max_healthpoint) {
+		if (c_hp >= 0 && c_hp <= m_max_healthpoint) {
 			m_current_healthpoint = c_hp;
 		}
 		else {
@@ -70,7 +77,14 @@ public:
 			throw std::invalid_argument("Attack range set error");
 		}
 	}
-	
+	int getMaxHealthPoint() const { return m_max_healthpoint; };
+	int getCurrentHealthPoint() const { return m_current_healthpoint; };
+	int getDamage() const { return m_damage; };
+	int getDefense() const { return m_defense; };
+	int getAttack() const { return m_attack; };
+	int getStamina() const { return m_stamina; };
+	int getInitiative() const { return m_initiative; };
+	int getAttackRange() const { return m_attack_range; };
 private:
 	int m_max_healthpoint;
 	int m_current_healthpoint;
