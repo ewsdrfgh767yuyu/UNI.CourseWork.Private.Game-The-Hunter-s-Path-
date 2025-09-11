@@ -6,11 +6,11 @@ using namespace std;
 class Entity {
 public:
 	Entity(int max_hp = 100, int damage = 10, int defense = 0,
-		int attack = 0, int stamina = 1, int initiative = 10,
+		int attack = 0, int max_stamina = 1, int c_stamina = 1, int initiative = 10,
 		int attack_range = 0)
 		: m_max_healthpoint(max_hp), m_current_healthpoint(max_hp),
 		m_damage(damage), m_defense(defense), m_attack(attack),
-		m_stamina(stamina), m_initiative(initiative),
+		m_max_stamina(max_stamina), m_current_stamina(c_stamina),m_initiative(initiative),
 		m_attack_range(attack_range){}
 	void setMaxHealthPoint(int max_hp) {
 		if (max_hp > 0) {
@@ -53,12 +53,20 @@ public:
 			throw std::invalid_argument("Attack cannot be negative!");
 		}
 	}
-	void setStamina(int stam) {
-		if (stam > 0) {
-			m_stamina = stam;
+	void setMaxStamina(int max_stam) {
+		if (max_stam > 0) {
+			m_max_stamina = max_stam;
 		}
 		else {
 			throw std::invalid_argument("Stamina cannot be negative!");
+		}
+	}
+	void setCurrentStamina(int c_stam) {
+		if (c_stam >= 0 && c_stam <= m_max_stamina) {
+			m_current_stamina = c_stam;
+		}
+		else {
+			throw std::invalid_argument("Current stamina set error");
 		}
 	}
 	void setInitiative(int init) {
@@ -95,7 +103,8 @@ public:
 	int getDamage() const { return m_damage; };
 	int getDefense() const { return m_defense; };
 	int getAttack() const { return m_attack; };
-	int getStamina() const { return m_stamina; };
+	int getMaxStamina() const { return m_max_stamina; };
+	int getCurrentStamina() const { return m_current_stamina; };
 	int getInitiative() const { return m_initiative; };
 	int getAttackRange() const { return m_attack_range; };
 private:
@@ -104,7 +113,8 @@ private:
 	int m_damage;
 	int m_defense;
 	int m_attack;
-	int m_stamina;
+	int m_max_stamina;
+	int m_current_stamina;
 	int m_initiative;
 	int m_attack_range;
 };
