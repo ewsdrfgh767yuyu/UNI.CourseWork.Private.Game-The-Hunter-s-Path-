@@ -136,3 +136,12 @@ private:
 		}
 	}
 };
+
+class Player : public Entity {
+public:
+	Player(int max_hp = 100, int damage = 10, int defense = 0,
+		int attack = 0, int max_stamina = 1, int c_stamina = 1, int initiative = 10,
+		int attack_range = 0)
+		: Entity(max_hp, max_hp, damage, defense, attack,  
+			max_stamina, c_stamina, initiative, attack_range) {}
+};
