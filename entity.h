@@ -102,6 +102,9 @@ public:
 	void takeDamage(int recieved_damage) {
 		m_current_healthpoint -= recieved_damage;
 	}
+	void regenerateStamina() {
+		m_current_stamina = m_max_stamina;
+	}
 
 	int getMaxHealthPoint() const { return m_max_healthpoint; };
 	int getCurrentHealthPoint() const { return m_current_healthpoint; };
