@@ -88,14 +88,19 @@ public:
 
 	int attack(int recipient_protection) {
 		return (m_damage + m_attack - recipient_protection);
+		spendStamina;
 	}
 	void heal(int heal_amount) {
 		if (m_current_healthpoint + heal_amount >= m_max_healthpoint) {
 			setCurrentHealthPoint(m_max_healthpoint);
+			spendStamina();
 		}
 		else {
 			setCurrentHealthPoint(m_current_healthpoint + heal_amount);
 		}
+	}
+	void takeDamage(int recieved_damage) {
+		m_current_healthpoint -= recieved_damage;
 	}
 
 	int getMaxHealthPoint() const { return m_max_healthpoint; };
@@ -117,4 +122,14 @@ private:
 	int m_current_stamina;
 	int m_initiative;
 	int m_attack_range;
+
+	void spendStamina() {
+		if (m_current_stamina > 0)
+		{
+			m_current_stamina--;
+		}
+		else {
+			throw std::invalid_argument("Negative stamina");
+		}
+	}
 };
