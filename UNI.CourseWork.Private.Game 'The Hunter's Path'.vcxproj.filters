@@ -19,16 +19,13 @@
     <Filter Include="Source Files\src/\core/">
       <UniqueIdentifier>{65f3e8bb-304c-4bcd-9f7d-f03e483df656}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\src/\entities/">
-      <UniqueIdentifier>{8b326762-e396-42d4-b3e8-53751f1ec99c}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="entity.h">
-      <Filter>Source Files\src/\entities/</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

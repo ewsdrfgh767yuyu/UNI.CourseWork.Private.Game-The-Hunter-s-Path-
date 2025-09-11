@@ -77,6 +77,10 @@ public:
 			throw std::invalid_argument("Attack range set error");
 		}
 	}
+	int attack(int recipient_protection) {
+		return (m_damage + m_attack - recipient_protection);
+	}
+
 	int getMaxHealthPoint() const { return m_max_healthpoint; };
 	int getCurrentHealthPoint() const { return m_current_healthpoint; };
 	int getDamage() const { return m_damage; };
