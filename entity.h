@@ -77,8 +77,17 @@ public:
 			throw std::invalid_argument("Attack range set error");
 		}
 	}
+
 	int attack(int recipient_protection) {
 		return (m_damage + m_attack - recipient_protection);
+	}
+	void heal(int heal_amount) {
+		if (m_current_healthpoint + heal_amount >= m_max_healthpoint) {
+			setCurrentHealthPoint(m_max_healthpoint);
+		}
+		else {
+			setCurrentHealthPoint(m_current_healthpoint + heal_amount);
+		}
 	}
 
 	int getMaxHealthPoint() const { return m_max_healthpoint; };
