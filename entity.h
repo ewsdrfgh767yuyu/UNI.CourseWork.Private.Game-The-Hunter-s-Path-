@@ -158,4 +158,20 @@ public:
 			throw std::invalid_argument("Level cannot be negative!");
 		}
 	}
+	void setRequiredExperience(int req_level) {
+		if (req_level > 0) {
+			m_required_experience = req_level;
+		}
+		else {
+			throw std::invalid_argument("Experience cannot be negative!");
+		}
+	}
+	void setReceivedExperience(int rec_level) {
+		if (rec_level > 0) {
+			m_received_experience = rec_level;
+		}
+		else {
+			throw std::invalid_argument("Experience cannot be negative!");
+		}
+	}
 };
