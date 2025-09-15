@@ -174,4 +174,8 @@ public:
 			throw std::invalid_argument("Experience cannot be negative!");
 		}
 	}
+
+	int getLevel() const { return m_level; };
+	int getRequiredExperience() const { return m_required_experience; };
+	int getReceivedExperience() const { return m_received_experience; };
 };
