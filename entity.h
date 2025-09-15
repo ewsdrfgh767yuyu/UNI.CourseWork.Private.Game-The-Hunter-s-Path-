@@ -138,10 +138,24 @@ private:
 };
 
 class Player : public Entity {
+private:
+	int m_level;
+	int m_required_experience;
+	int m_received_experience;
 public:
 	Player(int max_hp = 100, int damage = 10, int defense = 0,
 		int attack = 0, int max_stamina = 1, int c_stamina = 1, int initiative = 10,
-		int attack_range = 0)
-		: Entity(max_hp, max_hp, damage, defense, attack,  
-			max_stamina, c_stamina, initiative, attack_range) {}
+		int attack_range = 0, int level = 1, int required_experience = 1000, int received_experience = 0)
+		: Entity(max_hp, damage, defense, attack,
+			max_stamina, c_stamina, initiative, attack_range),
+		m_level(level), m_required_experience(required_experience), m_received_experience(received_experience) {}
+
+	void setLevel(int level) {
+		if (level > 0) {
+			m_level = level;
+		}
+		else {
+			throw std::invalid_argument("Level cannot be negative!");
+		}
+	}
 };
