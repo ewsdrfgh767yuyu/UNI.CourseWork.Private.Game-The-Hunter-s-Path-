@@ -452,4 +452,32 @@ public:
 		m_experience_value(exp_value),
 		m_difficulty_level(difficulty),
 		m_enemy_type(type) {}
+
+	void setExperienceValue(int exp_value) {
+		if (exp_value >= 0) {
+			m_experience_value = exp_value;
+		}
+		else {
+			throw std::invalid_argument("Experience value cannot be negative!");
+		}
+	}
+
+	int getExperienceValue() const { return m_experience_value; }
+
+	void setDifficultyLevel(int difficulty) {
+		if (difficulty > 0) {
+			m_difficulty_level = difficulty;
+		}
+		else {
+			throw std::invalid_argument("Difficulty level must be positive!");
+		}
+	}
+
+	int getDifficultyLevel() const { return m_difficulty_level; }
+
+	void setEnemyType(const std::string& type) {
+		m_enemy_type = type;
+	}
+
+	const std::string& getEnemyType() const { return m_enemy_type; }
 };
