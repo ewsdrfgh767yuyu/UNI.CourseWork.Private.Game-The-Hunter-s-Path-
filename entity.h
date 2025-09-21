@@ -2,7 +2,30 @@
 #include <iostream>
 #include <stdexcept> 
 #include <cmath>
+#include <string>
+#include <map>
 using namespace std;
+
+enum class ItemType {
+	WEAPON,
+	ARMOR,
+	ACCESSORY,
+	CONSUMABLE
+};
+
+enum class EquipmentSlot {
+	HEAD,
+	CHEST,
+	HANDS,
+	LEGS,
+	FEET,
+	MAIN_HAND,
+	OFF_HAND,
+	NECK,
+	RING1,
+	RING2,
+	NONE // Для неподходящих предметов
+};
 
 class Entity {
 public:
