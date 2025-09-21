@@ -27,6 +27,64 @@ enum class EquipmentSlot {
 	NONE // Для неподходящих предметов
 };
 
+class Item {
+private:
+	string m_name;
+	string m_description;
+	ItemType m_type;
+	EquipmentSlot m_slot;
+	map<string, int> m_stats; // Характеристики предмета
+
+public:
+	Item(const string& name, const  string& description,
+		ItemType type, EquipmentSlot slot,
+		const map< string, int>& stats)
+		: m_name(name), m_description(description),
+		m_type(type), m_slot(slot), m_stats(stats) {}
+
+	// Геттеры
+	string getName() const { return m_name; }
+	string getDescription() const { return m_description; }
+	ItemType getType() const { return m_type; }
+	EquipmentSlot getSlot() const { return m_slot; }
+	int getStat(const string& statName) const {
+		auto it = m_stats.find(statName);
+		return it != m_stats.end() ? it->second : 0;
+	}
+
+	// Отображение информации о предмете
+	void displayInfo() const {
+		cout << "=== " << m_name << " ===\n";
+		cout << "Type: ";
+		switch (m_type) {
+		case ItemType::WEAPON: cout << "Weapon"; break;
+		case ItemType::ARMOR: cout << "Armor"; break;
+		case ItemType::ACCESSORY: cout << "Accessory"; break;
+		case ItemType::CONSUMABLE: cout << "Consumable"; break;
+		}
+		cout << "\nSlot: ";
+		switch (m_slot) {
+		case EquipmentSlot::HEAD: cout << "Head"; break;
+		case EquipmentSlot::CHEST: cout << "Chest"; break;
+		case EquipmentSlot::HANDS: cout << "Hands"; break;
+		case EquipmentSlot::LEGS: cout << "Legs"; break;
+		case EquipmentSlot::FEET: cout << "Feet"; break;
+		case EquipmentSlot::MAIN_HAND: cout << "Main Hand"; break;
+		case EquipmentSlot::OFF_HAND: cout << "Off Hand"; break;
+		case EquipmentSlot::NECK: cout << "Neck"; break;
+		case EquipmentSlot::RING1: cout << "Ring"; break;
+		case EquipmentSlot::RING2: cout << "Ring"; break;
+		case EquipmentSlot::NONE: cout << "None"; break;
+		}
+		cout << "\nDescription: " << m_description << "\n";
+		cout << "Stats:\n";
+		for (const auto& stat : m_stats) {
+			cout << "  " << stat.first << ": " << stat.second << "\n";
+		}
+		cout << "==================\n";
+	}
+};
+
 class Entity {
 public:
 	Entity(int max_hp = 100, int damage = 10, int defense = 0,
@@ -41,7 +99,7 @@ public:
 			m_max_healthpoint = max_hp;
 		}
 		else {
-			throw std::invalid_argument("Health cannot be negative!");
+			throw  invalid_argument("Health cannot be negative!");
 		}
 	}
 	void setCurrentHealthPoint(int c_hp) {
@@ -49,7 +107,7 @@ public:
 			m_current_healthpoint = c_hp;
 		}
 		else {
-			throw std::invalid_argument("Current HP set error");
+			throw  invalid_argument("Current HP set error");
 		}
 	}
 	void setDamage(int dmg) {
@@ -58,7 +116,7 @@ public:
 		}
 		else
 		{
-			throw std::invalid_argument("Damage cannot be negative!");
+			throw  invalid_argument("Damage cannot be negative!");
 		}
 	}
 	void setDefence(int def) {
@@ -66,7 +124,7 @@ public:
 			m_defense = def;
 		}
 		else {
-			throw std::invalid_argument("Defence cannot be negative!");
+			throw  invalid_argument("Defence cannot be negative!");
 		}
 	}
 	void setAttack(int atk) {
@@ -74,7 +132,7 @@ public:
 			m_attack = atk;
 		}
 		else {
-			throw std::invalid_argument("Attack cannot be negative!");
+			throw  invalid_argument("Attack cannot be negative!");
 		}
 	}
 	void setMaxStamina(int max_stam) {
@@ -82,7 +140,7 @@ public:
 			m_max_stamina = max_stam;
 		}
 		else {
-			throw std::invalid_argument("Stamina cannot be negative!");
+			throw  invalid_argument("Stamina cannot be negative!");
 		}
 	}
 	void setCurrentStamina(int c_stam) {
@@ -90,7 +148,7 @@ public:
 			m_current_stamina = c_stam;
 		}
 		else {
-			throw std::invalid_argument("Current stamina set error");
+			throw  invalid_argument("Current stamina set error");
 		}
 	}
 	void setInitiative(int init) {
@@ -98,7 +156,7 @@ public:
 			m_initiative = init;
 		}
 		else {
-			throw std::invalid_argument("Initiative cannot be negative!");
+			throw  invalid_argument("Initiative cannot be negative!");
 		}
 	}
 	void setAttackRange(int range) {
@@ -106,7 +164,7 @@ public:
 			m_attack_range = range;
 		}
 		else {
-			throw std::invalid_argument("Attack range set error");
+			throw  invalid_argument("Attack range set error");
 		}
 	}
 
@@ -156,7 +214,7 @@ private:
 			m_current_stamina--;
 		}
 		else {
-			throw std::invalid_argument("Negative stamina");
+			throw  invalid_argument("Negative stamina");
 		}
 	}
 };
@@ -183,7 +241,7 @@ public:
 			m_level = level;
 		}
 		else {
-			throw std::invalid_argument("Level cannot be negative!");
+			throw  invalid_argument("Level cannot be negative!");
 		}
 	}
 	void setRequiredExperience(int req_level) {
@@ -191,7 +249,7 @@ public:
 			m_required_experience = req_level;
 		}
 		else {
-			throw std::invalid_argument("Experience cannot be negative!");
+			throw  invalid_argument("Experience cannot be negative!");
 		}
 	}
 	void setReceivedExperience(int rec_level) {
@@ -199,7 +257,7 @@ public:
 			m_received_experience = rec_level;
 		}
 		else {
-			throw std::invalid_argument("Experience cannot be negative!");
+			throw  invalid_argument("Experience cannot be negative!");
 		}
 	}
 
