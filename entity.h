@@ -1,7 +1,10 @@
 #pragma once
 #include <iostream>
 #include <stdexcept> 
+#include <cmath>
 using namespace std;
+
+
 
 class Entity {
 public:
@@ -142,6 +145,10 @@ private:
 	int m_level;
 	int m_required_experience;
 	int m_received_experience;
+	void increaseRequiredExperience() {
+		int required_experience = 250 * pow((m_level + 1), 1.8);
+		setRequiredExperience(required_experience);
+	}
 public:
 	Player(int max_hp = 100, int damage = 10, int defense = 0,
 		int attack = 0, int max_stamina = 1, int c_stamina = 1, int initiative = 10,
@@ -178,4 +185,21 @@ public:
 	int getLevel() const { return m_level; };
 	int getRequiredExperience() const { return m_required_experience; };
 	int getReceivedExperience() const { return m_received_experience; };
+
+	void upLevel() {
+		while (m_received_experience >= m_required_experience) {
+			setReceivedExperience(m_received_experience - m_required_experience);
+			setLevel(m_level + 1);
+			increaseRequiredExperience();
+
+			setMaxHealthPoint(static_cast<int>(getMaxHealthPoint() * 1.1));
+			setDamage(static_cast<int>(getDamage() + 2));
+			setDefence(static_cast<int>(getDefense() + 1));
+			setAttack(static_cast<int>(getAttack() + 1));
+			setInitiative(static_cast<int>(getInitiative() ));
+
+			setCurrentHealthPoint(getMaxHealthPoint());
+			setCurrentStamina(getMaxStamina());
+		}
+	}
 };
