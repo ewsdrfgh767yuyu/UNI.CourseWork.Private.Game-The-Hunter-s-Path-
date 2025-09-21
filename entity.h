@@ -4,8 +4,6 @@
 #include <cmath>
 using namespace std;
 
-
-
 class Entity {
 public:
 	Entity(int max_hp = 100, int damage = 10, int defense = 0,
@@ -202,4 +200,23 @@ public:
 			setCurrentStamina(getMaxStamina());
 		}
 	}
+};
+
+class Enemy : public Entity {
+private:
+	int m_experience_value;
+	int m_difficulty_level;
+	string m_enemy_type; 
+
+public:
+	Enemy(int max_hp = 50, int damage = 8, int defense = 2,
+		int attack = 2, int max_stamina = 1, int c_stamina = 1,
+		int initiative = 8, int attack_range = 0,
+		int exp_value = 50, int difficulty = 1,
+		const string& type = "common_enemy")
+		: Entity(max_hp, damage, defense, attack, max_stamina,
+			c_stamina, initiative, attack_range),
+		m_experience_value(exp_value),
+		m_difficulty_level(difficulty),
+		m_enemy_type(type) {}
 };
