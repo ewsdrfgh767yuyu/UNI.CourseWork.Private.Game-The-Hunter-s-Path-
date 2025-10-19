@@ -96,7 +96,8 @@ vector<Entity*> createPlayerParty() {
 
         cout << "Создан " << hero->getName() << " (" << tmpl.name << ")\n";
         cout << "Характеристики: HP " << hero->getCurrentHealthPoint()
-             << ", Урон " << hero->getDamage() << ", Защита " << hero->getDefense() << "\n";
+             << ", Урон " << hero->getDamage() << ", Защита " << hero->getDefense()
+             << ", Дальность атаки " << hero->getAttackRange() << "\n";
     }
 
     return party;
@@ -132,7 +133,8 @@ vector<Entity*> createEnemyGroup(LocationType location, int difficultyModifier =
             enemies.push_back(enemy);
             cout << "Появился " << enemy->getName() << "!\n";
             cout << "Характеристики: HP " << enemy->getCurrentHealthPoint()
-                 << ", Урон " << enemy->getDamage() << ", Защита " << enemy->getDefense() << "\n";
+                 << ", Урон " << enemy->getDamage() << ", Защита " << enemy->getDefense()
+                 << ", Дальность атаки " << enemy->getAttackRange() << "\n";
 
             // Показываем способность
             AbilityType ability = enemy->getAbility();
@@ -149,53 +151,82 @@ vector<Entity*> createEnemyGroup(LocationType location, int difficultyModifier =
 
 // Функция для выполнения хода игрока
 void executePlayerTurn(BattleSystem& battleSystem, Entity* currentEntity) {
-    cout << "\n=== ХОД " << currentEntity->getName() << " ===\n";
+    cout << "\n=== ХОД " << currentEntity->getName() << " (" << getEntityClassName(currentEntity) << ") ===\n";
+    cout << "Осталось стамины: " << currentEntity->getCurrentStamina() << "/" << currentEntity->getMaxStamina() << "\n";
 
-    // Показываем доступные действия
-    vector<string> actions = {"Атаковать", "Переместиться", "Использовать предмет", "Пропустить ход"};
-    int actionChoice = selectFromList(actions, "Выберите действие:");
+    while (currentEntity->getCurrentStamina() > 0) {
+        // Показываем доступные действия
+        vector<string> actions = {"Атаковать", "Переместиться", "Посмотреть характеристики", "Закончить ход"};
+        int actionChoice = selectFromList(actions, "Выберите действие:");
 
-    switch (actionChoice) {
-    case 0: { // Атаковать
-        vector<Entity*> targets = battleSystem.getAvailableTargetsForCurrent();
-        if (targets.empty()) {
-            cout << "Нет доступных целей для атаки!\n";
+        switch (actionChoice) {
+        case 0: { // Атаковать
+            vector<Entity*> targets = battleSystem.getAvailableTargetsForCurrent();
+            if (targets.empty()) {
+                cout << "Нет доступных целей для атаки!\n";
+                continue; // Не завершаем ход
+            }
+
+            vector<string> targetNames;
+            for (Entity* target : targets) {
+                targetNames.push_back(target->getName() + " (HP: " + to_string(target->getCurrentHealthPoint()) + ")");
+            }
+
+            int targetChoice = selectFromList(targetNames, "Выберите цель:");
+            battleSystem.attack(currentEntity, targets[targetChoice]);
             break;
         }
 
-        vector<string> targetNames;
-        for (Entity* target : targets) {
-            targetNames.push_back(target->getName() + " (HP: " + to_string(target->getCurrentHealthPoint()) + ")");
+        case 1: { // Переместиться
+            vector<string> positions = {"Позиция 0 (передняя линия)", "Позиция 1 (передняя линия)",
+                                       "Позиция 2 (задняя линия)", "Позиция 3 (задняя линия)"};
+            int positionChoice = selectFromList(positions, "Выберите позицию:");
+            battleSystem.movePosition(currentEntity, positionChoice);
+            break;
         }
 
-        int targetChoice = selectFromList(targetNames, "Выберите цель:");
-        battleSystem.attack(currentEntity, targets[targetChoice]);
-        break;
+        case 2: { // Посмотреть характеристики
+            auto allEntities = battleSystem.getAllEntitiesWithStatus();
+            vector<string> entityNames;
+            vector<Entity*> entityList;
+
+            for (const auto& entityPair : allEntities) {
+                Entity* entity = entityPair.first;
+                if (entity) {
+                    entityNames.push_back(entity->getName() + " (" + entityPair.second + ")");
+                    entityList.push_back(entity);
+                }
+            }
+
+            int entityChoice = selectFromList(entityNames, "Выберите персонажа для просмотра характеристик:");
+            battleSystem.displayEntityDetails(entityList[entityChoice]);
+            continue; // Не тратим стамину на просмотр
+        }
+
+        case 3: { // Закончить ход
+            cout << currentEntity->getName() << " заканчивает ход.\n";
+            return;
+        }
+        }
     }
 
-    case 1: { // Переместиться
-        vector<string> positions = {"Позиция 0 (передняя линия)", "Позиция 1 (передняя линия)",
-                                   "Позиция 2 (задняя линия)", "Позиция 3 (задняя линия)"};
-        int positionChoice = selectFromList(positions, "Выберите позицию:");
-        battleSystem.movePosition(currentEntity, positionChoice);
-        break;
-    }
+    cout << currentEntity->getName() << " израсходовал всю стамину и заканчивает ход.\n";
+}
 
-    case 2: { // Использовать предмет
-        cout << "Использование предметов пока не реализовано.\n";
-        break;
+// Функция для отображения класса персонажа
+string getEntityClassName(Entity* entity) {
+    // Для игроков возвращаем класс героя
+    for (const auto& pair : HeroFactory::getAvailableClasses()) {
+        // Это упрощенная проверка, в реальности нужно хранить класс в Entity
+        // Пока что возвращаем просто имя
+        return entity->getName();
     }
-
-    case 3: { // Пропустить ход
-        cout << currentEntity->getName() << " пропускает ход.\n";
-        break;
-    }
-    }
+    return entity->getName(); // Для врагов возвращаем имя
 }
 
 // Функция для выполнения хода ИИ
 void executeAITurn(BattleSystem& battleSystem, Entity* currentEntity) {
-    cout << "\n=== ХОД " << currentEntity->getName() << " ===\n";
+    cout << "\n=== ХОД " << currentEntity->getName() << " (" << getEntityClassName(currentEntity) << ") ===\n";
 
     // Простая ИИ логика: атаковать случайную цель или двигаться
     vector<Entity*> targets = battleSystem.getAvailableTargetsForCurrent();
@@ -207,9 +238,59 @@ void executeAITurn(BattleSystem& battleSystem, Entity* currentEntity) {
             cout << currentEntity->getName() << " атакует " << targets[targetIndex]->getName() << "!\n";
             battleSystem.attack(currentEntity, targets[targetIndex]);
         } else {
-            int newPosition = rand() % 4;
-            cout << currentEntity->getName() << " перемещается на позицию " << newPosition << "!\n";
-            battleSystem.movePosition(currentEntity, newPosition);
+            // Для ИИ тоже проверяем логику перемещения
+            // Определяем, игрок это или враг
+            bool isPlayerEntity = false;
+            // ИИ всегда враг, но для проверки логики перемещения нужно определить сторону
+            // В данной реализации ИИ всегда на стороне врагов
+
+            // Проверяем, есть ли пустые позиции на стороне врагов
+            // Если есть пустые позиции, ИИ не может перемещаться
+            // Если нет пустых позиций, ИИ может менять местами с союзниками
+
+            // Для простоты ИИ будет пытаться перемещаться только если это возможно
+            // (т.е. менять местами с союзниками, если нет пустых позиций)
+            bool canMove = false;
+
+            // Определяем сторону ИИ (враги)
+            const auto& enemyPositions = battleSystem.getEnemyPositions();
+            // Проверяем, есть ли пустые позиции на стороне врагов
+            bool hasEmpty = false;
+            for (int i = 0; i < 4; ++i) {
+                bool occupied = false;
+                for (const auto& pos : enemyPositions) {
+                    if (pos.position == i) {
+                        occupied = true;
+                        break;
+                    }
+                }
+                if (!occupied) {
+                    hasEmpty = true;
+                    break;
+                }
+            }
+
+            if (!hasEmpty) {
+                // Если нет пустых позиций, ИИ может менять местами
+                // Для простоты выбираем случайную позицию союзника
+                vector<int> allyPositions;
+                for (const auto& pos : enemyPositions) {
+                    if (pos.entity && pos.entity != currentEntity && !pos.isCorpse) {
+                        allyPositions.push_back(pos.position);
+                    }
+                }
+                if (!allyPositions.empty()) {
+                    int randomAllyIndex = rand() % allyPositions.size();
+                    int newPosition = allyPositions[randomAllyIndex];
+                    cout << currentEntity->getName() << " меняется местами с союзником на позицию " << newPosition << "!\n";
+                    battleSystem.movePosition(currentEntity, newPosition);
+                    canMove = true;
+                }
+            }
+
+            if (!canMove) {
+                cout << currentEntity->getName() << " не может перемещаться!\n";
+            }
         }
     } else {
         cout << currentEntity->getName() << " не может действовать!\n";
@@ -238,6 +319,7 @@ void forestBattle() {
         // Показываем текущее состояние поля
         cout << "\n" << battleSystem.getBattleStatus() << "\n";
         battleSystem.printBattlefield();
+        battleSystem.printTurnOrder();
 
         // Получаем текущего действующего персонажа
         Entity* currentEntity = battleSystem.getCurrentTurnEntity();
@@ -264,6 +346,9 @@ void forestBattle() {
             executeAITurn(battleSystem, currentEntity);
         }
 
+        // Переход к следующему ходу
+        battleSystem.nextTurn();
+
         // Небольшая пауза для читаемости
         cout << "\nНажмите Enter для продолжения...";
         cin.get();
@@ -271,13 +356,18 @@ void forestBattle() {
 
     // Проверяем результат боя
     cout << "\n" << battleSystem.getBattleStatus() << "\n";
+    battleSystem.printBattlefield();
 
     if (battleSystem.isPlayerVictory()) {
         cout << "\n[PARTY] ПОБЕДА! Вы успешно победили врагов леса!\n";
         cout << "Ваш отряд получает опыт и может продолжить путешествие.\n";
+        cout << "\nНажмите Enter для продолжения...";
+        cin.get();
     } else if (battleSystem.isPlayerDefeat()) {
         cout << "\n[SKULL] ПОРАЖЕНИЕ! Ваш отряд пал в бою!\n";
         cout << "Игра окончена. Попробуйте начать новую попытку.\n";
+        cout << "\nНажмите Enter для продолжения...";
+        cin.get();
     }
 
     // Завершаем бой
@@ -299,15 +389,20 @@ int main() {
 
     // Установка локали для корректного отображения русского текста
     setlocale(LC_ALL, ".65001");
-    
-    // Лог для проверки отображения русского текста
-    cout << "Тест: Русский текст должен отображаться корректно. Если видите кракозябры, проблема с кодировкой." << endl;
-    
+
     // Инициализация генератора случайных чисел
     srand(static_cast<unsigned int>(time(nullptr)));
 
-    cout << "[GAME] ДОБРО ПОЖАЛОВАТЬ В 'THE HUNTER'S PATH'! [GAME]\n";
-    cout << "Игра в стиле Darkest Dungeon с пошаговыми боями.\n";
+    cout << "╔══════════════════════════════════════════════════════════════╗\n";
+    cout << "║                                                              ║\n";
+    cout << "║                    THE HUNTER'S PATH                         ║\n";
+    cout << "║                                                              ║\n";
+    cout << "║              Эпическая RPG с пошаговыми боями               ║\n";
+    cout << "║                                                              ║\n";
+    cout << "║              Добро пожаловать, охотник!                      ║\n";
+    cout << "║                                                              ║\n";
+    cout << "╚══════════════════════════════════════════════════════════════╝\n";
+    cout << "\n";
 
     // Запускаем бой в лесу
     forestBattle();

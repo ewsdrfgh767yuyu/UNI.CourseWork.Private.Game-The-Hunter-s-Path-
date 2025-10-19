@@ -20,6 +20,7 @@ struct HeroTemplate {
     AbilityType baseAbility = AbilityType::NONE;
     std::vector<AbilityType> availableAbilities = {};
     bool isLoner = false;
+    double damageVariance = 0.2; // Разброс урона по умолчанию
 };
 
 // Структура для описания способности
@@ -68,7 +69,7 @@ void HeroFactory::initializeTemplates() {
         HeroClass::WARRIOR, ProgressionType::LEVEL_BASED,
         120, 15, 5, 3, 2, 12, 0, AbilityType::CHARGE,
         {AbilityType::CHARGE, AbilityType::SHIELD_WALL, AbilityType::BERSERK, AbilityType::BATTLE_CRY},
-        false
+        false, 0.15
     };
 
     // ПАЛАДИН - защитник с лечением
@@ -77,7 +78,7 @@ void HeroFactory::initializeTemplates() {
         HeroClass::PALADIN, ProgressionType::MASTERY,
         130, 12, 8, 2, 2, 10, 0, AbilityType::HEALING_WAVE,
         {AbilityType::HEALING_WAVE, AbilityType::SHIELD_WALL, AbilityType::COMMAND, AbilityType::FROST_ARMOR},
-        false
+        false, 0.1
     };
 
     // ВАРВАР - берсерк с высоким уроном
@@ -86,7 +87,7 @@ void HeroFactory::initializeTemplates() {
         HeroClass::BARBARIAN, ProgressionType::SACRIFICE,
         110, 18, 3, 4, 3, 14, 0, AbilityType::BERSERK,
         {AbilityType::BERSERK, AbilityType::CHARGE, AbilityType::BATTLE_CRY, AbilityType::BLOOD_RITUAL},
-        false
+        false, 0.4 // Высокий разброс - может нанести очень много или почти ничего
     };
 
     // РАЗБОЙНИК - stealth и критические удары
@@ -95,7 +96,7 @@ void HeroFactory::initializeTemplates() {
         HeroClass::ROGUE, ProgressionType::SKILL_POINTS,
         90, 14, 2, 3, 3, 16, 1, AbilityType::STEALTH,
         {AbilityType::STEALTH, AbilityType::SHADOW_STEP, AbilityType::POISON, AbilityType::INVISIBLE},
-        false
+        false, 0.25
     };
 
     // СЛЕДОПЫТ - дальний бой и мобильность
@@ -104,7 +105,7 @@ void HeroFactory::initializeTemplates() {
         HeroClass::RANGER, ProgressionType::LEVEL_BASED,
         100, 13, 3, 3, 2, 15, 2, AbilityType::NONE,
         {AbilityType::ARCANE_MISSILE, AbilityType::TELEPORT, AbilityType::COMMAND, AbilityType::HEAL},
-        false
+        false, 0.2
     };
 
     // МАГ - магический урон и контроль
@@ -113,7 +114,7 @@ void HeroFactory::initializeTemplates() {
         HeroClass::MAGE, ProgressionType::SKILL_POINTS,
         80, 8, 1, 2, 2, 11, 3, AbilityType::ARCANE_MISSILE,
         {AbilityType::ARCANE_MISSILE, AbilityType::CHAIN_LIGHTNING, AbilityType::FLAME_BURST, AbilityType::TELEPORT},
-        false
+        false, 0.05 // Почти без разброса - маги стреляют точно
     };
 
     // КОЛДУН - демоническая магия и жертвы
@@ -122,7 +123,7 @@ void HeroFactory::initializeTemplates() {
         HeroClass::WARLOCK, ProgressionType::SACRIFICE,
         85, 10, 2, 3, 2, 13, 2, AbilityType::BLOOD_RITUAL,
         {AbilityType::BLOOD_RITUAL, AbilityType::LIFE_STEAL, AbilityType::FEAR, AbilityType::CHAIN_LIGHTNING},
-        false
+        false, 0.3
     };
 
     // ДРУИД - природная магия и трансформация
@@ -140,7 +141,7 @@ void HeroFactory::initializeTemplates() {
         HeroClass::LONER, ProgressionType::TRANSCENDENCE,
         200, 25, 10, 8, 4, 18, 1, AbilityType::BERSERK,
         {AbilityType::BERSERK, AbilityType::CHARGE, AbilityType::SHIELD_WALL, AbilityType::HEALING_WAVE, AbilityType::TELEPORT},
-        true
+        true, 0.5 // Максимальный разброс - может нанести очень много или почти ничего
     };
 }
 
@@ -284,7 +285,8 @@ Player* HeroFactory::createHero(HeroClass heroClass, const std::string& customNa
         0, // received exp
         heroClass,
         tmpl.progressionType,
-        tmpl.baseAbility
+        tmpl.baseAbility,
+        tmpl.damageVariance
     );
 
     // Устанавливаем дополнительные свойства через методы

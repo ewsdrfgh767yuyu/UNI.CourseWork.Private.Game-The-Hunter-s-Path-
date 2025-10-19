@@ -97,6 +97,27 @@ bool BattleSystem::canAttackTarget(Entity* attacker, Entity* target) const {
 
     if (attackerPos == -1 || targetPos == -1) return false;
 
+    // Определяем, на какой стороне находится атакующий
+    bool isAttackerPlayer = false;
+    for (const auto& pos : playerPositions) {
+        if (pos.entity == attacker) {
+            isAttackerPlayer = true;
+            break;
+        }
+    }
+
+    // Определяем, на какой стороне находится цель
+    bool isTargetPlayer = false;
+    for (const auto& pos : playerPositions) {
+        if (pos.entity == target) {
+            isTargetPlayer = true;
+            break;
+        }
+    }
+
+    // Нельзя атаковать союзников
+    if (isAttackerPlayer == isTargetPlayer) return false;
+
     // Проверяем, является ли цель доступной для атаки
     int distance = abs(attackerPos - targetPos);
 
@@ -105,9 +126,29 @@ bool BattleSystem::canAttackTarget(Entity* attacker, Entity* target) const {
         return distance == 0;
     }
 
-    // Для range=1: позиция напротив и соседние
+    // Для range=1: можно атаковать через одного союзника
+    // Если атакующий на передней линии (0-1), может атаковать переднюю линию врага (0-1)
+    // Если атакующий на задней линии (2-3), может атаковать заднюю линию врага (2-3) и переднюю (0-1)
     if (attackRange == 1) {
-        return distance <= 1;
+        if (isAttackerPlayer) {
+            // Игрок на передней линии может атаковать только переднюю линию врага
+            if (attackerPos <= 1) {
+                return targetPos <= 1;
+            }
+            // Игрок на задней линии может атаковать обе линии врага
+            else {
+                return targetPos <= 1; // Через одного союзника
+            }
+        } else {
+            // Враг на передней линии может атаковать только переднюю линию игрока
+            if (attackerPos <= 1) {
+                return targetPos <= 1;
+            }
+            // Враг на задней линии может атаковать обе линии игрока
+            else {
+                return targetPos <= 1; // Через одного союзника
+            }
+        }
     }
 
     // Для range>=2: все позиции
@@ -128,6 +169,23 @@ bool BattleSystem::isPositionBlocked(int position, const vector<BattlePosition>&
     for (const auto& pos : positions) {
         if (pos.position == position && pos.isCorpse) {
             return true; // Позиция заблокирована трупом
+        }
+    }
+    return false;
+}
+
+bool BattleSystem::hasEmptyPositions(const vector<BattlePosition>& positions) const {
+    // Проверяем, есть ли пустые позиции (без живых сущностей и трупов)
+    for (int i = 0; i < 4; ++i) {
+        bool occupied = false;
+        for (const auto& pos : positions) {
+            if (pos.position == i) {
+                occupied = true;
+                break;
+            }
+        }
+        if (!occupied) {
+            return true; // Есть пустая позиция
         }
     }
     return false;
@@ -188,8 +246,8 @@ bool BattleSystem::attack(Entity* attacker, Entity* target) {
     // Трата стамины
     attacker->spendStamina();
 
-    cout << attacker->getName() << " атакует " << target->getName()
-         << " и наносит " << damage << " урона!\n";
+    cout << getAttackDescription(attacker, target) << "\n";
+    cout << "Наносит " << damage << " урона!\n";
 
     // Проверка на смерть
     removeDeadEntities();
@@ -206,7 +264,7 @@ bool BattleSystem::movePosition(Entity* entity, int newPosition) {
     if (!battleActive || !entity || newPosition < 0 || newPosition > 3) return false;
     if (entity->getCurrentStamina() <= 0) return false;
 
-    // Проверка, заблокирована ли новая позиция
+    // Определяем, игрок это или враг
     bool isPlayerEntity = false;
     for (const auto& pos : playerPositions) {
         if (pos.entity == entity) {
@@ -216,18 +274,61 @@ bool BattleSystem::movePosition(Entity* entity, int newPosition) {
     }
 
     const vector<BattlePosition>& sameSidePositions = isPlayerEntity ? playerPositions : enemyPositions;
+    const vector<BattlePosition>& opponentPositions = isPlayerEntity ? enemyPositions : playerPositions;
+
+    // Проверяем, есть ли пустые позиции на своей стороне
+    if (hasEmptyPositions(sameSidePositions)) {
+        // Если есть пустые позиции, перемещение запрещено - только смена местами
+        cout << "Перемещение запрещено! Можно только менять местами персонажей.\n";
+        return false;
+    }
+
+    // Проверяем, заблокирована ли новая позиция
     if (isPositionBlocked(newPosition, sameSidePositions)) {
         cout << "Позиция заблокирована трупом!\n";
         return false;
     }
 
-    // Поиск и обновление позиции
+    // Проверяем, есть ли союзник на новой позиции
+    bool hasAllyAtPosition = false;
+    for (const auto& pos : sameSidePositions) {
+        if (pos.position == newPosition && pos.entity && pos.entity != entity && !pos.isCorpse) {
+            hasAllyAtPosition = true;
+            break;
+        }
+    }
+
+    if (!hasAllyAtPosition) {
+        cout << "Можно перемещаться только на позицию союзника для смены местами!\n";
+        return false;
+    }
+
+    // Меняем местами с союзником
     vector<BattlePosition>& positions = isPlayerEntity ? playerPositions : enemyPositions;
+    int currentPosition = -1;
+    for (auto& pos : positions) {
+        if (pos.entity == entity) {
+            currentPosition = pos.position;
+            break;
+        }
+    }
+
+    if (currentPosition == -1) return false;
+
+    // Находим союзника и меняем позиции
+    for (auto& pos : positions) {
+        if (pos.position == newPosition && pos.entity && pos.entity != entity && !pos.isCorpse) {
+            pos.position = currentPosition;
+            break;
+        }
+    }
+
+    // Обновляем позицию текущего персонажа
     for (auto& pos : positions) {
         if (pos.entity == entity) {
             pos.position = newPosition;
             entity->spendStamina();
-            cout << entity->getName() << " перемещается на позицию " << newPosition << "\n";
+            cout << entity->getName() << " меняется местами с союзником на позицию " << newPosition << "\n";
             return true;
         }
     }
@@ -329,90 +430,169 @@ bool BattleSystem::isPlayerDefeat() const {
 void BattleSystem::printBattlefield() const {
     cout << "\n=== ПОЛЕ БОЯ ===\n";
 
-    // Первая линия игроков
-    cout << "Игроки (передняя): ";
-    for (int i = 0; i < 2; ++i) {
+    // Отображение в столбик: дружественные позиции 4-3-2-1, вражеские 1-2-3-4
+    cout << "Дружественные позиции:\n";
+    for (int i = 3; i >= 0; --i) {
+        cout << (i + 1) << " дружественная: ";
         bool found = false;
         for (const auto& pos : playerPositions) {
             if (pos.position == i) {
                 if (pos.isCorpse) {
-                    cout << "[ТРУП] ";
+                    cout << "[ТРУП]";
                 } else {
-                    cout << "[" << pos.entity->getName() << "] ";
+                    cout << "[" << pos.entity->getName() << "]";
                 }
                 found = true;
                 break;
             }
         }
-        if (!found) cout << "[ПУСТО] ";
+        if (!found) cout << "[ПУСТО]";
+        cout << "\n";
     }
-    cout << "\n";
 
-    // Вторая линия игроков
-    cout << "Игроки (задняя):  ";
-    for (int i = 2; i < 4; ++i) {
-        bool found = false;
-        for (const auto& pos : playerPositions) {
-            if (pos.position == i) {
-                if (pos.isCorpse) {
-                    cout << "[ТРУП] ";
-                } else {
-                    cout << "[" << pos.entity->getName() << "] ";
-                }
-                found = true;
-                break;
-            }
-        }
-        if (!found) cout << "[ПУСТО] ";
-    }
-    cout << "\n";
-
-    // Разделитель
-    cout << "-----------------\n";
-
-    // Вторая линия врагов
-    cout << "Враги (задняя):   ";
-    for (int i = 2; i < 4; ++i) {
+    cout << "\nВражеские позиции:\n";
+    for (int i = 0; i < 4; ++i) {
+        cout << (i + 1) << " вражеская:     ";
         bool found = false;
         for (const auto& pos : enemyPositions) {
             if (pos.position == i) {
                 if (pos.isCorpse) {
-                    cout << "[ТРУП] ";
+                    cout << "[ТРУП]";
                 } else {
-                    cout << "[" << pos.entity->getName() << "] ";
+                    cout << "[" << pos.entity->getName() << "]";
                 }
                 found = true;
                 break;
             }
         }
-        if (!found) cout << "[ПУСТО] ";
+        if (!found) cout << "[ПУСТО]";
+        cout << "\n";
     }
-    cout << "\n";
+    cout << "=================\n";
+}
 
-    // Первая линия врагов
-    cout << "Враги (передняя): ";
-    for (int i = 0; i < 2; ++i) {
-        bool found = false;
-        for (const auto& pos : enemyPositions) {
-            if (pos.position == i) {
-                if (pos.isCorpse) {
-                    cout << "[ТРУП] ";
-                } else {
-                    cout << "[" << pos.entity->getName() << "] ";
-                }
-                found = true;
-                break;
-            }
-        }
-        if (!found) cout << "[ПУСТО] ";
+void BattleSystem::nextTurn() {
+    if (turnOrder.empty()) return;
+    
+    currentTurnIndex++;
+    
+    // Если достигли конца очереди, пересчитываем очередь и начинаем с начала
+    if (currentTurnIndex >= turnOrder.size()) {
+        calculateTurnOrder();
+        currentTurnIndex = 0;
     }
-    cout << "\n=================\n";
+    
+    // Регенерируем стамину для текущего персонажа
+    regenerateStaminaForTurn();
+}
+
+void BattleSystem::displayEntityDetails(Entity* entity) const {
+    if (!entity) return;
+
+    cout << "\n=== ХАРАКТЕРИСТИКИ " << entity->getName() << " ===\n";
+    cout << "Здоровье: " << entity->getCurrentHealthPoint() << "/" << entity->getMaxHealthPoint() << "\n";
+    cout << "Урон: " << entity->getDamage() << "\n";
+    cout << "Защита: " << entity->getDefense() << "\n";
+    cout << "Атака: " << entity->getAttack() << "\n";
+    cout << "Инициатива: " << entity->getInitiative() << "\n";
+    cout << "Дальность атаки: " << entity->getAttackRange() << "\n";
+    cout << "Выносливость: " << entity->getCurrentStamina() << "/" << entity->getMaxStamina() << "\n";
+
+    AbilityType ability = entity->getAbility();
+    if (ability != AbilityType::NONE) {
+        // Для простоты используем базовую информацию о способности
+        cout << "Способность: ";
+        switch (ability) {
+        case AbilityType::FLYING: cout << "Полёт"; break;
+        case AbilityType::POISON: cout << "Яд"; break;
+        case AbilityType::FIRE_DAMAGE: cout << "Огненный урон"; break;
+        case AbilityType::ICE_DAMAGE: cout << "Ледяной урон"; break;
+        case AbilityType::LIGHTNING: cout << "Молния"; break;
+        case AbilityType::HEAL: cout << "Лечение"; break;
+        case AbilityType::TELEPORT: cout << "Телепортация"; break;
+        case AbilityType::INVISIBLE: cout << "Невидимость"; break;
+        case AbilityType::LIFE_STEAL: cout << "Похищение жизни"; break;
+        case AbilityType::REGENERATION: cout << "Регенерация"; break;
+        case AbilityType::FEAR: cout << "Страх"; break;
+        case AbilityType::BERSERK: cout << "Берсерк"; break;
+        case AbilityType::CHARGE: cout << "Рывок"; break;
+        case AbilityType::SHIELD_WALL: cout << "Стена щитов"; break;
+        case AbilityType::BATTLE_CRY: cout << "Боевой клич"; break;
+        case AbilityType::MAGIC_MISSILE: cout << "Магическая стрела"; break;
+        case AbilityType::CHAIN_LIGHTNING: cout << "Цепная молния"; break;
+        case AbilityType::FLAME_BURST: cout << "Огненный взрыв"; break;
+        case AbilityType::BLOOD_RITUAL: cout << "Кровавый ритуал"; break;
+        case AbilityType::HEALING_WAVE: cout << "Волна исцеления"; break;
+        case AbilityType::COMMAND: cout << "Команда"; break;
+        case AbilityType::FROST_ARMOR: cout << "Ледяная броня"; break;
+        case AbilityType::STEALTH: cout << "Скрытность"; break;
+        case AbilityType::SHADOW_STEP: cout << "Теневой шаг"; break;
+        case AbilityType::ARCANE_MISSILE: cout << "Чародейская стрела"; break;
+        default: cout << "Неизвестная способность"; break;
+        }
+        cout << "\n";
+    }
+    cout << "=====================================\n";
+}
+
+string BattleSystem::getAttackDescription(Entity* attacker, Entity* target) const {
+    if (!attacker || !target) return "";
+
+    string description = attacker->getName() + " ";
+
+    // Описания атак в зависимости от типа способности
+    AbilityType ability = attacker->getAbility();
+    switch (ability) {
+    case AbilityType::FIRE_DAMAGE:
+        description += "извергает поток пламени на ";
+        break;
+    case AbilityType::ICE_DAMAGE:
+        description += "замораживает ледяным дыханием ";
+        break;
+    case AbilityType::LIGHTNING:
+        description += "поражает молнией ";
+        break;
+    case AbilityType::POISON:
+        description += "отравляет ядом ";
+        break;
+    case AbilityType::LIFE_STEAL:
+        description += "высасывает жизненную силу из ";
+        break;
+    case AbilityType::BERSERK:
+        description += "в ярости обрушивается на ";
+        break;
+    case AbilityType::CHARGE:
+        description += "с разбега врезается в ";
+        break;
+    case AbilityType::MAGIC_MISSILE:
+        description += "запускает магическую стрелу в ";
+        break;
+    case AbilityType::CHAIN_LIGHTNING:
+        description += "вызывает цепную молнию, ударяющую по ";
+        break;
+    case AbilityType::FLAME_BURST:
+        description += "взрывает огненным шаром ";
+        break;
+    case AbilityType::SHADOW_STEP:
+        description += "выныривает из тени и атакует ";
+        break;
+    case AbilityType::ARCANE_MISSILE:
+        description += "пускает чародейскую стрелу в ";
+        break;
+    default:
+        description += "атакует ";
+        break;
+    }
+
+    description += target->getName() + "!";
+    return description;
 }
 
 void BattleSystem::printTurnOrder() const {
     cout << "\nОчередь ходов:\n";
     for (size_t i = 0; i < turnOrder.size(); ++i) {
         string marker = (i == currentTurnIndex) ? " -> " : "    ";
-        cout << marker << i + 1 << ". " << turnOrder[i]->getName() << "\n";
+        cout << marker << i + 1 << ". " << turnOrder[i]->getName()
+             << " (Дальность: " << turnOrder[i]->getAttackRange() << ")\n";
     }
 }

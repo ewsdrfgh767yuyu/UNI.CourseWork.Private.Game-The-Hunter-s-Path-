@@ -42,6 +42,7 @@ private:
     bool canAttackTarget(Entity* attacker, Entity* target) const;
     int getEntityPosition(Entity* entity) const;
     bool isPositionBlocked(int position, const vector<BattlePosition>& positions) const;
+    bool hasEmptyPositions(const vector<BattlePosition>& positions) const;
     vector<Entity*> getAvailableTargets(Entity* attacker, bool isPlayerAttacker) const;
     void removeDeadEntities();
     void regenerateStaminaForTurn();
@@ -64,11 +65,18 @@ public:
     vector<Entity*> getAvailableTargetsForCurrent() const;
     vector<pair<Entity*, string>> getAllEntitiesWithStatus() const;
     string getBattleStatus() const;
+    const vector<BattlePosition>& getPlayerPositions() const { return playerPositions; }
+    const vector<BattlePosition>& getEnemyPositions() const { return enemyPositions; }
+    void displayEntityDetails(Entity* entity) const;
+    string getAttackDescription(Entity* attacker, Entity* target) const;
 
     // Методы для проверки условий
     bool isPlayerVictory() const;
     bool isPlayerDefeat() const;
 
+    // Методы управления очередью ходов
+    void nextTurn();
+    
     // Отладочные методы
     void printBattlefield() const;
     void printTurnOrder() const;

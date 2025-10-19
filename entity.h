@@ -145,26 +145,27 @@ public:
 
 class Entity {
 protected:
-	string m_name;
-	AbilityType m_ability;
-	int m_max_healthpoint;
-	int m_current_healthpoint;
-	int m_damage;
-	int m_defense;
-	int m_attack;
-	int m_max_stamina;
-	int m_current_stamina;
-	int m_initiative;
-	int m_attack_range;
+  string m_name;
+  AbilityType m_ability;
+  int m_max_healthpoint;
+  int m_current_healthpoint;
+  int m_damage;
+  int m_defense;
+  int m_attack;
+  int m_max_stamina;
+  int m_current_stamina;
+  int m_initiative;
+  int m_attack_range;
+  double m_damage_variance; // Разброс урона (0.0 - без разброса, 1.0 - полный разброс)
 
 public:
-	Entity(const string& name = "Entity", int max_hp = 100, int damage = 10, int defense = 0,
-		int attack = 0, int max_stamina = 1, int c_stamina = 1, int initiative = 10,
-		int attack_range = 0, AbilityType ability = AbilityType::NONE)
-		: m_name(name), m_max_healthpoint(max_hp), m_current_healthpoint(max_hp),
-		m_damage(damage), m_defense(defense), m_attack(attack),
-		m_max_stamina(max_stamina), m_current_stamina(c_stamina), m_initiative(initiative),
-		m_attack_range(attack_range), m_ability(ability) {}
+  Entity(const string& name = "Entity", int max_hp = 100, int damage = 10, int defense = 0,
+    int attack = 0, int max_stamina = 1, int c_stamina = 1, int initiative = 10,
+    int attack_range = 0, AbilityType ability = AbilityType::NONE, double damage_variance = 0.2)
+    : m_name(name), m_max_healthpoint(max_hp), m_current_healthpoint(max_hp),
+    m_damage(damage), m_defense(defense), m_attack(attack),
+    m_max_stamina(max_stamina), m_current_stamina(c_stamina), m_initiative(initiative),
+    m_attack_range(attack_range), m_ability(ability), m_damage_variance(damage_variance) {}
 
 	// Геттеры
 	string getName() const { return m_name; }
@@ -178,6 +179,7 @@ public:
 	int getInitiative() const { return m_initiative; }
 	int getAttackRange() const { return m_attack_range; }
 	AbilityType getAbility() const { return m_ability; }
+	double getDamageVariance() const { return m_damage_variance; }
 
 	// Сеттеры
 	void setName(const string& name) { m_name = name; }
@@ -246,18 +248,49 @@ public:
 		}
 	}
 	void setAttackRange(int range) {
-		if (range >= 0 && range <= 3) {
-			m_attack_range = range;
-		}
-		else {
-			throw invalid_argument("Attack range set error");
-		}
+	  if (range >= 0 && range <= 3) {
+	    m_attack_range = range;
+	  }
+	  else {
+	    throw invalid_argument("Attack range set error");
+	  }
 	}
 	void setAbility(AbilityType ability) { m_ability = ability; }
+	void setDamageVariance(double variance) {
+	  if (variance >= 0.0 && variance <= 1.0) {
+	    m_damage_variance = variance;
+	  }
+	  else {
+	    throw invalid_argument("Damage variance must be between 0.0 and 1.0");
+	  }
+	}
 
 	// Методы действий
 	int attack(int recipient_protection) {
-		return (m_damage + m_attack - recipient_protection);
+	  // Расчет множителя атаки/защиты
+	  int attackDefenseDiff = m_attack - recipient_protection;
+	  double multiplier = 1.0;
+
+	  if (attackDefenseDiff > 0) {
+	    // Атака больше защиты - урон увеличивается на 5% за единицу
+	    multiplier = 1.0 + (attackDefenseDiff * 0.05);
+	  } else if (attackDefenseDiff < 0) {
+	    // Защита больше атаки - урон уменьшается на 5% за единицу
+	    multiplier = 1.0 / (1.0 + (abs(attackDefenseDiff) * 0.05));
+	  }
+
+	  // Уникальный разброс урона для каждого типа персонажа
+	  double varianceRange = m_damage_variance; // 0.0 - без разброса, 1.0 - полный разброс
+	  double minMultiplier = 1.0 - varianceRange;
+	  double maxMultiplier = 1.0 + varianceRange;
+
+	  // Генерация случайного множителя разброса
+	  double randomMultiplier = minMultiplier + (static_cast<double>(rand()) / RAND_MAX) * (maxMultiplier - minMultiplier);
+
+	  // Применение разброса и множителя атаки/защиты
+	  double finalDamage = m_damage * randomMultiplier * multiplier;
+
+	  return max(1, static_cast<int>(finalDamage)); // Минимум 1 урона
 	}
 
 	void heal(int heal_amount) {
@@ -338,12 +371,12 @@ private:
 
 public:
 	Player(const string& name = "Player", int max_hp = 100, int damage = 10, int defense = 0,
-		int attack = 0, int max_stamina = 1, int c_stamina = 1, int initiative = 10,
-		int attack_range = 0, int level = 1, int required_experience = 1000,
-		int received_experience = 0, HeroClass hero_class = HeroClass::WARRIOR,
-		ProgressionType progression_type = ProgressionType::LEVEL_BASED,
-		AbilityType base_ability = AbilityType::NONE)
-		: Entity(name, max_hp, damage, defense, attack, max_stamina, c_stamina, initiative, attack_range, base_ability),
+	  int attack = 0, int max_stamina = 1, int c_stamina = 1, int initiative = 10,
+	  int attack_range = 0, int level = 1, int required_experience = 1000,
+	  int received_experience = 0, HeroClass hero_class = HeroClass::WARRIOR,
+	  ProgressionType progression_type = ProgressionType::LEVEL_BASED,
+	  AbilityType base_ability = AbilityType::NONE, double damage_variance = 0.2)
+	  : Entity(name, max_hp, damage, defense, attack, max_stamina, c_stamina, initiative, attack_range, base_ability, damage_variance),
 		m_level(level), m_required_experience(required_experience), m_received_experience(received_experience),
 		m_hero_class(hero_class), m_progression_type(progression_type), m_is_loner(false) {
 
@@ -524,12 +557,12 @@ private:
 
 public:
 	Enemy(const string& name = "Enemy", int max_hp = 50, int damage = 8, int defense = 2,
-		int attack = 2, int max_stamina = 1, int c_stamina = 1,
-		int initiative = 8, int attack_range = 0, AbilityType ability = AbilityType::NONE,
-		int exp_value = 50, int difficulty = 1,
-		const string& type = "common_enemy")
-		: Entity(name, max_hp, damage, defense, attack, max_stamina,
-			c_stamina, initiative, attack_range, ability),
+	  int attack = 2, int max_stamina = 1, int c_stamina = 1,
+	  int initiative = 8, int attack_range = 0, AbilityType ability = AbilityType::NONE,
+	  int exp_value = 50, int difficulty = 1,
+	  const string& type = "common_enemy", double damage_variance = 0.2)
+	  : Entity(name, max_hp, damage, defense, attack, max_stamina,
+	    c_stamina, initiative, attack_range, ability, damage_variance),
 		m_experience_value(exp_value),
 		m_difficulty_level(difficulty),
 		m_enemy_type(type) {}
