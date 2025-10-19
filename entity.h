@@ -1,6 +1,6 @@
 #pragma once
 #include <iostream>
-#include <stdexcept> 
+#include <stdexcept>
 #include <cmath>
 #include <string>
 #include <map>
@@ -25,7 +25,63 @@ enum class EquipmentSlot {
 	NECK,
 	RING1,
 	RING2,
-	NONE 
+	NONE
+};
+
+enum class AbilityType {
+	NONE,
+	FLYING,
+	POISON,
+	FIRE_DAMAGE,
+	ICE_DAMAGE,
+	LIGHTNING,
+	HEAL,
+	TELEPORT,
+	INVISIBLE,
+	LIFE_STEAL,
+	REGENERATION,
+	FEAR,
+	BERSERK,
+	CHARGE,
+	SHIELD_WALL,
+	BATTLE_CRY,
+	MAGIC_MISSILE,
+	CHAIN_LIGHTNING,
+	FLAME_BURST,
+	BLOOD_RITUAL,
+	HEALING_WAVE,
+	COMMAND,
+	FROST_ARMOR,
+	STEALTH,
+	SHADOW_STEP,
+	ARCANE_MISSILE
+};
+
+enum class HeroClass {
+	WARRIOR,
+	PALADIN,
+	BARBARIAN,
+	ROGUE,
+	RANGER,
+	MAGE,
+	WARLOCK,
+	DRUID,
+	LONER
+};
+
+enum class ProgressionType {
+	LEVEL_BASED,
+	SKILL_POINTS,
+	MASTERY,
+	SACRIFICE,
+	TRANSCENDENCE
+};
+
+enum class LocationType {
+	FOREST,
+	CAVE,
+	DEAD_CITY,
+	CASTLE
 };
 
 class Item {
@@ -37,9 +93,12 @@ private:
 	map<string, int> m_stats;
 
 public:
-	Item(const string& name, const  string& description,
+	Item() : m_name(""), m_description(""), m_type(ItemType::CONSUMABLE),
+		m_slot(EquipmentSlot::NONE), m_stats() {}
+
+	Item(const string& name, const string& description,
 		ItemType type, EquipmentSlot slot,
-		const map< string, int>& stats)
+		const map<string, int>& stats)
 		: m_name(name), m_description(description),
 		m_type(type), m_slot(slot), m_stats(stats) {}
 
@@ -85,118 +144,9 @@ public:
 };
 
 class Entity {
-public:
-	Entity(int max_hp = 100, int damage = 10, int defense = 0,
-		int attack = 0, int max_stamina = 1, int c_stamina = 1, int initiative = 10,
-		int attack_range = 0)
-		: m_max_healthpoint(max_hp), m_current_healthpoint(max_hp),
-		m_damage(damage), m_defense(defense), m_attack(attack),
-		m_max_stamina(max_stamina), m_current_stamina(c_stamina),m_initiative(initiative),
-		m_attack_range(attack_range){}
-	void setMaxHealthPoint(int max_hp) {
-		if (max_hp > 0) {
-			m_max_healthpoint = max_hp;
-		}
-		else {
-			throw  invalid_argument("Health cannot be negative!");
-		}
-	}
-	void setCurrentHealthPoint(int c_hp) {
-		if (c_hp >= 0 && c_hp <= m_max_healthpoint) {
-			m_current_healthpoint = c_hp;
-		}
-		else {
-			throw  invalid_argument("Current HP set error");
-		}
-	}
-	void setDamage(int dmg) {
-		if (dmg > 0) {
-			m_damage = dmg;
-		}
-		else
-		{
-			throw  invalid_argument("Damage cannot be negative!");
-		}
-	}
-	void setDefence(int def) {
-		if (def >= 0) {
-			m_defense = def;
-		}
-		else {
-			throw  invalid_argument("Defence cannot be negative!");
-		}
-	}
-	void setAttack(int atk) {
-		if (atk >= 0) {
-			m_attack = atk;
-		}
-		else {
-			throw  invalid_argument("Attack cannot be negative!");
-		}
-	}
-	void setMaxStamina(int max_stam) {
-		if (max_stam > 0) {
-			m_max_stamina = max_stam;
-		}
-		else {
-			throw  invalid_argument("Stamina cannot be negative!");
-		}
-	}
-	void setCurrentStamina(int c_stam) {
-		if (c_stam >= 0 && c_stam <= m_max_stamina) {
-			m_current_stamina = c_stam;
-		}
-		else {
-			throw  invalid_argument("Current stamina set error");
-		}
-	}
-	void setInitiative(int init) {
-		if (init > 0) {
-			m_initiative = init;
-		}
-		else {
-			throw  invalid_argument("Initiative cannot be negative!");
-		}
-	}
-	void setAttackRange(int range) {
-		if (range >= 0 && range <= 3) {
-			m_attack_range = range;
-		}
-		else {
-			throw  invalid_argument("Attack range set error");
-		}
-	}
-
-	int attack(int recipient_protection) {
-		return (m_damage + m_attack - recipient_protection);
-		spendStamina;
-	}
-	void heal(int heal_amount) {
-		if (m_current_healthpoint + heal_amount >= m_max_healthpoint) {
-			setCurrentHealthPoint(m_max_healthpoint);
-			spendStamina();
-		}
-		else {
-			setCurrentHealthPoint(m_current_healthpoint + heal_amount);
-		}
-	}
-	void takeDamage(int recieved_damage) {
-		m_current_healthpoint -= recieved_damage;
-	}
-	void regenerateStamina() {
-		m_current_stamina = m_max_stamina;
-	}
-
-	int getMaxHealthPoint() const { return m_max_healthpoint; };
-	int getCurrentHealthPoint() const { return m_current_healthpoint; };
-	int getDamage() const { return m_damage; };
-	int getDefense() const { return m_defense; };
-	int getAttack() const { return m_attack; };
-	int getMaxStamina() const { return m_max_stamina; };
-	int getCurrentStamina() const { return m_current_stamina; };
-	int getInitiative() const { return m_initiative; };
-	int getAttackRange() const { return m_attack_range; };
-private:
+protected:
+	string m_name;
+	AbilityType m_ability;
 	int m_max_healthpoint;
 	int m_current_healthpoint;
 	int m_damage;
@@ -207,13 +157,133 @@ private:
 	int m_initiative;
 	int m_attack_range;
 
+public:
+	Entity(const string& name = "Entity", int max_hp = 100, int damage = 10, int defense = 0,
+		int attack = 0, int max_stamina = 1, int c_stamina = 1, int initiative = 10,
+		int attack_range = 0, AbilityType ability = AbilityType::NONE)
+		: m_name(name), m_max_healthpoint(max_hp), m_current_healthpoint(max_hp),
+		m_damage(damage), m_defense(defense), m_attack(attack),
+		m_max_stamina(max_stamina), m_current_stamina(c_stamina), m_initiative(initiative),
+		m_attack_range(attack_range), m_ability(ability) {}
+
+	// Геттеры
+	string getName() const { return m_name; }
+	int getMaxHealthPoint() const { return m_max_healthpoint; }
+	int getCurrentHealthPoint() const { return m_current_healthpoint; }
+	int getDamage() const { return m_damage; }
+	int getDefense() const { return m_defense; }
+	int getAttack() const { return m_attack; }
+	int getMaxStamina() const { return m_max_stamina; }
+	int getCurrentStamina() const { return m_current_stamina; }
+	int getInitiative() const { return m_initiative; }
+	int getAttackRange() const { return m_attack_range; }
+	AbilityType getAbility() const { return m_ability; }
+
+	// Сеттеры
+	void setName(const string& name) { m_name = name; }
+	void setMaxHealthPoint(int max_hp) {
+		if (max_hp > 0) {
+			m_max_healthpoint = max_hp;
+		}
+		else {
+			throw invalid_argument("Health cannot be negative!");
+		}
+	}
+	void setCurrentHealthPoint(int c_hp) {
+		if (c_hp >= 0 && c_hp <= m_max_healthpoint) {
+			m_current_healthpoint = c_hp;
+		}
+		else {
+			throw invalid_argument("Current HP set error");
+		}
+	}
+	void setDamage(int dmg) {
+		if (dmg > 0) {
+			m_damage = dmg;
+		}
+		else {
+			throw invalid_argument("Damage cannot be negative!");
+		}
+	}
+	void setDefense(int def) {
+		if (def >= 0) {
+			m_defense = def;
+		}
+		else {
+			throw invalid_argument("Defense cannot be negative!");
+		}
+	}
+	void setAttack(int atk) {
+		if (atk >= 0) {
+			m_attack = atk;
+		}
+		else {
+			throw invalid_argument("Attack cannot be negative!");
+		}
+	}
+	void setMaxStamina(int max_stam) {
+		if (max_stam > 0) {
+			m_max_stamina = max_stam;
+		}
+		else {
+			throw invalid_argument("Stamina cannot be negative!");
+		}
+	}
+	void setCurrentStamina(int c_stam) {
+		if (c_stam >= 0 && c_stam <= m_max_stamina) {
+			m_current_stamina = c_stam;
+		}
+		else {
+			throw invalid_argument("Current stamina set error");
+		}
+	}
+	void setInitiative(int init) {
+		if (init > 0) {
+			m_initiative = init;
+		}
+		else {
+			throw invalid_argument("Initiative cannot be negative!");
+		}
+	}
+	void setAttackRange(int range) {
+		if (range >= 0 && range <= 3) {
+			m_attack_range = range;
+		}
+		else {
+			throw invalid_argument("Attack range set error");
+		}
+	}
+	void setAbility(AbilityType ability) { m_ability = ability; }
+
+	// Методы действий
+	int attack(int recipient_protection) {
+		return (m_damage + m_attack - recipient_protection);
+	}
+
+	void heal(int heal_amount) {
+		if (m_current_healthpoint + heal_amount >= m_max_healthpoint) {
+			setCurrentHealthPoint(m_max_healthpoint);
+		}
+		else {
+			setCurrentHealthPoint(m_current_healthpoint + heal_amount);
+		}
+	}
+
+	void takeDamage(int received_damage) {
+		m_current_healthpoint -= received_damage;
+		if (m_current_healthpoint < 0) m_current_healthpoint = 0;
+	}
+
+	void regenerateStamina() {
+		m_current_stamina = m_max_stamina;
+	}
+
 	void spendStamina() {
-		if (m_current_stamina > 0)
-		{
+		if (m_current_stamina > 0) {
 			m_current_stamina--;
 		}
 		else {
-			throw  invalid_argument("Negative stamina");
+			throw invalid_argument("Negative stamina");
 		}
 	}
 };
@@ -223,13 +293,18 @@ private:
 	int m_level;
 	int m_required_experience;
 	int m_received_experience;
+	HeroClass m_hero_class;
+	ProgressionType m_progression_type;
+	vector<AbilityType> m_available_abilities;
+	map<AbilityType, int> m_ability_levels;
+	bool m_is_loner;
 
 	vector<Item> m_inventory;
 	map<EquipmentSlot, Item> m_equipment;
 
 	void increaseRequiredExperience() {
-		int required_experience = 250 * pow((m_level + 1), 1.8);
-		setRequiredExperience(required_experience);
+		int required_experience = static_cast<int>(250 * pow((m_level + 1), 1.8));
+		m_required_experience = required_experience;
 	}
 
 	void recalculateStats() {
@@ -251,7 +326,7 @@ private:
 
 		Entity::setMaxHealthPoint(100 + 10 * (m_level - 1) + healthBonus);
 		Entity::setDamage(10 + 2 * (m_level - 1) + damageBonus);
-		Entity::setDefence(0 + 1 * (m_level - 1) + defenseBonus);
+		Entity::setDefense(0 + 1 * (m_level - 1) + defenseBonus);
 		Entity::setAttack(0 + 1 * (m_level - 1) + attackBonus);
 		Entity::setMaxStamina(1 + (m_level / 5) + staminaBonus);
 		Entity::setInitiative(10 + (m_level / 3) + initiativeBonus);
@@ -259,18 +334,18 @@ private:
 		regenerateStamina();
 	}
 
-	static const map<EquipmentSlot, string> slotNames;
+	static map<EquipmentSlot, string> slotNames;
 
 public:
-
-	Player(int max_hp = 100, int damage = 10, int defense = 0,
+	Player(const string& name = "Player", int max_hp = 100, int damage = 10, int defense = 0,
 		int attack = 0, int max_stamina = 1, int c_stamina = 1, int initiative = 10,
 		int attack_range = 0, int level = 1, int required_experience = 1000,
-		int received_experience = 0)
-		: Entity(max_hp, damage, defense, attack,
-			max_stamina, c_stamina, initiative, attack_range),
-		m_level(level), m_required_experience(required_experience),
-		m_received_experience(received_experience) {
+		int received_experience = 0, HeroClass hero_class = HeroClass::WARRIOR,
+		ProgressionType progression_type = ProgressionType::LEVEL_BASED,
+		AbilityType base_ability = AbilityType::NONE)
+		: Entity(name, max_hp, damage, defense, attack, max_stamina, c_stamina, initiative, attack_range, base_ability),
+		m_level(level), m_required_experience(required_experience), m_received_experience(received_experience),
+		m_hero_class(hero_class), m_progression_type(progression_type), m_is_loner(false) {
 
 		m_equipment = {
 			{EquipmentSlot::HEAD, Item("None", "No item", ItemType::ARMOR, EquipmentSlot::HEAD, {})},
@@ -286,6 +361,20 @@ public:
 		};
 	}
 
+	// Геттеры
+	int getLevel() const { return m_level; }
+	int getRequiredExperience() const { return m_required_experience; }
+	int getReceivedExperience() const { return m_received_experience; }
+	HeroClass getHeroClass() const { return m_hero_class; }
+	ProgressionType getProgressionType() const { return m_progression_type; }
+	bool isLoner() const { return m_is_loner; }
+	const vector<AbilityType>& getAvailableAbilities() const { return m_available_abilities; }
+	int getAbilityLevel(AbilityType ability) const {
+		auto it = m_ability_levels.find(ability);
+		return it != m_ability_levels.end() ? it->second : 0;
+	}
+
+	// Сеттеры
 	void setLevel(int level) {
 		if (level > 0) {
 			m_level = level;
@@ -305,7 +394,7 @@ public:
 	}
 
 	void setReceivedExperience(int rec_level) {
-		if (rec_level > 0) {
+		if (rec_level >= 0) {
 			m_received_experience = rec_level;
 		}
 		else {
@@ -313,10 +402,12 @@ public:
 		}
 	}
 
-	int getLevel() const { return m_level; }
-	int getRequiredExperience() const { return m_required_experience; }
-	int getReceivedExperience() const { return m_received_experience; }
+	void setAvailableAbilities(const vector<AbilityType>& abilities) { m_available_abilities = abilities; }
+	void setProgressionType(ProgressionType type) { m_progression_type = type; }
+	void setIsLoner(bool loner) { m_is_loner = loner; }
+	void setAbilityLevel(AbilityType ability, int level) { m_ability_levels[ability] = level; }
 
+	// Методы инвентаря и экипировки
 	void addItem(const Item& item) {
 		m_inventory.push_back(item);
 	}
@@ -422,33 +513,23 @@ public:
 	}
 };
 
-const map<EquipmentSlot, string> Player::slotNames = {
-	{EquipmentSlot::HEAD, "Head"},
-	{EquipmentSlot::CHEST, "Chest"},
-	{EquipmentSlot::HANDS, "Hands"},
-	{EquipmentSlot::LEGS, "Legs"},
-	{EquipmentSlot::FEET, "Feet"},
-	{EquipmentSlot::MAIN_HAND, "Main Hand"},
-	{EquipmentSlot::OFF_HAND, "Off Hand"},
-	{EquipmentSlot::NECK, "Neck"},
-	{EquipmentSlot::RING1, "Ring 1"},
-	{EquipmentSlot::RING2, "Ring 2"}
-};
+
+
 
 class Enemy : public Entity {
 private:
 	int m_experience_value;
 	int m_difficulty_level;
-	string m_enemy_type; 
+	string m_enemy_type;
 
 public:
-	Enemy(int max_hp = 50, int damage = 8, int defense = 2,
+	Enemy(const string& name = "Enemy", int max_hp = 50, int damage = 8, int defense = 2,
 		int attack = 2, int max_stamina = 1, int c_stamina = 1,
-		int initiative = 8, int attack_range = 0,
+		int initiative = 8, int attack_range = 0, AbilityType ability = AbilityType::NONE,
 		int exp_value = 50, int difficulty = 1,
 		const string& type = "common_enemy")
-		: Entity(max_hp, damage, defense, attack, max_stamina,
-			c_stamina, initiative, attack_range),
+		: Entity(name, max_hp, damage, defense, attack, max_stamina,
+			c_stamina, initiative, attack_range, ability),
 		m_experience_value(exp_value),
 		m_difficulty_level(difficulty),
 		m_enemy_type(type) {}
@@ -458,7 +539,7 @@ public:
 			m_experience_value = exp_value;
 		}
 		else {
-			throw std::invalid_argument("Experience value cannot be negative!");
+			throw invalid_argument("Experience value cannot be negative!");
 		}
 	}
 
@@ -469,15 +550,15 @@ public:
 			m_difficulty_level = difficulty;
 		}
 		else {
-			throw std::invalid_argument("Difficulty level must be positive!");
+			throw invalid_argument("Difficulty level must be positive!");
 		}
 	}
 
 	int getDifficultyLevel() const { return m_difficulty_level; }
 
-	void setEnemyType(const std::string& type) {
+	void setEnemyType(const string& type) {
 		m_enemy_type = type;
 	}
 
-	const std::string& getEnemyType() const { return m_enemy_type; }
+	const string& getEnemyType() const { return m_enemy_type; }
 };
