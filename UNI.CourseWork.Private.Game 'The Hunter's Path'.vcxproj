@@ -128,15 +128,21 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="BattleSystem.cpp" />
+    <ClCompile Include="CampaignSystem.cpp" />
     <ClCompile Include="entity.cpp" />
+    <ClCompile Include="HeroFactory.cpp" />
+    <ClCompile Include="EnemyFactory.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Map.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BattleSystem.h" />
     <ClInclude Include="CampaignLogic.h" />
+    <ClInclude Include="CampaignSystem.h" />
     <ClInclude Include="EnemyTemplates.h" />
     <ClInclude Include="entity.h" />
     <ClInclude Include="HeroTemplates.h" />
+    <ClInclude Include="Map.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".gitattributes" />
