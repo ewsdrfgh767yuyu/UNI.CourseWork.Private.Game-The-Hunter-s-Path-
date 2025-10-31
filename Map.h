@@ -41,7 +41,7 @@ private:
     static const int MAP_SIZE = 15;
     std::vector<std::vector<NodeType>> grid;
     Position playerPos;
-    std::vector<std::vector<bool>> visited;
+    std::vector<std::vector<char>> visited;
     std::mt19937 rng;
 
     // Методы генерации

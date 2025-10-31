@@ -1,36 +1,7 @@
-# TODO: Реализация оригинальной карты и функционала
+# TODO List for Fixing Linker Error
 
-## 1. Изменение карты на оригинальную
+## Tasks to Complete
 
-- [ ] Изменить Map.cpp для генерации фиксированной карты с локациями
-- [ ] Создать локации: Лес (2 выхода), Пещера (2 выхода), Город Мертвецов (2 выхода), Замок (1 выход + босс)
-- [ ] Убедиться, что маршруты между локациями жестко заданы в коде
-
-## 2. Добавление случайных боев, ивентов и находки артефактов
-
-- [ ] Реализовать случайные бои на карте
-- [ ] Добавить ивенты (минимум 2 типа)
-- [ ] Добавить находку артефактов с возможностью экипировки
-
-## 3. Переключение на режим боя
-
-- [ ] При наступлении на клетку боя переключать на полноценный бой
-- [ ] Интегрировать BattleSystem с картой
-
-## 4. Артефакты в пошаговом режиме
-
-- [ ] Добавить меню управления инвентарем во время боя
-- [ ] Реализовать надевание/снимание артефактов в бою
-- [ ] Добавить эффекты артефактов на характеристики
-
-## 5. Ивенты
-
-- [ ] Реализовать 2 типа ивентов (например, загадка и торговец)
-- [ ] Добавить награды за успешное прохождение ивентов
-
-## 6. Тестирование
-
-- [ ] Проверить генерацию карты
-- [ ] Проверить переходы между локациями
-- [ ] Проверить бои и ивенты
-- [ ] Проверить работу артефактов
+- [x] Implement `generateCorridorMap()` method in `Map.cpp` to generate a procedural corridor-based map by calling existing helper methods (`placeSpecialNodes()`, `connectNodes()`, `ensureConnectivity()`, and optionally `createCorridorBranch()` for added complexity).
+- [x] Build the project using MSBuild to verify that the unresolved external symbol error for `generateCorridorMap()` is resolved.
+- [x] Test the map generation functionality to ensure it produces a valid, connected map without runtime errors.

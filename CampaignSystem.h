@@ -69,7 +69,7 @@ private:
     void runMapMode();
     char getPlayerMovementInput();
     void displayMap();
-    void manageInventory();
+    void manageInventory(Player *player = nullptr);
 
 public:
     CampaignSystem();

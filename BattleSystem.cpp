@@ -257,6 +257,11 @@ bool BattleSystem::attack(Entity* attacker, Entity* target) {
         calculateTurnOrder();
     }
 
+    // Проверяем, закончен ли бой
+    if (isPlayerVictory() || isPlayerDefeat()) {
+        battleActive = false;
+    }
+
     return true;
 }
 

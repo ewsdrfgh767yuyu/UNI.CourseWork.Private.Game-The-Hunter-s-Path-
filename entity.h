@@ -8,6 +8,8 @@
 #include <algorithm>
 #include <cstdlib>
 
+using namespace std;
+
 enum class ItemType
 {
 	WEAPON,
@@ -687,6 +689,8 @@ public:
 		  m_difficulty_level(difficulty),
 		  m_enemy_type(type) {}
 
+	virtual ~Enemy() = default;
+
 	void setExperienceValue(int exp_value)
 	{
 		if (exp_value >= 0)
@@ -721,6 +725,13 @@ public:
 	}
 
 	const string &getEnemyType() const { return m_enemy_type; }
+
+	// Virtual method for ability effect
+	virtual void useAbility(Entity &target)
+	{
+		// Default: no ability
+		cout << getName() << " has no special ability.\n";
+	}
 };
 
 // Goblin - быстрый и слабый враг, специализирующийся на яде
@@ -734,6 +745,16 @@ public:
 		   const string &type = "goblin", double damage_variance = 0.3)
 		: Enemy(name, max_hp, damage, defense, attack, max_stamina,
 				c_stamina, initiative, attack_range, ability, exp_value, difficulty, type, damage_variance) {}
+
+	void useAbility(Entity &target) override
+	{
+		// Poison ability: deals damage over time or applies poison effect
+		cout << getName() << " uses Poison on " << target.getName() << "!\n";
+		// Implement poison logic here, e.g., apply damage over time
+		int poisonDamage = 5; // Example damage
+		target.takeDamage(poisonDamage);
+		cout << target.getName() << " takes " << poisonDamage << " poison damage!\n";
+	}
 };
 
 // Orc - сильный и медленный враг, специализирующийся на берсерке
@@ -747,4 +768,14 @@ public:
 		const string &type = "orc", double damage_variance = 0.4)
 		: Enemy(name, max_hp, damage, defense, attack, max_stamina,
 				c_stamina, initiative, attack_range, ability, exp_value, difficulty, type, damage_variance) {}
+
+	void useAbility(Entity &target) override
+	{
+		// Berserk ability: increases damage but reduces defense
+		cout << getName() << " enters Berserk mode!\n";
+		// Temporarily increase damage and decrease defense
+		setDamage(getDamage() + 5);
+		setDefense(max(0, getDefense() - 2));
+		cout << getName() << "'s damage increased, defense decreased!\n";
+	}
 };

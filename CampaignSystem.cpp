@@ -24,29 +24,29 @@ void CampaignSystem::initializeLocations()
     forest.type = LocationType::FOREST;
     forest.name = "Лес";
     forest.description = "Густой лес, полный опасных существ и древних тайн.";
-    forest.connections = {LocationType::CAVE, LocationType::DEAD_CITY};
+    forest.connections = {LocationType::CAVE};
     forest.isFinalBossLocation = false;
 
-    // ПЕЩЕРА
+    // ПЕЩЕРЫ
     Location cave;
     cave.type = LocationType::CAVE;
-    cave.name = "Пещера";
+    cave.name = "Пещеры";
     cave.description = "Глубокие подземные пещеры, где обитают троглодиты и элементали.";
-    cave.connections = {LocationType::DEAD_CITY, LocationType::CASTLE};
+    cave.connections = {LocationType::FOREST, LocationType::DEAD_CITY};
     cave.isFinalBossLocation = false;
 
-    // ГОРОД МЕРТВЕЦОВ
+    // ГОРОД МЕРТВЫХ
     Location deadCity;
     deadCity.type = LocationType::DEAD_CITY;
-    deadCity.name = "Город Мертвецов";
+    deadCity.name = "Город мертвых";
     deadCity.description = "Заброшенный город, населенный нежитью и призраками.";
-    deadCity.connections = {LocationType::FOREST, LocationType::CASTLE};
+    deadCity.connections = {LocationType::CAVE, LocationType::CASTLE};
     deadCity.isFinalBossLocation = false;
 
     // ЗАМОК
     Location castle;
     castle.type = LocationType::CASTLE;
-    castle.name = "Проклятый Замок";
+    castle.name = "Замок";
     castle.description = "Древний замок, где обитает финальный босс и его приспешники.";
     castle.connections = {LocationType::DEAD_CITY};
     castle.isFinalBossLocation = true;
@@ -72,6 +72,11 @@ void CampaignSystem::startCampaign()
 
     // Генерируем карту
     gameMap.generate();
+    // Выводим карту сразу после генерации для отладки
+    cout << "Карта после генерации:\n";
+    gameMap.printMap();
+    cout << "\nНажмите Enter для продолжения...";
+    cin.get();
 
     // Запускаем режим карты
     runMapMode();
@@ -380,7 +385,25 @@ void CampaignSystem::handleBattleEvent(const Event &event)
     if (battleSystem.isPlayerVictory())
     {
         cout << "\n[PARTY] ПОБЕДА! Вы успешно победили врагов!\n";
-        // TODO: Добавить получение опыта
+
+        // Начисляем опыт всем живым игрокам
+        int totalExp = 0;
+        for (Entity* enemy : enemies) {
+            Enemy* e = static_cast<Enemy*>(enemy);
+            totalExp += e->getExperienceValue();
+        }
+
+        int expPerPlayer = static_cast<int>(totalExp) / static_cast<int>(playerParty.size());
+        for (Player* player : playerParty) {
+            if (player->getCurrentHealthPoint() > 0) {
+                player->setReceivedExperience(player->getReceivedExperience() + expPerPlayer);
+                player->upLevel();
+                cout << player->getName() << " получает " << expPerPlayer << " опыта!\n";
+            }
+        }
+
+        cout << "\nНажмите Enter для выхода в режим карты...";
+        cin.get();
     }
     else if (battleSystem.isPlayerDefeat())
     {
@@ -778,12 +801,16 @@ void CampaignSystem::handleNodeEvent(NodeType nodeType)
     }
 }
 
-void CampaignSystem::manageInventory()
+void CampaignSystem::manageInventory(Player *player)
 {
     if (playerParty.empty())
         return;
 
-    Player *player = playerParty[0]; // Управляем инвентарем первого героя
+    if (player == nullptr)
+    {
+        // Если игрок не указан, выбираем первого
+        player = playerParty[0];
+    }
 
     while (true)
     {
