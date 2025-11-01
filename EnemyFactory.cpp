@@ -7,6 +7,7 @@
 
 // Initialize static member
 std::map<LocationType, std::vector<EnemyTemplate>> EnemyFactory::enemyTemplates;
+std::vector<std::string> defaultEnemies = {"Гоблин", "Орк", "Тролль", "Волк", "Бандит", "Разбойник"};
 
 void EnemyFactory::initializeTemplates()
 {
@@ -38,22 +39,8 @@ void EnemyFactory::initializeTemplates()
         // Фамильяр - быстрый и слабый, но с магией
         {"Фамильяр", 50, 6, 1, 2, 2, 15, 2, AbilityType::LIGHTNING, 30, 1, "familiar", 0.3}};
 
-    // ЗАМОК - нежить и демоны
-    enemyTemplates[LocationType::CASTLE] = {
-        // Рыцарь смерти - танкующий нежить
-        {"Рыцарь смерти", 140, 18, 7, 4, 2, 10, 0, AbilityType::FEAR, 90, 3, "death_knight", 0.15},
-
-        // Лорд вампир - вампир с вампиризмом
-        {"Лорд вампир", 120, 16, 6, 3, 2, 13, 1, AbilityType::LIFE_STEAL, 85, 3, "vampire_lord", 0.2},
-
-        // Архидьявол - мощный демон с огнем
-        {"Архидьявол", 180, 22, 8, 5, 3, 12, 2, AbilityType::FIRE_DAMAGE, 120, 4, "archdevil", 0.3},
-
-        // Злобоглаз - летающий наблюдатель с молниями
-        {"Злобоглаз", 70, 9, 2, 3, 1, 16, 3, AbilityType::LIGHTNING, 60, 2, "beholder", 0.1},
-
-        // ФИНАЛЬНЫЙ БОСС - Властелин Тьмы
-        {"Властелин Тьмы", 300, 25, 10, 8, 3, 15, 2, AbilityType::LIFE_STEAL, 200, 5, "final_boss", 0.1}};
+    // ЗАМОК - финальная локация, регулярные враги отсутствуют (только босс-бой)
+    enemyTemplates[LocationType::CASTLE] = {};
 
     // ГОРОД МЕРТВЕЦОВ - чистая нежить
     enemyTemplates[LocationType::DEAD_CITY] = {
@@ -80,15 +67,15 @@ Enemy *EnemyFactory::createRandomEnemy(LocationType location, int difficultyModi
     auto it = enemyTemplates.find(location);
     if (it == enemyTemplates.end() || it->second.empty())
     {
-        return new Enemy("Неизвестный враг", 50, 8, 2, 2, 1, 1, 8, 0, AbilityType::NONE, 25, 1, "unknown");
+        int randomIndex = rand() % defaultEnemies.size();
+        return new Enemy(defaultEnemies[randomIndex], 50, 8, 2, 2, 1, 1, 8, 0, AbilityType::NONE, 25, 1, "unknown", 0.2);
     }
 
     const auto &templates = it->second;
 
-    // Выбираем случайный шаблон
-    srand(static_cast<unsigned int>(time(nullptr)));
-    int randomIndex = rand() % templates.size();
-    const EnemyTemplate &selected = templates[randomIndex];
+    // Выбираем шаблон случайно
+    int index = rand() % templates.size();
+    const EnemyTemplate &selected = templates[index];
 
     // Применяем модификатор сложности
     int modifiedHP = selected.maxHP + (difficultyModifier * 20);
@@ -151,8 +138,9 @@ Enemy *EnemyFactory::createEnemyByName(const std::string &name, int difficultyMo
         }
     }
 
-    // Если не нашли, возвращаем дефолтного врага
-    return new Enemy("Неизвестный враг", 50, 8, 2, 2, 1, 1, 8, 0, AbilityType::NONE, 25, 1, "unknown", 0.2);
+    // Если не нашли, возвращаем дефолтного врага с случайным именем
+    int randomIndex = rand() % defaultEnemies.size();
+    return new Enemy(defaultEnemies[randomIndex], 50, 8, 2, 2, 1, 1, 8, 0, AbilityType::NONE, 25, 1, "unknown", 0.2);
 }
 
 std::vector<std::string> EnemyFactory::getAvailableEnemies(LocationType location)

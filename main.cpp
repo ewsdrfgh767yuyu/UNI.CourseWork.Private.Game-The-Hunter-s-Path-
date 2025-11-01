@@ -186,7 +186,7 @@ void executePlayerTurn(BattleSystem &battleSystem, Entity *currentEntity)
     while (currentEntity->getCurrentStamina() > 0)
     {
         // Показываем доступные действия
-        vector<string> actions = {"Атаковать", "Переместиться", "Посмотреть характеристики", "Закончить ход"};
+        vector<string> actions = {"Атаковать", "Переместиться", "Посмотреть характеристики", "Пропустить половину хода", "Уничтожить труп", "Закончить ход"};
         int actionChoice = selectFromList(actions, "Выберите действие:");
 
         switch (actionChoice)
@@ -242,6 +242,20 @@ void executePlayerTurn(BattleSystem &battleSystem, Entity *currentEntity)
         }
 
         case 3:
+        { // Пропустить половину хода
+            battleSystem.skipHalfTurn(currentEntity);
+            break;
+        }
+
+        case 4:
+        { // Уничтожить труп
+            vector<string> positions = {"Позиция 0", "Позиция 1", "Позиция 2", "Позиция 3"};
+            int positionChoice = selectFromList(positions, "Выберите позицию для уничтожения трупа:");
+            battleSystem.destroyCorpse(currentEntity, positionChoice);
+            break;
+        }
+
+        case 5:
         { // Закончить ход
             cout << currentEntity->getName() << " заканчивает ход.\n";
             return;
@@ -341,6 +355,78 @@ void executeAITurn(BattleSystem &battleSystem, Entity *currentEntity)
     }
 }
 
+// Test function for destroyCorpse bug fix
+void testDestroyCorpse()
+{
+    cout << "\n=== TESTING DESTROY CORPSE FUNCTION ===\n";
+
+    // Create a player and enemy
+    Player *player = HeroFactory::createHero(HeroClass::WARRIOR, "Test Warrior");
+    Enemy *enemy = EnemyFactory::createEnemyByName("Goblin", 0);
+
+    vector<Entity *> players = {player};
+    vector<Entity *> enemies = {enemy};
+
+    BattleSystem battleSystem;
+    battleSystem.startBattle(players, enemies);
+
+    // Kill the enemy to create a corpse by attacking
+    cout << "Killing enemy to create corpse...\n";
+    battleSystem.attack(player, enemy); // This should kill enemy and create corpse
+
+    battleSystem.printBattlefield();
+
+    // Now try to destroy the corpse as player
+    cout << "Attempting to destroy enemy corpse as player...\n";
+    bool success = battleSystem.destroyCorpse(player, 0); // Position 0 should have corpse
+    if (success)
+    {
+        cout << "SUCCESS: Player destroyed enemy corpse!\n";
+    }
+    else
+    {
+        cout << "FAILED: Player could not destroy enemy corpse!\n";
+    }
+
+    battleSystem.printBattlefield();
+
+    // Test reverse: create player corpse and let enemy destroy it
+    cout << "\nTesting enemy destroying player corpse...\n";
+    battleSystem.attack(enemy, player); // Kill player (assuming enemy is still alive or revive)
+
+    battleSystem.printBattlefield();
+
+    // Create a new enemy to test
+    Enemy *enemy2 = EnemyFactory::createEnemyByName("Orc", 0);
+    enemies = {enemy2};
+    battleSystem.startBattle(players, enemies); // Restart battle
+
+    // Kill player to create corpse
+    battleSystem.attack(enemy2, player);
+
+    battleSystem.printBattlefield();
+
+    cout << "Attempting to destroy player corpse as enemy...\n";
+    success = battleSystem.destroyCorpse(enemy2, 0);
+    if (success)
+    {
+        cout << "SUCCESS: Enemy destroyed player corpse!\n";
+    }
+    else
+    {
+        cout << "FAILED: Enemy could not destroy player corpse!\n";
+    }
+
+    battleSystem.printBattlefield();
+
+    cout << "=== TEST COMPLETED ===\n";
+
+    // Clean up
+    delete player;
+    delete enemy;
+    delete enemy2;
+}
+
 int main()
 {
     // Установка кодовой страницы консоли для корректного отображения русского текста
@@ -361,6 +447,9 @@ int main()
 
     // Инициализация генератора случайных чисел
     srand(static_cast<unsigned int>(time(nullptr)));
+
+    // Run test first
+    testDestroyCorpse();
 
     // Начальное меню
     bool exitGame = false;

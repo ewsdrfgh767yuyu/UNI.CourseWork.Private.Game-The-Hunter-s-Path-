@@ -14,7 +14,9 @@ CampaignSystem::CampaignSystem()
 
 CampaignSystem::~CampaignSystem()
 {
+    cout << "[DEBUG] CampaignSystem destructor called\n";
     cleanupParty();
+    cout << "[DEBUG] CampaignSystem destructor completed\n";
 }
 
 void CampaignSystem::initializeLocations()
@@ -69,6 +71,9 @@ void CampaignSystem::startCampaign()
     cout << "\n";
 
     createPlayerParty();
+
+    // Начинаем с леса
+    currentLocation = locations[LocationType::FOREST];
 
     // Генерируем карту
     gameMap.generate();
@@ -301,6 +306,13 @@ void CampaignSystem::handleBattleEvent(const Event &event)
         if (!currentEntity)
             break;
 
+        // Пропускаем мертвых сущностей
+        if (currentEntity->getCurrentHealthPoint() <= 0)
+        {
+            battleSystem.nextTurn();
+            continue;
+        }
+
         // Определяем, игрок это или ИИ
         bool isPlayerEntity = false;
         for (Player *player : playerParty)
@@ -320,35 +332,95 @@ void CampaignSystem::handleBattleEvent(const Event &event)
                 // Ход игрока (упрощенная версия)
                 cout << "\n=== ХОД " << currentEntity->getName() << " ===\n";
                 cout << "Осталось стамины: " << currentEntity->getCurrentStamina() << "/" << currentEntity->getMaxStamina() << "\n";
-                vector<Entity *> targets = battleSystem.getAvailableTargetsForCurrent();
 
-                if (!targets.empty())
+                // Показываем доступные действия
+                cout << "Выберите действие:\n";
+                cout << "1. Атаковать\n";
+                cout << "2. Использовать способность\n";
+
+                int actionChoice;
+                cout << "Выберите (1-2): ";
+                cin >> actionChoice;
+                cin.ignore();
+
+                if (actionChoice == 1)
                 {
-                    cout << "Доступные цели:\n";
-                    for (size_t i = 0; i < targets.size(); ++i)
-                    {
-                        cout << i + 1 << ". " << targets[i]->getName() << " (HP: " << targets[i]->getCurrentHealthPoint() << ")\n";
-                    }
+                    // Атака
+                    vector<Entity *> targets = battleSystem.getAvailableTargetsForCurrent();
 
-                    int targetChoice;
-                    cout << "Выберите цель (1-" << targets.size() << "): ";
-                    cin >> targetChoice;
-                    cin.ignore();
-
-                    if (targetChoice > 0 && targetChoice <= static_cast<int>(targets.size()))
+                    if (!targets.empty())
                     {
-                        battleSystem.attack(currentEntity, targets[targetChoice - 1]);
+                        cout << "Доступные цели:\n";
+                        for (size_t i = 0; i < targets.size(); ++i)
+                        {
+                            cout << i + 1 << ". " << targets[i]->getName() << " (HP: " << targets[i]->getCurrentHealthPoint() << ")\n";
+                        }
+
+                        int targetChoice;
+                        cout << "Выберите цель (1-" << targets.size() << "): ";
+                        cin >> targetChoice;
+                        cin.ignore();
+
+                        if (targetChoice > 0 && targetChoice <= static_cast<int>(targets.size()))
+                        {
+                            battleSystem.attack(currentEntity, targets[targetChoice - 1]);
+                        }
+                        else
+                        {
+                            cout << "Неверный выбор цели!\n";
+                            continue;
+                        }
                     }
                     else
                     {
-                        // Если выбор некорректный, пропускаем ход
-                        break;
+                        cout << "Нет доступных целей для атаки!\n";
+                        continue;
+                    }
+                }
+                else if (actionChoice == 2)
+                {
+                    // Использование способности
+                    Player *player = static_cast<Player *>(currentEntity);
+                    const vector<AbilityType> &abilities = player->getAvailableAbilities();
+
+                    if (!abilities.empty())
+                    {
+                        cout << "Доступные способности:\n";
+                        for (size_t i = 0; i < abilities.size(); ++i)
+                        {
+                            const AbilityInfo &info = HeroFactory::getAbilityInfo(abilities[i]);
+                            cout << i + 1 << ". " << info.name << " - " << info.description << "\n";
+                        }
+
+                        int abilityChoice;
+                        cout << "Выберите способность (1-" << abilities.size() << "): ";
+                        cin >> abilityChoice;
+                        cin.ignore();
+
+                        if (abilityChoice > 0 && abilityChoice <= static_cast<int>(abilities.size()))
+                        {
+                            AbilityType chosenAbility = abilities[abilityChoice - 1];
+                            if (!battleSystem.useAbility(currentEntity, chosenAbility))
+                            {
+                                cout << "Не удалось использовать способность!\n";
+                            }
+                        }
+                        else
+                        {
+                            cout << "Неверный выбор способности!\n";
+                            continue;
+                        }
+                    }
+                    else
+                    {
+                        cout << "Нет доступных способностей!\n";
+                        continue;
                     }
                 }
                 else
                 {
-                    // Нет целей, пропускаем ход
-                    break;
+                    cout << "Неверный выбор действия!\n";
+                    continue;
                 }
             }
             else
@@ -377,6 +449,13 @@ void CampaignSystem::handleBattleEvent(const Event &event)
             cin.get();
         }
 
+        // Проверяем, закончен ли бой
+        if (battleSystem.isPlayerVictory() || battleSystem.isPlayerDefeat())
+        {
+            battleSystem.endBattle();
+            break;
+        }
+
         // Переходим к следующему персонажу
         battleSystem.nextTurn();
     }
@@ -388,14 +467,17 @@ void CampaignSystem::handleBattleEvent(const Event &event)
 
         // Начисляем опыт всем живым игрокам
         int totalExp = 0;
-        for (Entity* enemy : enemies) {
-            Enemy* e = static_cast<Enemy*>(enemy);
+        for (Entity *enemy : enemies)
+        {
+            Enemy *e = static_cast<Enemy *>(enemy);
             totalExp += e->getExperienceValue();
         }
 
         int expPerPlayer = static_cast<int>(totalExp) / static_cast<int>(playerParty.size());
-        for (Player* player : playerParty) {
-            if (player->getCurrentHealthPoint() > 0) {
+        for (Player *player : playerParty)
+        {
+            if (player->getCurrentHealthPoint() > 0)
+            {
                 player->setReceivedExperience(player->getReceivedExperience() + expPerPlayer);
                 player->upLevel();
                 cout << player->getName() << " получает " << expPerPlayer << " опыта!\n";
@@ -410,13 +492,15 @@ void CampaignSystem::handleBattleEvent(const Event &event)
         cout << "\n[SKULL] ПОРАЖЕНИЕ! Ваш отряд пал в бою!\n";
     }
 
+    cout << "[DEBUG] Before battleSystem.endBattle()\n";
     battleSystem.endBattle();
+    cout << "[DEBUG] After battleSystem.endBattle()\n";
 
-    // Освобождаем память врагов
-    for (Entity *enemy : enemies)
-    {
-        delete enemy;
-    }
+    // НЕ удаляем врагов здесь - они будут удалены в CampaignSystem::cleanupParty()
+    // или в деструкторе, чтобы избежать двойного удаления
+    cout << "[DEBUG] Skipping enemy deletion in handleBattleEvent - will be handled by cleanupParty\n";
+    enemies.clear(); // Очищаем вектор, но не удаляем объекты
+    cout << "[DEBUG] Enemies vector cleared\n";
 }
 
 void CampaignSystem::handleTreasureEvent(const Event &event)
@@ -544,9 +628,9 @@ void CampaignSystem::handleBossBattleEvent(const Event &event)
     Enemy *finalBoss = new Enemy("Властелин Тьмы", 300, 25, 10, 8, 3, 3, 15, 2, AbilityType::LIFE_STEAL, 200, 5, "final_boss", 0.1);
     bossParty.push_back(finalBoss);
 
-    // Добавляем пару приспешников
-    Enemy *minion1 = EnemyFactory::createEnemyByName("Рыцарь смерти", 2);
-    Enemy *minion2 = EnemyFactory::createEnemyByName("Архидьявол", 2);
+    // Добавляем пару приспешников (не из замка)
+    Enemy *minion1 = EnemyFactory::createEnemyByName("Вампир", 2);
+    Enemy *minion2 = EnemyFactory::createEnemyByName("Троглодит", 2);
     bossParty.push_back(minion1);
     bossParty.push_back(minion2);
 
@@ -570,44 +654,152 @@ void CampaignSystem::handleBossBattleEvent(const Event &event)
         if (!currentEntity)
             break;
 
-        // Упрощенная логика боя
-        vector<Entity *> targets = battleSystem.getAvailableTargetsForCurrent();
-        if (!targets.empty())
+        // Определяем, игрок это или ИИ
+        bool isPlayerEntity = false;
+        for (Player *player : playerParty)
         {
-            if (currentEntity == finalBoss)
+            if (player == currentEntity)
             {
-                // Ход босса - атакует случайную цель
-                int targetIndex = rand() % targets.size();
-                battleSystem.attack(currentEntity, targets[targetIndex]);
-                cout << "Властелин Тьмы атакует " << targets[targetIndex]->getName() << "!\n";
+                isPlayerEntity = true;
+                break;
             }
-            else
+        }
+
+        // Ход персонажа - повторяем пока есть стамина
+        while (currentEntity->getCurrentStamina() > 0 && battleSystem.isBattleActive())
+        {
+            if (isPlayerEntity)
             {
                 // Ход игрока
                 cout << "\n=== ХОД " << currentEntity->getName() << " ===\n";
                 cout << "Осталось стамины: " << currentEntity->getCurrentStamina() << "/" << currentEntity->getMaxStamina() << "\n";
-                cout << "Доступные цели:\n";
-                for (size_t i = 0; i < targets.size(); ++i)
-                {
-                    cout << i + 1 << ". " << targets[i]->getName() << " (HP: " << targets[i]->getCurrentHealthPoint() << ")\n";
-                }
 
-                int targetChoice;
-                cout << "Выберите цель (1-" << targets.size() << "): ";
-                cin >> targetChoice;
+                // Показываем доступные действия
+                cout << "Выберите действие:\n";
+                cout << "1. Атаковать\n";
+                cout << "2. Использовать способность\n";
+
+                int actionChoice;
+                cout << "Выберите (1-2): ";
+                cin >> actionChoice;
                 cin.ignore();
 
-                if (targetChoice > 0 && targetChoice <= static_cast<int>(targets.size()))
+                if (actionChoice == 1)
                 {
-                    battleSystem.attack(currentEntity, targets[targetChoice - 1]);
+                    // Атака
+                    vector<Entity *> targets = battleSystem.getAvailableTargetsForCurrent();
+
+                    if (!targets.empty())
+                    {
+                        cout << "Доступные цели:\n";
+                        for (size_t i = 0; i < targets.size(); ++i)
+                        {
+                            cout << i + 1 << ". " << targets[i]->getName() << " (HP: " << targets[i]->getCurrentHealthPoint() << ")\n";
+                        }
+
+                        int targetChoice;
+                        cout << "Выберите цель (1-" << targets.size() << "): ";
+                        cin >> targetChoice;
+                        cin.ignore();
+
+                        if (targetChoice > 0 && targetChoice <= static_cast<int>(targets.size()))
+                        {
+                            battleSystem.attack(currentEntity, targets[targetChoice - 1]);
+                        }
+                        else
+                        {
+                            cout << "Неверный выбор цели!\n";
+                            continue;
+                        }
+                    }
+                    else
+                    {
+                        cout << "Нет доступных целей для атаки!\n";
+                        continue;
+                    }
+                }
+                else if (actionChoice == 2)
+                {
+                    // Использование способности
+                    Player *player = static_cast<Player *>(currentEntity);
+                    const vector<AbilityType> &abilities = player->getAvailableAbilities();
+
+                    if (!abilities.empty())
+                    {
+                        cout << "Доступные способности:\n";
+                        for (size_t i = 0; i < abilities.size(); ++i)
+                        {
+                            const AbilityInfo &info = HeroFactory::getAbilityInfo(abilities[i]);
+                            cout << i + 1 << ". " << info.name << " - " << info.description << "\n";
+                        }
+
+                        int abilityChoice;
+                        cout << "Выберите способность (1-" << abilities.size() << "): ";
+                        cin >> abilityChoice;
+                        cin.ignore();
+
+                        if (abilityChoice > 0 && abilityChoice <= static_cast<int>(abilities.size()))
+                        {
+                            AbilityType chosenAbility = abilities[abilityChoice - 1];
+                            if (!battleSystem.useAbility(currentEntity, chosenAbility))
+                            {
+                                cout << "Не удалось использовать способность!\n";
+                            }
+                        }
+                        else
+                        {
+                            cout << "Неверный выбор способности!\n";
+                            continue;
+                        }
+                    }
+                    else
+                    {
+                        cout << "Нет доступных способностей!\n";
+                        continue;
+                    }
+                }
+                else
+                {
+                    cout << "Неверный выбор действия!\n";
+                    continue;
                 }
             }
+            else
+            {
+                // Ход ИИ (случайная атака)
+                vector<Entity *> targets = battleSystem.getAvailableTargetsForCurrent();
+                if (!targets.empty())
+                {
+                    int targetIndex = rand() % targets.size();
+                    battleSystem.attack(currentEntity, targets[targetIndex]);
+                    cout << currentEntity->getName() << " атакует " << targets[targetIndex]->getName() << "!\n";
+                }
+                else
+                {
+                    // Нет целей, пропускаем ход
+                    break;
+                }
+            }
+
+            // Проверяем, не закончен ли бой после атаки
+            if (!battleSystem.isBattleActive())
+            {
+                break;
+            }
+
+            cout << "\nНажмите Enter для продолжения...";
+            cin.get();
         }
 
-        battleSystem.nextTurn();
+        // Проверяем, закончен ли бой
+        if (battleSystem.isPlayerVictory() || battleSystem.isPlayerDefeat())
+        {
+            battleSystem.endBattle();
+            break;
+        }
 
-        cout << "\nНажмите Enter для продолжения...";
-        cin.get();
+        // Переходим к следующему персонажу
+        battleSystem.nextTurn();
     }
 
     if (battleSystem.isPlayerVictory())
@@ -710,19 +902,26 @@ void CampaignSystem::runMapMode()
         }
 
         // Проверяем, жив ли отряд
+        cout << "[DEBUG] Checking party status, party size: " << playerParty.size() << "\n";
         bool partyAlive = false;
         for (Player *player : playerParty)
         {
-            if (player->getCurrentHealthPoint() > 0)
+            if (player)
             {
-                partyAlive = true;
-                break;
+                cout << "[DEBUG] Player " << player->getName() << " HP: " << player->getCurrentHealthPoint() << "\n";
+                if (player->getCurrentHealthPoint() > 0)
+                {
+                    partyAlive = true;
+                    cout << "[DEBUG] Found alive player: " << player->getName() << "\n";
+                    break;
+                }
             }
         }
 
         if (!partyAlive)
         {
             cout << "\n[SKULL] Ваш отряд пал в бою! Игра окончена.\n";
+            cout << "[DEBUG] Breaking from runMapMode loop\n";
             break;
         }
     }
@@ -967,9 +1166,16 @@ void CampaignSystem::manageInventory(Player *player)
 
 void CampaignSystem::cleanupParty()
 {
+    cout << "[DEBUG] CampaignSystem::cleanupParty() called, party size: " << playerParty.size() << "\n";
     for (Player *player : playerParty)
     {
-        delete player;
+        if (player)
+        {
+            cout << "[DEBUG] Deleting player: " << player->getName() << "\n";
+            delete player;
+            player = nullptr;
+        }
     }
     playerParty.clear();
+    cout << "[DEBUG] CampaignSystem::cleanupParty() completed\n";
 }
