@@ -426,11 +426,11 @@ void CampaignSystem::handleBattleEvent(const Event &event)
             else
             {
                 // Ход ИИ (случайная атака)
-                vector<Entity *> targets = battleSystem.getAvailableTargetsForCurrent();
+                vector<pair<Entity *, int>> targets = battleSystem.getAvailableTargetsForCurrent();
                 if (!targets.empty())
                 {
                     int targetIndex = rand() % targets.size();
-                    battleSystem.attack(currentEntity, targets[targetIndex]);
+                    battleSystem.attack(currentEntity, targets[targetIndex].first);
                 }
                 else
                 {
@@ -452,6 +452,7 @@ void CampaignSystem::handleBattleEvent(const Event &event)
         // Проверяем, закончен ли бой
         if (battleSystem.isPlayerVictory() || battleSystem.isPlayerDefeat())
         {
+            cout << "[DEBUG] endBattle called from handleBattleEvent victory/defeat check\n";
             battleSystem.endBattle();
             break;
         }
@@ -460,13 +461,14 @@ void CampaignSystem::handleBattleEvent(const Event &event)
         battleSystem.nextTurn();
     }
 
+    // Собираем мертвых игроков для удаления после завершения боя
+    vector<Player *> deadPlayers;
+
     // Проверяем результат боя
     if (battleSystem.isPlayerVictory())
     {
         cout << "\n[PARTY] ПОБЕДА! Вы успешно победили врагов!\n";
 
-        // Собираем мертвых игроков для удаления после завершения боя
-        vector<Player *> deadPlayers;
         for (auto it = playerParty.begin(); it != playerParty.end();)
         {
             if (*it && (*it)->getCurrentHealthPoint() <= 0)
@@ -508,9 +510,15 @@ void CampaignSystem::handleBattleEvent(const Event &event)
         cout << "\n[SKULL] ПОРАЖЕНИЕ! Ваш отряд пал в бою!\n";
     }
 
-    cout << "[DEBUG] Before battleSystem.endBattle()\n";
-    battleSystem.endBattle();
-    cout << "[DEBUG] After battleSystem.endBattle()\n";
+    if (battleSystem.isBattleActive()) {
+        cout << "[DEBUG] Before battleSystem.endBattle() from handleBattleEvent cleanup\n";
+        if (battleSystem.isBattleActive()) {
+            if (battleSystem.isBattleActive()) {
+                battleSystem.endBattle();
+            }
+        }
+        cout << "[DEBUG] After battleSystem.endBattle() from handleBattleEvent cleanup\n";
+    }
 
     // Удаляем мертвых игроков после завершения боя
     for (Player *deadPlayer : deadPlayers)
@@ -537,6 +545,7 @@ void CampaignSystem::handleTreasureEvent(const Event &event)
         cout << "Вы нашли: " << event.reward->getName() << "\n";
         // Добавить предмет в общий инвентарь отряда
         partyInventory.push_back(*event.reward);
+        cout << "[DEBUG] Added item to partyInventory, size: " << partyInventory.size() << "\n";
         cout << "Предмет добавлен в общий инвентарь отряда.\n";
         delete event.reward;
     }
@@ -708,14 +717,14 @@ void CampaignSystem::handleBossBattleEvent(const Event &event)
                 if (actionChoice == 1)
                 {
                     // Атака
-                    vector<Entity *> targets = battleSystem.getAvailableTargetsForCurrent();
+                    vector<pair<Entity *, int>> targets = battleSystem.getAvailableTargetsForCurrent();
 
                     if (!targets.empty())
                     {
                         cout << "Доступные цели:\n";
                         for (size_t i = 0; i < targets.size(); ++i)
                         {
-                            cout << i + 1 << ". " << targets[i]->getName() << " (HP: " << targets[i]->getCurrentHealthPoint() << ")\n";
+                            cout << i + 1 << ". " << targets[i].first->getName() << " (HP: " << targets[i].first->getCurrentHealthPoint() << ")\n";
                         }
 
                         int targetChoice;
@@ -725,7 +734,7 @@ void CampaignSystem::handleBossBattleEvent(const Event &event)
 
                         if (targetChoice > 0 && targetChoice <= static_cast<int>(targets.size()))
                         {
-                            battleSystem.attack(currentEntity, targets[targetChoice - 1]);
+                            battleSystem.attack(currentEntity, targets[targetChoice - 1].first);
                         }
                         else
                         {
@@ -788,12 +797,12 @@ void CampaignSystem::handleBossBattleEvent(const Event &event)
             else
             {
                 // Ход ИИ (случайная атака)
-                vector<Entity *> targets = battleSystem.getAvailableTargetsForCurrent();
+                vector<pair<Entity *, int>> targets = battleSystem.getAvailableTargetsForCurrent();
                 if (!targets.empty())
                 {
                     int targetIndex = rand() % targets.size();
-                    battleSystem.attack(currentEntity, targets[targetIndex]);
-                    cout << currentEntity->getName() << " атакует " << targets[targetIndex]->getName() << "!\n";
+                    battleSystem.attack(currentEntity, targets[targetIndex].first);
+                    cout << currentEntity->getName() << " атакует " << targets[targetIndex].first->getName() << "!\n";
                 }
                 else
                 {
@@ -1071,6 +1080,7 @@ void CampaignSystem::manageInventory(Player *player)
     {
         cout << "\n=== УПРАВЛЕНИЕ ИНВЕНТАРЕМ ===\n";
         cout << "Герой: " << player->getName() << "\n\n";
+        cout << "[DEBUG] manageInventory called, partyInventory size: " << partyInventory.size() << ", player inventory size: " << player->getInventory().size() << "\n";
 
         player->displayInventory();
         cout << "\n";
@@ -1080,10 +1090,11 @@ void CampaignSystem::manageInventory(Player *player)
         cout << "1. Надеть предмет\n";
         cout << "2. Снять предмет\n";
         cout << "3. Использовать расходуемый предмет\n";
-        cout << "4. Выйти из управления инвентарем\n";
+        cout << "4. Взять предмет из общего инвентаря\n";
+        cout << "5. Выйти из управления инвентарем\n";
 
         int choice;
-        cout << "Выберите (1-4): ";
+        cout << "Выберите (1-5): ";
         cin >> choice;
         cin.ignore();
 
@@ -1206,6 +1217,37 @@ void CampaignSystem::manageInventory(Player *player)
             }
         }
         else if (choice == 4)
+        {
+            // Взять предмет из общего инвентаря
+            if (partyInventory.empty())
+            {
+                cout << "Общий инвентарь пуст!\n";
+                continue;
+            }
+
+            cout << "Общий инвентарь отряда:\n";
+            for (size_t i = 0; i < partyInventory.size(); ++i)
+            {
+                cout << i + 1 << ". " << partyInventory[i].getName() << "\n";
+            }
+
+            int itemChoice;
+            cout << "Выберите предмет для взятия (1-" << partyInventory.size() << "): ";
+            cin >> itemChoice;
+            cin.ignore();
+
+            if (itemChoice > 0 && itemChoice <= static_cast<int>(partyInventory.size()))
+            {
+                player->addItem(partyInventory[itemChoice - 1]);
+                partyInventory.erase(partyInventory.begin() + itemChoice - 1);
+                cout << "Предмет взят в личный инвентарь.\n";
+            }
+            else
+            {
+                cout << "Неверный выбор!\n";
+            }
+        }
+        else if (choice == 5)
         {
             // Выход
             break;

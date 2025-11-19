@@ -52,6 +52,7 @@ private:
     int currentDifficulty = 0;                  // Текущая сложность
     bool gameCompleted = false;                 // Флаг завершения игры
     std::map<Position, bool> visitedNodes;      // Посещенные узлы на карте
+    std::vector<Item> partyInventory;           // Общий инвентарь отряда
 
     // Вспомогательные методы
     void initializeLocations();

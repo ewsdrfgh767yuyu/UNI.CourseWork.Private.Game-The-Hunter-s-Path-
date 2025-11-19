@@ -190,6 +190,9 @@ public:
 
 class Entity
 {
+public:
+    virtual ~Entity() = default;
+
 protected:
 	string m_name;
 	AbilityType m_ability;
@@ -422,6 +425,7 @@ private:
 	map<AbilityType, int> m_ability_levels;
 	bool m_is_loner;
 
+	vector<Item> m_inventory;
 	map<EquipmentSlot, Item> m_equipment;
 
 	void increaseRequiredExperience()
