@@ -83,6 +83,7 @@ public:
 
     // Методы для получения информации
     const std::vector<Player *> &getPlayerParty() const { return playerParty; }
+    const std::vector<Item> &getPartyInventory() const { return partyInventory; }
     const Location &getCurrentLocation() const { return currentLocation; }
     int getCurrentDifficulty() const { return currentDifficulty; }
     const Map &getGameMap() const { return gameMap; }

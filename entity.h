@@ -422,7 +422,6 @@ private:
 	map<AbilityType, int> m_ability_levels;
 	bool m_is_loner;
 
-	vector<Item> m_inventory;
 	map<EquipmentSlot, Item> m_equipment;
 
 	void increaseRequiredExperience()
@@ -433,33 +432,33 @@ private:
 
 	void recalculateStats()
 	{
-	    std::cout << "[DEBUG] Player " << m_name << " recalculating stats\n";
-	    int healthBonus = 0;
-	    int damageBonus = 0;
-	    int defenseBonus = 0;
-	    int attackBonus = 0;
-	    int staminaBonus = 0;
-	    int initiativeBonus = 0;
-	
-	    for (const auto &item : m_equipment)
-	    {
-	        healthBonus += item.second.getStat("health");
-	        damageBonus += item.second.getStat("damage");
-	        defenseBonus += item.second.getStat("defense");
-	        attackBonus += item.second.getStat("attack");
-	        staminaBonus += item.second.getStat("stamina");
-	        initiativeBonus += item.second.getStat("initiative");
-	    }
-	
-	    Entity::setMaxHealthPoint(100 + 10 * (m_level - 1) + healthBonus);
-	    Entity::setDamage(10 + 2 * (m_level - 1) + damageBonus);
-	    Entity::setDefense(0 + 1 * (m_level - 1) + defenseBonus);
-	    Entity::setAttack(0 + 1 * (m_level - 1) + attackBonus);
-	    Entity::setMaxStamina(1 + (m_level / 5) + staminaBonus);
-	    Entity::setInitiative(10 + (m_level / 3) + initiativeBonus);
-	
-	    regenerateStamina();
-	    std::cout << "[DEBUG] Player " << m_name << " stats recalculated\n";
+		std::cout << "[DEBUG] Player " << m_name << " recalculating stats\n";
+		int healthBonus = 0;
+		int damageBonus = 0;
+		int defenseBonus = 0;
+		int attackBonus = 0;
+		int staminaBonus = 0;
+		int initiativeBonus = 0;
+
+		for (const auto &item : m_equipment)
+		{
+			healthBonus += item.second.getStat("health");
+			damageBonus += item.second.getStat("damage");
+			defenseBonus += item.second.getStat("defense");
+			attackBonus += item.second.getStat("attack");
+			staminaBonus += item.second.getStat("stamina");
+			initiativeBonus += item.second.getStat("initiative");
+		}
+
+		Entity::setMaxHealthPoint(100 + 10 * (m_level - 1) + healthBonus);
+		Entity::setDamage(10 + 2 * (m_level - 1) + damageBonus);
+		Entity::setDefense(0 + 1 * (m_level - 1) + defenseBonus);
+		Entity::setAttack(0 + 1 * (m_level - 1) + attackBonus);
+		Entity::setMaxStamina(1 + (m_level / 5) + staminaBonus);
+		Entity::setInitiative(10 + (m_level / 3) + initiativeBonus);
+
+		regenerateStamina();
+		std::cout << "[DEBUG] Player " << m_name << " stats recalculated\n";
 	}
 
 	static map<EquipmentSlot, string> slotNames;
@@ -659,16 +658,16 @@ public:
 
 	void upLevel()
 	{
-	    while (m_received_experience >= m_required_experience)
-	    {
-	        std::cout << "[DEBUG] Player " << m_name << " leveling up from " << m_level << " to " << m_level + 1 << "\n";
-	        setReceivedExperience(m_received_experience - m_required_experience);
-	        setLevel(m_level + 1);
-	        increaseRequiredExperience();
-	
-	        recalculateStats();
-	        std::cout << "[DEBUG] Player " << m_name << " leveled up to " << m_level << "\n";
-	    }
+		while (m_received_experience >= m_required_experience)
+		{
+			std::cout << "[DEBUG] Player " << m_name << " leveling up from " << m_level << " to " << m_level + 1 << "\n";
+			setReceivedExperience(m_received_experience - m_required_experience);
+			setLevel(m_level + 1);
+			increaseRequiredExperience();
+
+			recalculateStats();
+			std::cout << "[DEBUG] Player " << m_name << " leveled up to " << m_level << "\n";
+		}
 	}
 
 	const vector<Item> &getInventory() const { return m_inventory; }

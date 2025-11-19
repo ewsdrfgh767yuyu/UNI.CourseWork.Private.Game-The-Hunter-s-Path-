@@ -24,13 +24,13 @@ void BattleSystem::startBattle(const vector<Entity *> &players, const vector<Ent
     // Расстановка игроков (позиции 0-3)
     for (size_t i = 0; i < players.size() && i < 4; ++i)
     {
-        playerPositions.push_back(BattlePosition(players[i], static_cast<int>(i), false));
+        playerPositions.push_back(BattlePosition(players[i], static_cast<int>(i)));
     }
 
     // Расстановка врагов (позиции 0-3)
     for (size_t i = 0; i < enemies.size() && i < 4; ++i)
     {
-        enemyPositions.push_back(BattlePosition(enemies[i], static_cast<int>(i), false));
+        enemyPositions.push_back(BattlePosition(enemies[i], static_cast<int>(i)));
     }
 
     // Регенерация стамины для всех участников
@@ -72,7 +72,7 @@ void BattleSystem::calculateTurnOrder()
     // Добавляем всех живых игроков
     for (const auto &pos : playerPositions)
     {
-        if (pos.entity && pos.entity->getCurrentHealthPoint() > 0 && !pos.isCorpse)
+        if (pos.entity && pos.entity->getCurrentHealthPoint() > 0)
         {
             int turnWeight = pos.entity->getInitiative() / 10;
             for (int i = 0; i < turnWeight; ++i)
@@ -85,7 +85,7 @@ void BattleSystem::calculateTurnOrder()
     // Добавляем всех живых врагов
     for (const auto &pos : enemyPositions)
     {
-        if (pos.entity && pos.entity->getCurrentHealthPoint() > 0 && !pos.isCorpse)
+        if (pos.entity && pos.entity->getCurrentHealthPoint() > 0)
         {
             int turnWeight = pos.entity->getInitiative() / 10;
             for (int i = 0; i < turnWeight; ++i)
@@ -193,9 +193,9 @@ bool BattleSystem::canAttackTarget(Entity *attacker, Entity *target) const
     return distance <= attackRange;
 }
 
-bool BattleSystem::canAttackCorpse(Entity *attacker, int position) const
+bool BattleSystem::canAttackCorpse(Entity *attacker, int targetPosition) const
 {
-    if (!attacker || position < 0 || position > 3)
+    if (!attacker)
         return false;
 
     int attackerPos = getEntityPosition(attacker);
@@ -215,53 +215,59 @@ bool BattleSystem::canAttackCorpse(Entity *attacker, int position) const
         }
     }
 
-    // Определяем, на какой стороне находится труп
+    // Определяем, на какой стороне находится цель (трупы только на вражеской стороне)
     const vector<BattlePosition> &opponentPositions = isAttackerPlayer ? enemyPositions : playerPositions;
-    bool isCorpseAtPosition = false;
+
+    // Проверяем, есть ли труп на этой позиции
+    bool hasCorpse = false;
     for (const auto &pos : opponentPositions)
     {
-        if (pos.position == position && pos.isCorpse && pos.corpseHP > 0)
+        if (pos.position == targetPosition && !pos.entity && pos.corpseHP > 0)
         {
-            isCorpseAtPosition = true;
+            hasCorpse = true;
             break;
         }
     }
 
-    if (!isCorpseAtPosition)
+    if (!hasCorpse)
         return false;
 
     // Проверяем расстояние
-    int distance = abs(attackerPos - position);
+    int distance = abs(attackerPos - targetPosition);
 
-    // Для range=0: только позиция напротив
+    // Для range=0: только позиция напротив (0-0, 1-1, 2-2, 3-3)
     if (attackRange == 0)
     {
         return distance == 0;
     }
 
-    // Для range=1: аналогично живым целям
+    // Для range=1: можно атаковать через одного союзника
     if (attackRange == 1)
     {
         if (isAttackerPlayer)
         {
+            // Игрок на передней линии может атаковать только переднюю линию врага
             if (attackerPos <= 1)
             {
-                return true; // Front line can attack both lines
+                return targetPosition <= 1;
             }
+            // Игрок на задней линии может атаковать обе линии врага
             else
             {
-                return true;
+                return targetPosition <= 1; // Через одного союзника
             }
         }
         else
         {
+            // Враг на передней линии может атаковать только переднюю линию игрока
             if (attackerPos <= 1)
             {
-                return true; // Front line can attack both lines
+                return targetPosition <= 1;
             }
+            // Враг на задней линии может атаковать обе линии игрока
             else
             {
-                return true;
+                return targetPosition <= 1; // Через одного союзника
             }
         }
     }
@@ -287,13 +293,7 @@ int BattleSystem::getEntityPosition(Entity *entity) const
 
 bool BattleSystem::isPositionBlocked(int position, const vector<BattlePosition> &positions) const
 {
-    for (const auto &pos : positions)
-    {
-        if (pos.position == position && pos.isCorpse)
-        {
-            return true; // Позиция заблокирована трупом
-        }
-    }
+    // Позиции не блокируются, так как трупов нет
     return false;
 }
 
@@ -319,9 +319,9 @@ bool BattleSystem::hasEmptyPositions(const vector<BattlePosition> &positions) co
     return false;
 }
 
-vector<Entity *> BattleSystem::getAvailableTargets(Entity *attacker, bool isPlayerAttacker) const
+vector<pair<Entity *, int>> BattleSystem::getAvailableTargets(Entity *attacker, bool isPlayerAttacker) const
 {
-    vector<Entity *> targets;
+    vector<pair<Entity *, int>> targets;
 
     if (!attacker)
         return targets;
@@ -330,19 +330,12 @@ vector<Entity *> BattleSystem::getAvailableTargets(Entity *attacker, bool isPlay
 
     for (const auto &pos : opponentPositions)
     {
-        if (pos.entity && pos.entity->getCurrentHealthPoint() > 0 && !pos.isCorpse)
+        if (pos.entity && pos.entity->getCurrentHealthPoint() > 0)
         {
             if (canAttackTarget(attacker, pos.entity))
             {
-                targets.push_back(pos.entity);
+                targets.push_back({pos.entity, pos.position});
             }
-        }
-        // Include corpses with HP > 0 as targets
-        else if (pos.isCorpse && pos.corpseHP > 0)
-        {
-            // Create a dummy entity to represent the corpse
-            Entity *corpseDummy = new Entity("Труп", pos.corpseHP, 0, 0, 0, 0, 0, 0, 0, AbilityType::NONE, 0.0);
-            targets.push_back(corpseDummy);
         }
     }
 
@@ -351,25 +344,26 @@ vector<Entity *> BattleSystem::getAvailableTargets(Entity *attacker, bool isPlay
 
 void BattleSystem::removeDeadEntities()
 {
-    // Превращаем мертвых игроков в трупы
+    // Удаляем мертвых игроков (только помечаем как nullptr, удаление в CampaignSystem)
     for (auto &pos : playerPositions)
     {
-        if (pos.entity && pos.entity->getCurrentHealthPoint() <= 0 && !pos.isCorpse)
+        if (pos.entity && pos.entity->getCurrentHealthPoint() <= 0)
         {
-            pos.isCorpse = true;
-            pos.corpseHP = 50; // Устанавливаем HP для трупа
             cout << pos.entity->getName() << " пал в бою!\n";
+            pos.entity = nullptr;
+            shiftPositionsAfterDeath(playerPositions, pos.position);
         }
     }
 
-    // Превращаем мертвых врагов в трупы
+    // Помечаем мертвых врагов как nullptr и создаем трупы (удаление в CampaignSystem)
     for (auto &pos : enemyPositions)
     {
-        if (pos.entity && pos.entity->getCurrentHealthPoint() <= 0 && !pos.isCorpse)
+        if (pos.entity && pos.entity->getCurrentHealthPoint() <= 0)
         {
-            pos.isCorpse = true;
-            pos.corpseHP = 50; // Устанавливаем HP для трупа
             cout << pos.entity->getName() << " повержен!\n";
+            pos.entity = nullptr;
+            pos.corpseHP = 50; // Создаем труп с 50 HP
+            shiftPositionsAfterDeath(enemyPositions, pos.position);
         }
     }
 }
@@ -390,89 +384,31 @@ bool BattleSystem::attack(Entity *attacker, Entity *target)
     if (attacker->getCurrentStamina() <= 0)
         return false;
 
-    // Check if target is a corpse dummy
-    bool isCorpseAttack = (target->getName() == "Труп");
+    if (!canAttackTarget(attacker, target))
+        return false;
 
-    if (isCorpseAttack)
+    // Расчет урона
+    int damage = attacker->attack(target->getDefense());
+    target->takeDamage(damage);
+
+    // Применение эффектов способности
+    applyAbilityEffect(attacker, target, damage);
+
+    cout << getAttackDescription(attacker, target) << "\n";
+    cout << "Наносит " << damage << " урона!\n";
+
+    // Проверка на смерть
+    bool targetWasDead = target->getCurrentHealthPoint() <= 0;
+    removeDeadEntities();
+
+    // Пересчет очереди ходов после смерти
+    if (targetWasDead)
     {
-        // Find the corpse position
-        bool isPlayerAttacker = false;
-        for (const auto &pos : playerPositions)
+        calculateTurnOrder();
+        // Корректируем currentTurnIndex, чтобы он не выходил за границы
+        if (currentTurnIndex >= turnOrder.size())
         {
-            if (pos.entity == attacker)
-            {
-                isPlayerAttacker = true;
-                break;
-            }
-        }
-
-        vector<BattlePosition> &opponentPositions = isPlayerAttacker ? enemyPositions : playerPositions;
-        int corpsePosition = -1;
-        for (const auto &pos : opponentPositions)
-        {
-            if (pos.isCorpse && pos.corpseHP == target->getCurrentHealthPoint())
-            {
-                corpsePosition = pos.position;
-                break;
-            }
-        }
-
-        if (corpsePosition == -1 || !canAttackCorpse(attacker, corpsePosition))
-            return false;
-
-        // Calculate damage
-        int damage = attacker->attack(0); // Corpses have no defense
-        if (damage > 0)
-        {
-            // Apply damage to corpse
-            for (BattlePosition &pos : opponentPositions)
-            {
-                if (pos.position == corpsePosition && pos.isCorpse)
-                {
-                    pos.corpseHP -= damage;
-                    if (pos.corpseHP <= 0)
-                    {
-                        delete pos.entity;
-                        pos.corpseHP = 0;
-                        pos.isCorpse = false;
-                        pos.entity = nullptr;
-                        cout << "Труп на позиции " << corpsePosition << " уничтожен!\n";
-                    }
-                    break;
-                }
-            }
-
-            cout << attacker->getName() << " атакует труп на позиции " << corpsePosition << "!\n";
-            cout << "Наносит " << damage << " урона трупу!\n";
-        }
-    }
-    else
-    {
-        if (!canAttackTarget(attacker, target))
-            return false;
-
-        // Расчет урона
-        int damage = attacker->attack(target->getDefense());
-        target->takeDamage(damage);
-
-        // Применение эффектов способности
-        applyAbilityEffect(attacker, target, damage);
-
-        cout << getAttackDescription(attacker, target) << "\n";
-        cout << "Наносит " << damage << " урона!\n";
-
-        // Проверка на смерть
-        removeDeadEntities();
-
-        // Пересчет очереди ходов после смерти
-        if (target->getCurrentHealthPoint() <= 0)
-        {
-            calculateTurnOrder();
-            // Корректируем currentTurnIndex, чтобы он не выходил за границы
-            if (currentTurnIndex >= turnOrder.size())
-            {
-                currentTurnIndex = 0;
-            }
+            currentTurnIndex = 0;
         }
     }
 
@@ -509,18 +445,11 @@ bool BattleSystem::movePosition(Entity *entity, int newPosition)
     const vector<BattlePosition> &sameSidePositions = isPlayerEntity ? playerPositions : enemyPositions;
     const vector<BattlePosition> &opponentPositions = isPlayerEntity ? enemyPositions : playerPositions;
 
-    // Проверяем, заблокирована ли новая позиция
-    if (isPositionBlocked(newPosition, sameSidePositions))
-    {
-        cout << "Позиция заблокирована трупом!\n";
-        return false;
-    }
-
     // Проверяем, есть ли союзник на новой позиции
     bool hasAllyAtPosition = false;
     for (const auto &pos : sameSidePositions)
     {
-        if (pos.position == newPosition && pos.entity && pos.entity != entity && !pos.isCorpse)
+        if (pos.position == newPosition && pos.entity && pos.entity != entity)
         {
             hasAllyAtPosition = true;
             break;
@@ -547,7 +476,7 @@ bool BattleSystem::movePosition(Entity *entity, int newPosition)
         // Находим союзника и меняем позиции
         for (auto &pos : positions)
         {
-            if (pos.position == newPosition && pos.entity && pos.entity != entity && !pos.isCorpse)
+            if (pos.position == newPosition && pos.entity && pos.entity != entity)
             {
                 pos.position = currentPosition;
                 break;
@@ -599,7 +528,7 @@ Entity *BattleSystem::getCurrentTurnEntity() const
     return turnOrder[currentTurnIndex];
 }
 
-vector<Entity *> BattleSystem::getAvailableTargetsForCurrent() const
+vector<pair<Entity *, int>> BattleSystem::getAvailableTargetsForCurrent() const
 {
     Entity *current = getCurrentTurnEntity();
     if (!current)
@@ -628,7 +557,7 @@ vector<pair<Entity *, string>> BattleSystem::getAllEntitiesWithStatus() const
     {
         if (pos.entity)
         {
-            string status = pos.isCorpse ? "ТРУП" : "ЖИВ";
+            string status = "ЖИВ";
             entities.push_back({pos.entity, status});
         }
     }
@@ -638,7 +567,7 @@ vector<pair<Entity *, string>> BattleSystem::getAllEntitiesWithStatus() const
     {
         if (pos.entity)
         {
-            string status = pos.isCorpse ? "ТРУП" : "ЖИВ";
+            string status = "ЖИВ";
             entities.push_back({pos.entity, status});
         }
     }
@@ -687,7 +616,7 @@ bool BattleSystem::isPlayerVictory() const
     // Проверяем, все ли враги мертвы
     for (const auto &pos : enemyPositions)
     {
-        if (pos.entity && pos.entity->getCurrentHealthPoint() > 0 && !pos.isCorpse)
+        if (pos.entity && pos.entity->getCurrentHealthPoint() > 0)
         {
             return false;
         }
@@ -700,7 +629,7 @@ bool BattleSystem::isPlayerDefeat() const
     // Проверяем, все ли игроки мертвы
     for (const auto &pos : playerPositions)
     {
-        if (pos.entity && pos.entity->getCurrentHealthPoint() > 0 && !pos.isCorpse)
+        if (pos.entity && pos.entity->getCurrentHealthPoint() > 0)
         {
             return false;
         }
@@ -722,11 +651,7 @@ void BattleSystem::printBattlefield() const
         {
             if (pos.position == i)
             {
-                if (pos.isCorpse)
-                {
-                    cout << "[ТРУП]";
-                }
-                else if (pos.entity)
+                if (pos.entity)
                 {
                     cout << "[" << pos.entity->getName() << "]";
                 }
@@ -752,11 +677,7 @@ void BattleSystem::printBattlefield() const
         {
             if (pos.position == i)
             {
-                if (pos.isCorpse)
-                {
-                    cout << "[ТРУП]";
-                }
-                else if (pos.entity)
+                if (pos.entity)
                 {
                     cout << "[" << pos.entity->getName() << "]";
                 }
@@ -1017,7 +938,7 @@ bool BattleSystem::useAbility(Entity *user, AbilityType ability)
         vector<BattlePosition> &allies = isPlayer ? playerPositions : enemyPositions;
         for (auto &pos : allies)
         {
-            if (pos.entity && pos.entity->getCurrentHealthPoint() > 0 && !pos.isCorpse)
+            if (pos.entity && pos.entity->getCurrentHealthPoint() > 0)
             {
                 pos.entity->heal(50);
                 cout << pos.entity->getName() << " исцелен на 50 HP!\n";
@@ -1038,7 +959,7 @@ bool BattleSystem::useAbility(Entity *user, AbilityType ability)
         vector<BattlePosition> &opponents = isPlayer ? enemyPositions : playerPositions;
         for (auto &pos : opponents)
         {
-            if (pos.entity && pos.entity->getCurrentHealthPoint() > 0 && !pos.isCorpse)
+            if (pos.entity && pos.entity->getCurrentHealthPoint() > 0)
             {
                 pos.entity->setInitiative(max(1, pos.entity->getInitiative() - 2));
                 pos.entity->setDamage(max(1, pos.entity->getDamage() - 3));
@@ -1053,7 +974,7 @@ bool BattleSystem::useAbility(Entity *user, AbilityType ability)
         vector<BattlePosition> &opponents = isPlayer ? enemyPositions : playerPositions;
         for (auto &pos : opponents)
         {
-            if (pos.entity && pos.entity->getCurrentHealthPoint() > 0 && !pos.isCorpse)
+            if (pos.entity && pos.entity->getCurrentHealthPoint() > 0)
             {
                 int fireDamage = 15;
                 pos.entity->takeDamage(fireDamage);
@@ -1068,7 +989,7 @@ bool BattleSystem::useAbility(Entity *user, AbilityType ability)
         vector<BattlePosition> &opponents = isPlayer ? enemyPositions : playerPositions;
         for (auto &pos : opponents)
         {
-            if (pos.entity && pos.entity->getCurrentHealthPoint() > 0 && !pos.isCorpse)
+            if (pos.entity && pos.entity->getCurrentHealthPoint() > 0)
             {
                 int iceDamage = 12;
                 pos.entity->takeDamage(iceDamage);
@@ -1084,7 +1005,7 @@ bool BattleSystem::useAbility(Entity *user, AbilityType ability)
         vector<BattlePosition> &opponents = isPlayer ? enemyPositions : playerPositions;
         for (auto &pos : opponents)
         {
-            if (pos.entity && pos.entity->getCurrentHealthPoint() > 0 && !pos.isCorpse)
+            if (pos.entity && pos.entity->getCurrentHealthPoint() > 0)
             {
                 int lightningDamage = 25;
                 pos.entity->takeDamage(lightningDamage);
@@ -1100,7 +1021,7 @@ bool BattleSystem::useAbility(Entity *user, AbilityType ability)
         vector<BattlePosition> &opponents = isPlayer ? enemyPositions : playerPositions;
         for (auto &pos : opponents)
         {
-            if (pos.entity && pos.entity->getCurrentHealthPoint() > 0 && !pos.isCorpse)
+            if (pos.entity && pos.entity->getCurrentHealthPoint() > 0)
             {
                 int poisonDamage = 8;
                 pos.entity->takeDamage(poisonDamage);
@@ -1115,7 +1036,7 @@ bool BattleSystem::useAbility(Entity *user, AbilityType ability)
         vector<BattlePosition> &opponents = isPlayer ? enemyPositions : playerPositions;
         for (auto &pos : opponents)
         {
-            if (pos.entity && pos.entity->getCurrentHealthPoint() > 0 && !pos.isCorpse)
+            if (pos.entity && pos.entity->getCurrentHealthPoint() > 0)
             {
                 int stealDamage = 20;
                 pos.entity->takeDamage(stealDamage);
@@ -1159,56 +1080,20 @@ bool BattleSystem::useAbility(Entity *user, AbilityType ability)
     return true;
 }
 
-bool BattleSystem::destroyCorpse(Entity *destroyer, int position)
+void BattleSystem::shiftPositionsAfterDeath(vector<BattlePosition> &positions, int deadPosition)
 {
-    if (!battleActive || !destroyer || position < 0 || position > 3)
-        return false;
-    if (destroyer->getCurrentStamina() <= 0)
-        return false;
-
-    // Проверяем, может ли разрушитель атаковать труп на этой позиции
-    if (!canAttackCorpse(destroyer, position))
-        return false;
-
-    // Определяем, на какой стороне находится разрушитель
-    bool isPlayerDestroyer = false;
-    for (const auto &pos : playerPositions)
+    // Сдвигаем всех персонажей на позициях выше deadPosition на одну позицию ближе к бою
+    for (int i = deadPosition + 1; i < 4; ++i)
     {
-        if (pos.entity == destroyer)
+        // Найти позицию i
+        auto it = find_if(positions.begin(), positions.end(),
+                          [i](const BattlePosition &pos)
+                          { return pos.position == i && pos.entity != nullptr; });
+        if (it != positions.end())
         {
-            isPlayerDestroyer = true;
-            break;
+            it->position = i - 1;
         }
     }
-
-    // Проверяем, есть ли труп на указанной позиции
-    vector<BattlePosition> &positions = isPlayerDestroyer ? enemyPositions : playerPositions;
-    bool corpseFound = false;
-    for (auto &pos : positions)
-    {
-        if (pos.position == position && pos.isCorpse)
-        {
-            // Удаляем труп
-            delete pos.entity;
-            pos.isCorpse = false;
-            pos.corpseHP = 0;
-            pos.entity = nullptr;
-            corpseFound = true;
-            cout << destroyer->getName() << " уничтожает труп на позиции " << position << "!\n";
-            break;
-        }
-    }
-
-    if (!corpseFound)
-    {
-        cout << "На позиции " << position << " нет трупа!\n";
-        return false;
-    }
-
-    // Трата стамины
-    destroyer->spendStamina();
-
-    return true;
 }
 
 bool BattleSystem::skipHalfTurn(Entity *entity)

@@ -346,14 +346,14 @@ void CampaignSystem::handleBattleEvent(const Event &event)
                 if (actionChoice == 1)
                 {
                     // Атака
-                    vector<Entity *> targets = battleSystem.getAvailableTargetsForCurrent();
+                    vector<pair<Entity *, int>> targets = battleSystem.getAvailableTargetsForCurrent();
 
                     if (!targets.empty())
                     {
                         cout << "Доступные цели:\n";
                         for (size_t i = 0; i < targets.size(); ++i)
                         {
-                            cout << i + 1 << ". " << targets[i]->getName() << " (HP: " << targets[i]->getCurrentHealthPoint() << ")\n";
+                            cout << i + 1 << ". " << targets[i].first->getName() << " (HP: " << targets[i].first->getCurrentHealthPoint() << ", Pos: " << targets[i].second << ")\n";
                         }
 
                         int targetChoice;
@@ -363,7 +363,7 @@ void CampaignSystem::handleBattleEvent(const Event &event)
 
                         if (targetChoice > 0 && targetChoice <= static_cast<int>(targets.size()))
                         {
-                            battleSystem.attack(currentEntity, targets[targetChoice - 1]);
+                            battleSystem.attack(currentEntity, targets[targetChoice - 1].first);
                         }
                         else
                         {
@@ -465,7 +465,23 @@ void CampaignSystem::handleBattleEvent(const Event &event)
     {
         cout << "\n[PARTY] ПОБЕДА! Вы успешно победили врагов!\n";
 
-        // Начисляем опыт всем живым игрокам
+        // Собираем мертвых игроков для удаления после завершения боя
+        vector<Player *> deadPlayers;
+        for (auto it = playerParty.begin(); it != playerParty.end();)
+        {
+            if (*it && (*it)->getCurrentHealthPoint() <= 0)
+            {
+                cout << (*it)->getName() << " пал в бою и покидает отряд!\n";
+                deadPlayers.push_back(*it);
+                it = playerParty.erase(it);
+            }
+            else
+            {
+                ++it;
+            }
+        }
+
+        // Начисляем опыт всем оставшимся игрокам
         int totalExp = 0;
         for (Entity *enemy : enemies)
         {
@@ -496,11 +512,19 @@ void CampaignSystem::handleBattleEvent(const Event &event)
     battleSystem.endBattle();
     cout << "[DEBUG] After battleSystem.endBattle()\n";
 
-    // НЕ удаляем врагов здесь - они будут удалены в CampaignSystem::cleanupParty()
-    // или в деструкторе, чтобы избежать двойного удаления
-    cout << "[DEBUG] Skipping enemy deletion in handleBattleEvent - will be handled by cleanupParty\n";
-    enemies.clear(); // Очищаем вектор, но не удаляем объекты
-    cout << "[DEBUG] Enemies vector cleared\n";
+    // Удаляем мертвых игроков после завершения боя
+    for (Player *deadPlayer : deadPlayers)
+    {
+        delete deadPlayer;
+    }
+
+    // Удаляем врагов после боя
+    for (Entity *enemy : enemies)
+    {
+        delete enemy;
+    }
+    enemies.clear();
+    cout << "[DEBUG] Enemies deleted and vector cleared\n";
 }
 
 void CampaignSystem::handleTreasureEvent(const Event &event)
@@ -511,12 +535,9 @@ void CampaignSystem::handleTreasureEvent(const Event &event)
     if (event.reward)
     {
         cout << "Вы нашли: " << event.reward->getName() << "\n";
-        // Добавить предмет в инвентарь первого героя
-        if (!playerParty.empty())
-        {
-            playerParty[0]->addItem(*event.reward);
-            cout << "Предмет добавлен в инвентарь " << playerParty[0]->getName() << ".\n";
-        }
+        // Добавить предмет в общий инвентарь отряда
+        partyInventory.push_back(*event.reward);
+        cout << "Предмет добавлен в общий инвентарь отряда.\n";
         delete event.reward;
     }
     else
@@ -805,6 +826,41 @@ void CampaignSystem::handleBossBattleEvent(const Event &event)
     if (battleSystem.isPlayerVictory())
     {
         cout << "\n[VICTORY] ПОБЕДА! Вы победили Властелина Тьмы и спасли мир!\n";
+
+        // Удаляем мертвых игроков из отряда
+        for (auto it = playerParty.begin(); it != playerParty.end();)
+        {
+            if (*it && (*it)->getCurrentHealthPoint() <= 0)
+            {
+                cout << (*it)->getName() << " пал в бою и покидает отряд!\n";
+                delete *it;
+                it = playerParty.erase(it);
+            }
+            else
+            {
+                ++it;
+            }
+        }
+
+        // Начисляем опыт всем оставшимся игрокам
+        int totalExp = 0;
+        for (Entity *enemy : bossParty)
+        {
+            Enemy *e = static_cast<Enemy *>(enemy);
+            totalExp += e->getExperienceValue();
+        }
+
+        int expPerPlayer = static_cast<int>(totalExp) / static_cast<int>(playerParty.size());
+        for (Player *player : playerParty)
+        {
+            if (player->getCurrentHealthPoint() > 0)
+            {
+                player->setReceivedExperience(player->getReceivedExperience() + expPerPlayer);
+                player->upLevel();
+                cout << player->getName() << " получает " << expPerPlayer << " опыта!\n";
+            }
+        }
+
         gameCompleted = true;
     }
     else

@@ -12,12 +12,11 @@ using namespace std;
 struct BattlePosition
 {
     Entity *entity;
-    int position;  // 0-3 (0-1 первая линия, 2-3 вторая линия)
-    bool isCorpse; // true если это труп
-    int corpseHP;  // HP трупа, если isCorpse=true
+    int position; // 0-3 (0 первая линия, 1 вторая, 2 третья)
+    int corpseHP; // HP трупа, если entity == nullptr
 
-    BattlePosition(Entity *e = nullptr, int pos = 0, bool corpse = false, int hp = 0)
-        : entity(e), position(pos), isCorpse(corpse), corpseHP(hp) {}
+    BattlePosition(Entity *e = nullptr, int pos = 0, int cHP = 0)
+        : entity(e), position(pos), corpseHP(cHP) {}
 };
 
 // Структура для хранения информации о ходе
@@ -42,17 +41,19 @@ private:
     mt19937 randomGenerator;
 
     // Вспомогательные методы
-    void calculateTurnOrder();
     bool canAttackTarget(Entity *attacker, Entity *target) const;
+    bool canAttackCorpse(Entity *attacker, int targetPosition) const;
     int getEntityPosition(Entity *entity) const;
     bool isPositionBlocked(int position, const vector<BattlePosition> &positions) const;
     bool hasEmptyPositions(const vector<BattlePosition> &positions) const;
-    vector<Entity *> getAvailableTargets(Entity *attacker, bool isPlayerAttacker) const;
+    vector<pair<Entity *, int>> getAvailableTargets(Entity *attacker, bool isPlayerAttacker) const;
     void regenerateStaminaForTurn();
     void applyAbilityEffect(Entity *attacker, Entity *target, int damage);
+    void shiftPositionsAfterDeath(vector<BattlePosition> &positions, int deadPosition);
 
 public:
     void removeDeadEntities(); // Made public for testing
+    void calculateTurnOrder(); // Made public for testing
 
 public:
     BattleSystem();
@@ -67,19 +68,18 @@ public:
     bool movePosition(Entity *entity, int newPosition);
     bool useItem(Entity *user, int itemIndex);
     bool useAbility(Entity *user, AbilityType ability);
-    bool destroyCorpse(Entity *destroyer, int position);
     bool skipHalfTurn(Entity *entity);
 
     // Методы для получения информации
     Entity *getCurrentTurnEntity() const;
-    vector<Entity *> getAvailableTargetsForCurrent() const;
+    vector<pair<Entity *, int>> getAvailableTargetsForCurrent() const;
     vector<pair<Entity *, string>> getAllEntitiesWithStatus() const;
     string getBattleStatus() const;
     const vector<BattlePosition> &getPlayerPositions() const { return playerPositions; }
     const vector<BattlePosition> &getEnemyPositions() const { return enemyPositions; }
+    const vector<Entity *> &getTurnOrder() const { return turnOrder; }
     void displayEntityDetails(Entity *entity) const;
     string getAttackDescription(Entity *attacker, Entity *target) const;
-    bool canAttackCorpse(Entity *attacker, int position) const; // Public for testing
 
     // Методы для проверки условий
     bool isPlayerVictory() const;

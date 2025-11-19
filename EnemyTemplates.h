@@ -28,7 +28,6 @@ class EnemyFactory
 {
 private:
     static std::map<LocationType, std::vector<EnemyTemplate>> enemyTemplates;
-    static bool initialized;
 
     static void initializeTemplates();
 
