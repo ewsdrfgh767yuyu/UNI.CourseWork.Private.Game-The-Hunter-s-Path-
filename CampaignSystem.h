@@ -4,10 +4,13 @@
 #include "EnemyTemplates.h"
 #include "HeroTemplates.h"
 #include "Map.h"
+#include "utils.h"
 #include <vector>
 #include <string>
 #include <map>
 #include <random>
+#include <iostream>
+#include <limits>
 
 // Типы событий в походовом режиме
 enum class EventType

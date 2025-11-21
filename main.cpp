@@ -15,15 +15,9 @@
 #include "EnemyTemplates.h"
 #include "HeroTemplates.h"
 #include "CampaignSystem.h"
+#include "utils.h"
 
 using namespace std;
-
-// Функция для очистки ввода
-void clearInput()
-{
-    cin.clear();
-    cin.ignore(numeric_limits<streamsize>::max(), '\n');
-}
 
 // Функция для очистки консоли
 void clearConsole()
@@ -36,33 +30,13 @@ int selectFromList(const vector<string> &options, const string &prompt)
 {
     cout << "\n"
          << prompt << "\n";
-    for (size_t i = 0; i < options.size(); ++i)
+    for (int i = 0; i < options.size(); ++i)
     {
         cout << i + 1 << ". " << options[i] << "\n";
     }
 
-    int choice;
-    while (true)
-    {
-        cout << "Выберите (1-" << options.size() << "): ";
-        if (cin >> choice)
-        {
-            if (choice >= 1 && choice <= static_cast<int>(options.size()))
-            {
-                clearInput();
-                return choice - 1;
-            }
-            else
-            {
-                cout << "Неверный выбор. Попробуйте снова.\n";
-            }
-        }
-        else
-        {
-            cout << "Ошибка ввода. Попробуйте снова.\n";
-        }
-        clearInput();
-    }
+    int choice = getSafeIntInput("Выберите (1-" + to_string(options.size()) + "): ", 1, static_cast<int>(options.size()));
+    return choice - 1;
 }
 
 // Функция для создания отряда игроков
@@ -183,6 +157,8 @@ void executePlayerTurn(BattleSystem &battleSystem, Entity *currentEntity)
     cout << "\n=== ХОД " << currentEntity->getName() << " ===\n";
     cout << "Осталось стамины: " << currentEntity->getCurrentStamina() << "/" << currentEntity->getMaxStamina() << "\n";
 
+    int viewCount = 0; // Счетчик просмотров характеристик за ход
+
     while (currentEntity->getCurrentStamina() > 0)
     {
         // Показываем доступные действия
@@ -224,6 +200,12 @@ void executePlayerTurn(BattleSystem &battleSystem, Entity *currentEntity)
 
         case 2:
         { // Посмотреть характеристики
+            if (viewCount >= 3)
+            {
+                cout << "Вы уже просмотрели характеристики 3 раза в этом ходу. Выберите другое действие.\n";
+                continue;
+            }
+
             auto allEntities = battleSystem.getAllEntitiesWithStatus();
             vector<string> entityNames;
             vector<Entity *> entityList;
@@ -240,6 +222,7 @@ void executePlayerTurn(BattleSystem &battleSystem, Entity *currentEntity)
 
             int entityChoice = selectFromList(entityNames, "Выберите персонажа для просмотра характеристик:");
             battleSystem.displayEntityDetails(entityList[entityChoice]);
+            viewCount++;
             continue; // Не тратим стамину на просмотр
         }
 

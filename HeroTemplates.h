@@ -24,6 +24,14 @@ struct HeroTemplate
     double damageVariance = 0.2; // Разброс урона по умолчанию
 };
 
+// Структура пресета сборки отряда
+struct PartyPreset
+{
+    std::string name = "";
+    std::string description = "";
+    std::vector<std::pair<HeroClass, std::string>> heroes = {}; // Класс и имя героя
+};
+
 // Структура для описания способности
 struct AbilityInfo
 {
@@ -40,9 +48,11 @@ class HeroFactory
 private:
     static std::map<HeroClass, HeroTemplate> heroTemplates;
     static std::map<AbilityType, AbilityInfo> abilityDatabase;
+    static std::vector<PartyPreset> partyPresets;
 
     static void initializeTemplates();
     static void initializeAbilities();
+    static void initializePartyPresets();
 
 public:
     // Получить список доступных классов
@@ -59,4 +69,10 @@ public:
 
     // Получить список способностей для класса
     static std::vector<AbilityType> getClassAbilities(HeroClass heroClass);
+
+    // Получить список пресетов сборок
+    static const std::vector<PartyPreset> &getPartyPresets();
+
+    // Создать отряд по пресету
+    static std::vector<Player *> createPartyFromPreset(int presetIndex);
 };

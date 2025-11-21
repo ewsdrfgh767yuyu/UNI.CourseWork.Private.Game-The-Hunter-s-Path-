@@ -124,7 +124,7 @@ public:
         float randomValue = random.nextFloat(0.0f, total);
         
         float cumulative = 0.0f;
-        for (size_t i = 0; i < probabilities.size(); i++) {
+        for (int i = 0; i < probabilities.size(); i++) {
             cumulative += probabilities[i];
             if (randomValue <= cumulative) {
                 return static_cast<EventType>(i);

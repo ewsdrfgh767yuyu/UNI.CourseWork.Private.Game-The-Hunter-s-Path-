@@ -182,7 +182,7 @@ void Map::generateFixedMap()
     grid[4][14] = NodeType::TREASURE;
 
     // Событие в городе мертвых
-    grid[11][7] = NodeType::EVENT;
+    grid[11][8] = NodeType::EVENT;
     // Сокровище в городе мертвых
     grid[12][7] = NodeType::TREASURE;
 
@@ -190,6 +190,22 @@ void Map::generateFixedMap()
     grid[7][6] = NodeType::EVENT;
     // Финальное сокровище
     grid[7][8] = NodeType::TREASURE;
+
+    // Размещаем выходы из локаций
+    // Выходы из леса (2 выхода)
+    grid[6][4] = NodeType::EXIT;
+    grid[4][6] = NodeType::EXIT;
+
+    // Выходы из пещер (2 выхода)
+    grid[6][12] = NodeType::EXIT;
+    grid[5][13] = NodeType::EXIT;
+
+    // Выходы из города мертвых (2 выхода)
+    grid[13][4] = NodeType::EXIT;
+    grid[11][7] = NodeType::EXIT;
+
+    // Выход из замка (1 выход)
+    grid[9][7] = NodeType::EXIT;
 }
 
 void Map::createCorridorBranch(Position start, int length, int branchType)
@@ -797,9 +813,9 @@ std::vector<Position> Map::getNeighbors(const Position &pos) const
     if (neighbors.size() > 6)
     {
         // Простая перетасовка: меняем местами элементы
-        for (size_t i = 0; i < neighbors.size(); ++i)
+        for (int i = 0; i < neighbors.size(); ++i)
         {
-            size_t j = (rand() % (neighbors.size() - i)) + i;
+            int j = (rand() % (neighbors.size() - i)) + i;
             std::swap(neighbors[i], neighbors[j]);
         }
         neighbors.resize(6);

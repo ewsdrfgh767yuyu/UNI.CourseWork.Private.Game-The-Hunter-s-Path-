@@ -39,8 +39,19 @@ void EnemyFactory::initializeTemplates()
         // Фамильяр - быстрый и слабый, но с магией
         {"Фамильяр", 50, 6, 1, 2, 2, 15, 2, AbilityType::LIGHTNING, 30, 1, "familiar", 0.3}};
 
-    // ЗАМОК - финальная локация, регулярные враги отсутствуют (только босс-бой)
-    enemyTemplates[LocationType::CASTLE] = {};
+    // ЗАМОК - финальная локация, стражники и рыцари
+    enemyTemplates[LocationType::CASTLE] = {
+        // Стражник - базовый защитник замка
+        {"Стражник", 100, 12, 6, 2, 1, 10, 0, AbilityType::NONE, 50, 2, "guard", 0.2},
+
+        // Рыцарь - тяжелый воин
+        {"Рыцарь", 140, 16, 8, 3, 1, 12, 0, AbilityType::BERSERK, 80, 3, "knight", 0.25},
+
+        // Маг замка - магический враг
+        {"Маг замка", 80, 10, 2, 2, 2, 14, 2, AbilityType::LIGHTNING, 60, 2, "castle_mage", 0.3},
+
+        // Призрачный страж - нематериальный защитник
+        {"Призрачный страж", 90, 11, 3, 2, 1, 16, 1, AbilityType::INVISIBLE, 70, 2, "ghost_guard", 0.15}};
 
     // ГОРОД МЕРТВЕЦОВ - чистая нежить
     enemyTemplates[LocationType::DEAD_CITY] = {
@@ -83,21 +94,49 @@ Enemy *EnemyFactory::createRandomEnemy(LocationType location, int difficultyModi
     int modifiedDefense = selected.defense + difficultyModifier;
     int modifiedExp = selected.expValue + (difficultyModifier * 10);
 
-    return new Enemy(
-        selected.name,
-        modifiedHP,
-        modifiedDamage,
-        modifiedDefense,
-        selected.attack,
-        selected.maxStamina,
-        selected.maxStamina,
-        selected.initiative,
-        selected.attackRange,
-        selected.ability,
-        modifiedExp,
-        selected.difficulty + difficultyModifier,
-        selected.type,
-        selected.damageVariance);
+    // Создаем врага соответствующего типа
+    if (selected.name == "Гоблин" || selected.type == "goblin")
+    {
+        return new Goblin(selected.name, modifiedHP, modifiedDamage, modifiedDefense, selected.attack,
+                         selected.maxStamina, selected.maxStamina, selected.initiative, selected.attackRange,
+                         selected.ability, modifiedExp, selected.difficulty + difficultyModifier, selected.type, selected.damageVariance);
+    }
+    else if (selected.name == "Орк" || selected.type == "orc")
+    {
+        return new Orc(selected.name, modifiedHP, modifiedDamage, modifiedDefense, selected.attack,
+                      selected.maxStamina, selected.maxStamina, selected.initiative, selected.attackRange,
+                      selected.ability, modifiedExp, selected.difficulty + difficultyModifier, selected.type, selected.damageVariance);
+    }
+    else if (selected.name == "Вампир" || selected.type == "vampire")
+    {
+        return new Vampire(selected.name, modifiedHP, modifiedDamage, modifiedDefense, selected.attack,
+                          selected.maxStamina, selected.maxStamina, selected.initiative, selected.attackRange,
+                          selected.ability, modifiedExp, selected.difficulty + difficultyModifier, selected.type, selected.damageVariance);
+    }
+    else if (selected.name == "Виверна" || selected.type == "wyvern" || selected.name == "Виверна-монарх" || selected.type == "wyvern_monarch")
+    {
+        return new Wyvern(selected.name, modifiedHP, modifiedDamage, modifiedDefense, selected.attack,
+                         selected.maxStamina, selected.maxStamina, selected.initiative, selected.attackRange,
+                         selected.ability, modifiedExp, selected.difficulty + difficultyModifier, selected.type, selected.damageVariance);
+    }
+    else if (selected.name == "Призрак" || selected.type == "ghost")
+    {
+        return new Ghost(selected.name, modifiedHP, modifiedDamage, modifiedDefense, selected.attack,
+                        selected.maxStamina, selected.maxStamina, selected.initiative, selected.attackRange,
+                        selected.ability, modifiedExp, selected.difficulty + difficultyModifier, selected.type, selected.damageVariance);
+    }
+    else if (selected.name == "Троглодит" || selected.type == "troglodyte" || selected.name == "Инфернальный троглодит" || selected.type == "infernal_troglodyte")
+    {
+        return new Troglodyte(selected.name, modifiedHP, modifiedDamage, modifiedDefense, selected.attack,
+                             selected.maxStamina, selected.maxStamina, selected.initiative, selected.attackRange,
+                             selected.ability, modifiedExp, selected.difficulty + difficultyModifier, selected.type, selected.damageVariance);
+    }
+    else
+    {
+        return new Enemy(selected.name, modifiedHP, modifiedDamage, modifiedDefense, selected.attack,
+                        selected.maxStamina, selected.maxStamina, selected.initiative, selected.attackRange,
+                        selected.ability, modifiedExp, selected.difficulty + difficultyModifier, selected.type, selected.damageVariance);
+    }
 }
 
 Enemy *EnemyFactory::createEnemyByName(const std::string &name, int difficultyModifier)

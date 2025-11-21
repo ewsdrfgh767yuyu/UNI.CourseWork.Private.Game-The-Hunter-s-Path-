@@ -7,6 +7,12 @@
         "ctime": "cpp",
         "limits": "cpp",
         "numeric": "cpp",
-        "string": "cpp"
+        "string": "cpp",
+        "vector": "cpp",
+        "stdexcept": "cpp",
+        "set": "cpp",
+        "map": "cpp",
+        "random": "cpp",
+        "queue": "cpp"
     }
 }

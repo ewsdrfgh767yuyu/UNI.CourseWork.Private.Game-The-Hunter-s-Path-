@@ -34,7 +34,7 @@ private:
     vector<BattlePosition> playerPositions; // Позиции игроков (до 4)
     vector<BattlePosition> enemyPositions;  // Позиции врагов (до 4)
     vector<Entity *> turnOrder;             // Текущая очередь ходов
-    size_t currentTurnIndex;                // Индекс текущего хода
+    int currentTurnIndex;                // Индекс текущего хода
     bool battleActive;                      // Флаг активного боя
 
     // Генератор случайных чисел
@@ -87,6 +87,7 @@ public:
 
     // Методы управления очередью ходов
     void nextTurn();
+    bool skipTurn(Entity *entity);
 
     // Отладочные методы
     void printBattlefield() const;
