@@ -13,6 +13,7 @@
         "set": "cpp",
         "map": "cpp",
         "random": "cpp",
-        "queue": "cpp"
+        "queue": "cpp",
+        "array": "cpp"
     }
 }

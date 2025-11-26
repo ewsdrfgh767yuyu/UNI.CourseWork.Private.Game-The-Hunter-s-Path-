@@ -52,7 +52,7 @@ void CampaignSystem::initializeLocations()
     castle.type = LocationType::CASTLE;
     castle.name = "Замок";
     castle.description = "Древний замок, где обитает финальный босс и его приспешники.";
-    castle.connections = {LocationType::DEAD_CITY};
+    castle.connections = {};
     castle.isFinalBossLocation = true;
 
     locations[LocationType::FOREST] = forest;
@@ -77,8 +77,8 @@ void CampaignSystem::startCampaign()
     // Начинаем с леса
     currentLocation = locations[LocationType::FOREST];
 
-    // Генерируем карту
-    gameMap.generate();
+    // Генерируем фиксированную карту
+    gameMap.generateFixedMap();
     // Выводим карту сразу после генерации для отладки
     cout << "Карта после генерации:\n";
     gameMap.printMap();
@@ -620,37 +620,52 @@ void CampaignSystem::handleExitEvent(const Event &event)
     cout << "\n=== ВЫХОД ===\n";
     cout << event.description << "\n";
 
-    // Для карты просто уведомляем о переходе
-    cout << "Вы переходите в следующую локацию...\n";
-    cout << "Название новой локации: ";
-
-    // Генерируем случайное название для новой локации
-    vector<string> locationNames = {
-        "Темный Лес", "Подземные Пещеры", "Заброшенный Город",
-        "Древний Замок", "Морские Берега", "Горные Вершины",
-        "Волшебный Лес", "Ледяные Пустоши", "Пылающая Пустыня"};
-
-    string newLocationName = locationNames[rand() % locationNames.size()];
-    cout << newLocationName << "\n";
-
-    cout << "\nВы согласны перейти? (y/n): ";
-    char choice;
-    cin >> choice;
-    cin.ignore();
-
-    if (choice == 'y' || choice == 'Y')
+    // Показываем доступные переходы
+    if (!currentLocation.connections.empty())
     {
-        cout << "Вы переходите в " << newLocationName << "...\n";
-        // Генерируем новую карту для новой локации
-        gameMap.generate();
-        visitedNodes.clear();
-        currentDifficulty++;
+        cout << "Доступные переходы:\n";
+        for (int i = 0; i < currentLocation.connections.size(); ++i)
+        {
+            LocationType locType = currentLocation.connections[i];
+            Location loc = locations[locType];
+            cout << i + 1 << ". " << loc.name << " - " << loc.description << "\n";
+        }
+
+        int choice = getSafeIntInput("Выберите локацию для перехода (1-" + to_string(currentLocation.connections.size()) + "): ", 1, static_cast<int>(currentLocation.connections.size()));
+
+        if (choice > 0 && choice <= static_cast<int>(currentLocation.connections.size()))
+        {
+            LocationType targetLocation = currentLocation.connections[choice - 1];
+            Location newLoc = locations[targetLocation];
+
+            cout << "\nВы согласны перейти в " << newLoc.name << "? (y/n): ";
+            char confirm;
+            cin >> confirm;
+            cin.ignore();
+
+            if (confirm == 'y' || confirm == 'Y')
+            {
+                cout << "Вы переходите в " << newLoc.name << "...\n";
+                // Меняем текущую локацию
+                currentLocation = newLoc;
+                // Генерируем новую карту для новой локации
+                gameMap.generateFixedMap();
+                visitedNodes.clear();
+                currentDifficulty++;
+            }
+            else
+            {
+                cout << "Вы остаетесь на месте.\n";
+            }
+        }
+        else
+        {
+            cout << "Неверный выбор!\n";
+        }
     }
     else
     {
-        cout << "Вы остаетесь на месте.\n";
-        // Возвращаем игрока на предыдущую клетку (перед выходом)
-        // Для простоты просто не делаем ничего, игрок остается на выходе
+        cout << "Нет доступных переходов из этой локации.\n";
     }
 
     cout << "\nНажмите Enter для продолжения...";
@@ -1096,8 +1111,16 @@ void CampaignSystem::handleNodeEvent(NodeType nodeType)
     {
     case NodeType::BATTLE:
     {
-        Event battleEvent{EventType::BATTLE, "Вы наткнулись на группу врагов!", {}, {}, nullptr, currentDifficulty};
-        handleBattleEvent(battleEvent);
+        if (currentLocation.type == LocationType::CASTLE)
+        {
+            Event bossEvent{EventType::BOSS_BATTLE, "Вы столкнулись с финальным боссом!"};
+            handleBossBattleEvent(bossEvent);
+        }
+        else
+        {
+            Event battleEvent{EventType::BATTLE, "Вы наткнулись на группу врагов!", {}, {}, nullptr, currentDifficulty};
+            handleBattleEvent(battleEvent);
+        }
         break;
     }
     case NodeType::EVENT:

@@ -46,7 +46,6 @@ private:
 
     // Методы генерации
     void initializeGrid();
-    void generateFixedMap();
     void generateCorridorMap();
     void createCorridorBranch(Position start, int length, int branchType);
     void placeSpecialNodes();
@@ -61,6 +60,7 @@ private:
 public:
     Map();
     void generate();
+    void generateFixedMap();
     void resetVisited();
 
     // Движение игрока
@@ -80,4 +80,7 @@ public:
     // Проверка
     bool isValidMove(char direction) const;
     std::vector<char> getValidMoves() const;
+
+    // Проверка и починка целостности карты
+    bool checkAndFixMapIntegrity();
 };

@@ -1,21 +1,136 @@
-#include "Map.h"
+ #include "Map.h"
 #include <iostream>
 #include <algorithm>
 #include <queue>
 #include <set>
+#include <array>
+#include <map>
+
+NodeType charToNodeType(char c)
+{
+    switch (c)
+    {
+    case 'I':
+        return NodeType::START;
+    case 'B':
+        return NodeType::BATTLE;
+    case 'S':
+        return NodeType::EVENT;
+    case 'P':
+        return NodeType::TREASURE;
+    case 'V':
+        return NodeType::EXIT;
+    case '.':
+        return NodeType::EMPTY;
+    case '?':
+        return NodeType::UNKNOWN;
+    case 'F':
+        return NodeType::FOREST;
+    case 'C':
+        return NodeType::CAVE;
+    case 'D':
+        return NodeType::DEAD_CITY;
+    case 'Z':
+        return NodeType::CASTLE;
+    default:
+        return NodeType::UNKNOWN;
+    }
+}
+
+#include "mapPrototypesData.h"
 
 Map::Map() : grid(MAP_SIZE, std::vector<NodeType>(MAP_SIZE, NodeType::EMPTY)),
-              visited(MAP_SIZE, std::vector<char>(MAP_SIZE, 0)),
-              rng(std::random_device{}())
+             visited(MAP_SIZE, std::vector<char>(MAP_SIZE, 0)),
+             rng(std::random_device{}())
 {
     playerPos = Position(0, 0);
 }
 
 void Map::generate()
 {
-    generateFixedMap();
+    // Clear grid first
+    for (auto &row : grid)
+    {
+        std::fill(row.begin(), row.end(), NodeType::UNKNOWN);
+    }
+
+    // Select a map type currently supported: FOREST, DEAD_CITY, CAVE, CASTLE
+    int mapTypeIndex = rng() % 4;
+
+    const char *const(*selectedPrototypes)[15] = nullptr;
+    switch (mapTypeIndex)
+    {
+    case 0:
+        selectedPrototypes = forestPrototypes;
+        break;
+    case 1:
+        selectedPrototypes = deadCityPrototypes;
+        break;
+    case 2:
+        selectedPrototypes = cavePrototypes;
+        break;
+    case 3:
+        selectedPrototypes = castlePrototypes;
+        break;
+    }
+
+    // Select a prototype variant randomly [0..3]
+    int variantIndex = rng() % 4;
+
+    // Load the selected prototype into grid
+    for (int y = 0; y < MAP_SIZE; ++y)
+    {
+        for (int x = 0; x < MAP_SIZE; ++x)
+        {
+            char c = selectedPrototypes[variantIndex][y][x];
+            grid[y][x] = charToNodeType(c);
+        }
+    }
+
+    // Add points of interest based on map type
+    std::vector<Position> emptyPositions;
+    for (int y = 0; y < MAP_SIZE; ++y)
+    {
+        for (int x = 0; x < MAP_SIZE; ++x)
+        {
+            if (grid[y][x] == NodeType::EMPTY)
+            {
+                emptyPositions.emplace_back(x, y);
+            }
+        }
+    }
+
+    // Determine POI type based on map type
+    NodeType poiType;
+    switch (mapTypeIndex)
+    {
+    case 0: // Forest
+        poiType = NodeType::FOREST;
+        break;
+    case 1: // Dead City
+        poiType = NodeType::DEAD_CITY;
+        break;
+    case 2: // Cave
+        poiType = NodeType::CAVE;
+        break;
+    case 3: // Castle
+        poiType = NodeType::CASTLE;
+        break;
+    }
+
+    // Add 2-4 POI in random empty positions
+    int numPOI = 2 + (rng() % 3); // 2-4 POI
+    for (int i = 0; i < numPOI && !emptyPositions.empty(); ++i)
+    {
+        int idx = rng() % emptyPositions.size();
+        Position pos = emptyPositions[idx];
+        grid[pos.y][pos.x] = poiType;
+        emptyPositions.erase(emptyPositions.begin() + idx);
+    }
+
     resetVisited();
-    // Помещаем игрока на старт
+
+    // Place player at start position
     for (int y = 0; y < MAP_SIZE; ++y)
     {
         for (int x = 0; x < MAP_SIZE; ++x)
@@ -127,6 +242,7 @@ void Map::generateFixedMap()
 
     // Замок в центре
     grid[7][7] = NodeType::CASTLE;
+    grid[7][8] = NodeType::BATTLE; // Бой с боссом в замке
 
     // Создаем пути между локациями
     // Путь от Леса к Пещере
@@ -204,8 +320,23 @@ void Map::generateFixedMap()
     grid[13][4] = NodeType::EXIT;
     grid[11][7] = NodeType::EXIT;
 
-    // Выход из замка (1 выход)
-    grid[9][7] = NodeType::EXIT;
+    // Выход из замка убран, так как замок - финальная локация
+
+    resetVisited();
+
+    // Place player at start position
+    for (int y = 0; y < MAP_SIZE; ++y)
+    {
+        for (int x = 0; x < MAP_SIZE; ++x)
+        {
+            if (grid[y][x] == NodeType::START)
+            {
+                playerPos = Position(x, y);
+                visited[y][x] = 1;
+                return;
+            }
+        }
+    }
 }
 
 void Map::createCorridorBranch(Position start, int length, int branchType)
@@ -307,7 +438,7 @@ void Map::placeSpecialNodes()
     case 1:
         startX = MAP_SIZE - 1;
         startY = 1 + rng() % (MAP_SIZE - 2); // Избегаем углов
-        break; // right
+        break;                               // right
     case 2:
         startX = 1 + rng() % (MAP_SIZE - 2); // Избегаем углов
         startY = MAP_SIZE - 1;
@@ -315,7 +446,7 @@ void Map::placeSpecialNodes()
     case 3:
         startX = 0;
         startY = 1 + rng() % (MAP_SIZE - 2); // Избегаем углов
-        break; // left
+        break;                               // left
     }
     grid[startY][startX] = NodeType::START;
 
@@ -328,7 +459,7 @@ void Map::placeSpecialNodes()
         int x, y;
         bool validPosition = false;
         int attempts = 0;
-        
+
         do
         {
             // Первый выход на противоположной стороне по X
@@ -361,7 +492,7 @@ void Map::placeSpecialNodes()
             // Проверяем минимальное расстояние от старта и других узлов
             Position newPos(x, y);
             validPosition = (grid[y][x] == NodeType::UNKNOWN);
-            
+
             // Проверяем расстояние от всех уже размещенных узлов
             for (const auto &placed : placedNodes)
             {
@@ -371,13 +502,13 @@ void Map::placeSpecialNodes()
                     break;
                 }
             }
-            
+
             // Дополнительная проверка: выход должен быть достаточно далеко от старта
             if (validPosition)
             {
                 validPosition = (Position(startX, startY).manhattanDistance(newPos) >= 10);
             }
-            
+
             attempts++;
         } while (!validPosition && attempts < 100);
 
@@ -395,7 +526,7 @@ void Map::placeSpecialNodes()
         int x, y;
         bool validPosition = false;
         int attempts = 0;
-        
+
         do
         {
             // Размещаем бои в разных квадрантах карты для лучшего распределения
@@ -422,7 +553,7 @@ void Map::placeSpecialNodes()
 
             Position newPos(x, y);
             validPosition = (grid[y][x] == NodeType::UNKNOWN);
-            
+
             // Проверяем расстояние от всех уже размещенных узлов
             for (const auto &placed : placedNodes)
             {
@@ -432,7 +563,7 @@ void Map::placeSpecialNodes()
                     break;
                 }
             }
-            
+
             attempts++;
         } while (!validPosition && attempts < 100);
 
@@ -450,16 +581,16 @@ void Map::placeSpecialNodes()
         int x, y;
         bool validPosition = false;
         int attempts = 0;
-        
+
         do
         {
             // Размещаем в случайном месте, но избегаем краев
             x = 2 + rng() % (MAP_SIZE - 4);
             y = 2 + rng() % (MAP_SIZE - 4);
-            
+
             Position newPos(x, y);
             validPosition = (grid[y][x] == NodeType::UNKNOWN);
-            
+
             // Проверяем расстояние от всех уже размещенных узлов
             for (const auto &placed : placedNodes)
             {
@@ -469,7 +600,7 @@ void Map::placeSpecialNodes()
                     break;
                 }
             }
-            
+
             attempts++;
         } while (!validPosition && attempts < 100);
 
@@ -512,10 +643,10 @@ void Map::connectNodes()
 
     // Создаем минимальное остовное дерево для гарантии связности
     // Используем простой алгоритм: соединяем каждый узел с ближайшим уже подключенным узлом
-    
+
     std::vector<Position> connectedNodes;
     connectedNodes.push_back(start);
-    
+
     // Удаляем старт из списка специальных узлов для соединения
     auto it = std::find(specialNodes.begin(), specialNodes.end(), start);
     if (it != specialNodes.end())
@@ -529,7 +660,7 @@ void Map::connectNodes()
         Position closestNode;
         Position closestConnected;
         int minDistance = MAP_SIZE * MAP_SIZE;
-        
+
         // Находим ближайшую пару (неподключенный узел - подключенный узел)
         for (const auto &node : specialNodes)
         {
@@ -544,13 +675,13 @@ void Map::connectNodes()
                 }
             }
         }
-        
+
         // Соединяем найденные узлы
         if (minDistance < MAP_SIZE * MAP_SIZE)
         {
             carvePath(closestNode, closestConnected);
             connectedNodes.push_back(closestNode);
-            
+
             // Удаляем подключенный узел из списка неподключенных
             it = std::find(specialNodes.begin(), specialNodes.end(), closestNode);
             if (it != specialNodes.end())
@@ -573,17 +704,17 @@ void Map::connectNodes()
         {
             int idx1 = rng() % connectedNodes.size();
             int idx2 = rng() % connectedNodes.size();
-            
+
             // Убеждаемся, что это разные узлы
             while (idx2 == idx1 && connectedNodes.size() > 1)
             {
                 idx2 = rng() % connectedNodes.size();
             }
-            
+
             Position node1 = connectedNodes[idx1];
             Position node2 = connectedNodes[idx2];
             int distance = node1.manhattanDistance(node2);
-            
+
             // Соединяем только если расстояние разумное (не слишком большое и не слишком маленькое)
             if (distance >= 4 && distance <= 10)
             {
@@ -596,7 +727,7 @@ void Map::connectNodes()
 void Map::carvePath(const Position &start, const Position &end)
 {
     Position current = start;
-    
+
     // Создаем путь от старта до конца
     while (current != end)
     {
@@ -608,7 +739,7 @@ void Map::carvePath(const Position &start, const Position &end)
             direction.x = -1;
         else
             direction.x = 0;
-            
+
         if (current.y < end.y)
             direction.y = 1;
         else if (current.y > end.y)
@@ -644,7 +775,7 @@ void Map::carvePath(const Position &start, const Position &end)
             break;
         }
     }
-    
+
     // Убеждаемся, что конечная точка тоже установлена как EMPTY
     if (isValidPosition(end.x, end.y))
     {
@@ -725,11 +856,11 @@ void Map::ensureConnectivity()
             if (grid[y][x] != NodeType::UNKNOWN && !reachable[y][x])
             {
                 Position isolated(x, y);
-                
+
                 // Находим ближайшую достижимую клетку
                 Position closest;
                 int minDist = MAP_SIZE * MAP_SIZE; // Большое начальное расстояние
-                
+
                 for (int yy = 0; yy < MAP_SIZE; ++yy)
                 {
                     for (int xx = 0; xx < MAP_SIZE; ++xx)
@@ -745,7 +876,7 @@ void Map::ensureConnectivity()
                         }
                     }
                 }
-                
+
                 // Соединяем изолированную клетку с ближайшей достижимой
                 if (minDist < MAP_SIZE * MAP_SIZE)
                 {
@@ -934,6 +1065,18 @@ void Map::printMap() const
                     case NodeType::EXIT:
                         symbol = 'V';
                         break;
+                    case NodeType::FOREST:
+                        symbol = 'F';
+                        break;
+                    case NodeType::CAVE:
+                        symbol = 'C';
+                        break;
+                    case NodeType::DEAD_CITY:
+                        symbol = 'D';
+                        break;
+                    case NodeType::CASTLE:
+                        symbol = 'Z';
+                        break;
                     default:
                         symbol = '.';
                         break;
@@ -1013,6 +1156,18 @@ std::string Map::getMapString() const
                     case NodeType::EXIT:
                         symbol = 'V';
                         break;
+                    case NodeType::FOREST:
+                        symbol = 'F';
+                        break;
+                    case NodeType::CAVE:
+                        symbol = 'C';
+                        break;
+                    case NodeType::DEAD_CITY:
+                        symbol = 'D';
+                        break;
+                    case NodeType::CASTLE:
+                        symbol = 'Z';
+                        break;
                     default:
                         symbol = '.';
                         break;
@@ -1065,6 +1220,110 @@ bool Map::isValidMove(char direction) const
         return false;
     }
     return isValidPosition(newPos.x, newPos.y) && grid[newPos.y][newPos.x] != NodeType::UNKNOWN;
+}
+
+bool Map::checkAndFixMapIntegrity()
+{
+    // Find start position
+    Position start(-1, -1);
+    for (int y = 0; y < MAP_SIZE; ++y)
+    {
+        for (int x = 0; x < MAP_SIZE; ++x)
+        {
+            if (grid[y][x] == NodeType::START)
+            {
+                start = Position(x, y);
+                break;
+            }
+        }
+        if (start.x != -1) break;
+    }
+    if (start.x == -1) return false; // No start found, cannot verify
+
+    // Collect all special nodes except the start
+    std::vector<Position> specialNodes;
+    for (int y = 0; y < MAP_SIZE; ++y)
+    {
+        for (int x = 0; x < MAP_SIZE; ++x)
+        {
+            NodeType type = grid[y][x];
+            if (isSpecialNode(type) && type != NodeType::START)
+            {
+                specialNodes.emplace_back(x, y);
+            }
+        }
+    }
+
+    // Check reachability of each special node, carve path if unreachable
+    for (const auto& node : specialNodes)
+    {
+        if (!hasPathToExit(start, grid[node.y][node.x]))
+        {
+            carvePath(start, node);
+        }
+    }
+
+    // Check connectivity of all non-UNKNOWN cells starting from start
+    std::vector<std::vector<char>> reachable(MAP_SIZE, std::vector<char>(MAP_SIZE, 0));
+    std::queue<Position> q;
+    q.push(start);
+    reachable[start.y][start.x] = 1;
+
+    while (!q.empty())
+    {
+        Position current = q.front();
+        q.pop();
+
+        std::vector<Position> directions = {{0, -1}, {0, 1}, {-1, 0}, {1, 0}};
+        for (const auto& dir : directions)
+        {
+            Position neighbor(current.x + dir.x, current.y + dir.y);
+            if (isValidPosition(neighbor.x, neighbor.y) &&
+                !reachable[neighbor.y][neighbor.x] &&
+                grid[neighbor.y][neighbor.x] != NodeType::UNKNOWN)
+            {
+                reachable[neighbor.y][neighbor.x] = 1;
+                q.push(neighbor);
+            }
+        }
+    }
+
+    // For any unreachable cell, carve path to closest reachable cell
+    for (int y = 0; y < MAP_SIZE; ++y)
+    {
+        for (int x = 0; x < MAP_SIZE; ++x)
+        {
+            if (grid[y][x] != NodeType::UNKNOWN && !reachable[y][x])
+            {
+                Position isolated(x, y);
+                Position closest;
+                int minDist = MAP_SIZE * MAP_SIZE;
+
+                for (int yy = 0; yy < MAP_SIZE; ++yy)
+                {
+                    for (int xx = 0; xx < MAP_SIZE; ++xx)
+                    {
+                        if (reachable[yy][xx])
+                        {
+                            int dist = isolated.manhattanDistance(Position(xx, yy));
+                            if (dist < minDist)
+                            {
+                                minDist = dist;
+                                closest = Position(xx, yy);
+                            }
+                        }
+                    }
+                }
+
+                if (minDist < MAP_SIZE * MAP_SIZE)
+                {
+                    carvePath(isolated, closest);
+                }
+            }
+        }
+    }
+
+    return true;
 }
 
 std::vector<char> Map::getValidMoves() const
