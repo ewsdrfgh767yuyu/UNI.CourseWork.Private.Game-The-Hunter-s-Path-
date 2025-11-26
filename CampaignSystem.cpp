@@ -652,6 +652,16 @@ void CampaignSystem::handleExitEvent(const Event &event)
                 gameMap.generateFixedMap();
                 visitedNodes.clear();
                 currentDifficulty++;
+
+                // Восстанавливаем здоровье всех членов отряда при переходе в новую локацию
+                for (Player *player : playerParty)
+                {
+                    if (player && player->getCurrentHealthPoint() > 0)
+                    {
+                        player->setCurrentHealthPoint(player->getMaxHealthPoint());
+                        cout << player->getName() << " полностью восстановил здоровье!\n";
+                    }
+                }
             }
             else
             {

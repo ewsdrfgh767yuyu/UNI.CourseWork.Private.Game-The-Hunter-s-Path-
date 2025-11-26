@@ -37,4 +37,7 @@ public:
 
     // Создать случайный предмет определенного типа
     static Item createRandomItemOfType(ItemType type);
+
+    // Генерировать строку способностей
+    static std::string generateAbilityString(const std::map<std::string, int>& stats);
 };
