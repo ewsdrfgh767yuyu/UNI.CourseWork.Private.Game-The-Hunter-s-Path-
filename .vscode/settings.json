@@ -14,6 +14,7 @@
         "map": "cpp",
         "random": "cpp",
         "queue": "cpp",
-        "array": "cpp"
+        "array": "cpp",
+        "cstdlib": "cpp"
     }
 }
