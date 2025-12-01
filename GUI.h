@@ -24,6 +24,7 @@ class TextDisplay {
 public:
     TextDisplay(const std::string& text, const sf::Font& font, unsigned int characterSize, const sf::Vector2f& position, sf::Color color = sf::Color::White);
     void draw(sf::RenderWindow& window);
+    void drawWithOffset(sf::RenderWindow& window, float offsetY);
     void setText(const std::string& newText);
     void setPosition(const sf::Vector2f& position);
 
@@ -35,6 +36,7 @@ class Menu {
 public:
     Menu(sf::RenderWindow& window, const sf::Font& font);
     void addButton(const std::string& text, const sf::Vector2f& position, const sf::Vector2f& size, std::function<void()> callback);
+    void addText(const std::string& text, unsigned int characterSize, const sf::Vector2f& position, sf::Color color = sf::Color::White);
     void handleEvent(const sf::Event& event);
     void draw();
     void clear();

@@ -546,7 +546,11 @@ public:
 	string getHealthBarString() const
 	{
 	    int barWidth = 20;
-	    int filled = (m_current_healthpoint * barWidth) / m_max_healthpoint;
+	    int filled = 0;
+	    if (m_max_healthpoint > 0)
+	    {
+	        filled = (m_current_healthpoint * barWidth) / m_max_healthpoint;
+	    }
 	    if (filled < 0) filled = 0;
 	    if (filled > barWidth) filled = barWidth;
 
@@ -839,7 +843,11 @@ public:
 	string getExperienceBarString() const
 	{
 	    int barWidth = 20;
-	    int filled = (m_received_experience * barWidth) / m_required_experience;
+	    int filled = 0;
+	    if (m_required_experience > 0)
+	    {
+	        filled = (m_received_experience * barWidth) / m_required_experience;
+	    }
 	    if (filled < 0) filled = 0;
 	    if (filled > barWidth) filled = barWidth;
 
@@ -863,7 +871,7 @@ public:
 
 	void upLevel()
 	{
-		while (m_received_experience >= m_required_experience)
+		while (m_required_experience > 0 && m_received_experience >= m_required_experience)
 		{
 			std::cout << "[DEBUG] Player " << m_name << " leveling up from " << m_level << " to " << m_level + 1 << "\n";
 			setReceivedExperience(m_received_experience - m_required_experience);

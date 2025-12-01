@@ -1,70 +1,70 @@
-# Техническая документация игры "The Hunter's Path"
+# Technical Documentation of the Game "The Hunter's Path"
 
-## Обзор проекта
+## Project Overview
 
-Игра в жанре Darkest Dungeon с пошаговыми боями, нелинейной навигацией по локациям и элементами rogue-like.
+A game in the genre of Darkest Dungeon with turn-based battles, non-linear location navigation, and rogue-like elements.
 
-## Архитектурные решения
+## Architectural Solutions
 
-### 1. Модульная структура
-Проект разделен на независимые системы для обеспечения:
-- **Тестируемости** - каждая система может тестироваться отдельно
-- **Расширяемости** - легко добавлять новые механики
-- **Поддержки** - четкое разделение ответственности
+### 1. Modular Structure
+The project is divided into independent systems to ensure:
+- **Testability** - each system can be tested separately
+- **Extensibility** - easy addition of new mechanics
+- **Maintainability** - clear responsibility separation
 
-### 2. Наследование сущностей
-Используется иерархия классов:
-- **Entity** - базовая функциональность всех существ
-- **Player** - специализация для игровых персонажей
-- **Enemy** - специализация для врагов
+### 2. Entity Inheritance
+Using a class hierarchy:
+- **Entity** - basic functionality for all creatures
+- **Player** - specialization for playable characters
+- **Enemy** - specialization for enemies
 
-### 3. Компонентный подход
-Каждая система отвечает за свою область:
-- **BattleSystem** - логика боя
-- **LocationSystem** - навигация по миру
-- **EventSystem** - обработка событий
-- **PartySystem** - управление отрядом
+### 3. Component Approach
+Each system is responsible for its area:
+- **BattleSystem** - battle logic
+- **LocationSystem** - world navigation
+- **EventSystem** - event handling
+- **PartySystem** - party management
 
-## Детали реализации
+## Implementation Details
 
-### Система боя (BattleSystem)
+### Battle System (BattleSystem)
 
-#### Механика инициативы
+#### Initiative Mechanics
 ```cpp
-// Расчет веса хода на основе инициативы
+// Calculate turn weight based on initiative
 int turnWeight = entity->getInitiative() / 10;
-// Юнит с инициативой 20: turnWeight = 2 (ходит в 2 раза чаще)
+// Unit with initiative 20: turnWeight = 2 (acts twice as often)
 ```
 
-#### Позиционная система
+#### Positional System
 ```cpp
 class BattlePosition {
-    vector<Entity*> frontLine;    // Первая линия (позиции 0-1)
-    vector<Entity*> backLine;     // Вторая линия (позиции 2-3)
-    vector<Entity*> corpses;      // Трупы на позициях
+    vector<Entity*> frontLine;    // Front line (positions 0-1)
+    vector<Entity*> backLine;     // Back line (positions 2-3)
+    vector<Entity*> corpses;      // Corpses on positions
 };
 
-// Проверка доступности цели
+// Check target availability
 bool canAttackTarget(Entity* attacker, Entity* target) {
     int attackerRange = attacker->getAttackRange();
     int targetPosition = getPosition(target);
-    
-    // Проверка наличия трупов на пути
+
+    // Check for corpses blocking the path
     return isTargetReachable(attackerRange, targetPosition);
 }
 ```
 
-### Система локаций
+### Location System
 
-#### Граф навигации
+#### Navigation Graph
 ```cpp
 struct LocationConnection {
     Location* from;
     Location* to;
-    int travelCost;  // Стоимость перемещения (выносливость/здоровье)
+    int travelCost;  // Travel cost (stamina/health)
 };
 
-// Нелинейные связи между локациями
+// Non-linear connections between locations
 vector<LocationConnection> connections = {
     {FOREST, CAVE, 10},
     {FOREST, DEAD_CITY, 15},
@@ -77,52 +77,52 @@ vector<LocationConnection> connections = {
 };
 ```
 
-### Система событий
+### Event System
 
-#### Детальная механика генерации событий
+#### Detailed Event Generation Mechanics
 
-**Вероятностная система:**
+**Probabilistic System:**
 ```cpp
 struct EventProbability {
     EventType type;
-    float baseProbability;    // Базовая вероятность
-    float levelMultiplier;    // Множитель от уровня отряда
-    int minLevel;            // Минимальный уровень для события
-    int maxLevel;            // Максимальный уровень для события
+    float baseProbability;    // Base probability
+    float levelMultiplier;    // Multiplier from party level
+    int minLevel;            // Minimum level for event
+    int maxLevel;            // Maximum level for event
 };
 
 class EventGenerator {
 private:
     map<LocationType, vector<EventProbability>> locationProbabilities;
     RandomGenerator random;
-    
-    // Корректировка вероятностей на основе уровня отряда
+
+    // Adjust probabilities based on party level
     vector<float> adjustProbabilities(LocationType location, int partyLevel) {
         vector<float> adjusted;
         for (auto& prob : locationProbabilities[location]) {
             if (partyLevel >= prob.minLevel && partyLevel <= prob.maxLevel) {
                 float adjustedProb = prob.baseProbability *
-                                   (1.0 + prob.levelMultiplier * (partyLevel - 1));
+                                    (1.0 + prob.levelMultiplier * (partyLevel - 1));
                 adjusted.push_back(adjustedProb);
             } else {
-                adjusted.push_back(0.0); // Событие недоступно для этого уровня
+                adjusted.push_back(0.0); // Event unavailable for this level
             }
         }
         return adjusted;
     }
-    
+
 public:
     Event* generateEvent(Location* location, int partyLevel) {
         auto probabilities = adjustProbabilities(location->getType(), partyLevel);
         EventType type = weightedRandomSelect(probabilities);
         return createEvent(type, location, partyLevel);
     }
-    
-    // Взвешенный случайный выбор
+
+    // Weighted random selection
     EventType weightedRandomSelect(const vector<float>& probabilities) {
         float total = accumulate(probabilities.begin(), probabilities.end(), 0.0f);
         float randomValue = random.nextFloat(0.0f, total);
-        
+
         float cumulative = 0.0f;
         for (int i = 0; i < probabilities.size(); i++) {
             cumulative += probabilities[i];
@@ -135,106 +135,106 @@ public:
 };
 ```
 
-**Конфигурация вероятностей по локациям:**
+**Probability Configuration by Locations:**
 ```cpp
-// Инициализация вероятностей событий
+// Initialize event probabilities
 void initializeProbabilities() {
     locationProbabilities[FOREST] = {
-        {COMBAT, 0.6, 0.1, 1, 10},     // 60% база, +10% за уровень
-        {TREASURE, 0.2, 0.05, 1, 10},  // 20% база, +5% за уровень
-        {RECRUIT, 0.1, 0.02, 2, 8},    // Только с 2 уровня
+        {COMBAT, 0.6, 0.1, 1, 10},     // 60% base, +10% per level
+        {TREASURE, 0.2, 0.05, 1, 10},  // 20% base, +5% per level
+        {RECRUIT, 0.1, 0.02, 2, 8},    // Only from level 2
         {TRAP, 0.05, 0.01, 1, 10},
-        {REST, 0.05, 0.0, 1, 10}       // Вероятность не растет с уровнем
+        {REST, 0.05, 0.0, 1, 10}       // Probability doesn't grow with level
     };
-    
+
     locationProbabilities[CAVE] = {
-        {COMBAT, 0.7, 0.15, 1, 10},    // Пещеры более опасны
-        {TREASURE, 0.15, 0.08, 1, 10}, // Но награды лучше
+        {COMBAT, 0.7, 0.15, 1, 10},    // Caves are more dangerous
+        {TREASURE, 0.15, 0.08, 1, 10}, // But rewards are better
         {TRAP, 0.1, 0.05, 1, 10},
         {REST, 0.05, 0.0, 1, 10}
     };
-    
+
     locationProbabilities[CASTLE] = {
-        {BOSS, 1.0, 0.0, 3, 10}        // Только босс с 3 уровня
+        {BOSS, 1.0, 0.0, 3, 10}        // Only boss from level 3
     };
 }
 ```
 
-**Динамическая генерация контента событий:**
+**Dynamic Event Content Generation:**
 ```cpp
 Event* createEvent(EventType type, Location* location, int partyLevel) {
     Event* event = new Event();
     event->type = type;
     event->difficultyLevel = calculateDifficulty(partyLevel, location);
-    
+
     switch (type) {
     case COMBAT:
         event->involvedEntities = generateEnemies(event->difficultyLevel, location);
         event->rewards = generateCombatRewards(event->difficultyLevel);
         break;
-        
+
     case TREASURE:
         event->rewards = generateTreasure(event->difficultyLevel);
-        event->choices = {"Взять сокровище", "Оставить", "Осмотреть окружение"};
+        event->choices = {"Take the treasure", "Leave it", "Examine surroundings"};
         break;
-        
+
     case RECRUIT:
         event->involvedEntities = {generateRecruitableHero(partyLevel)};
-        event->choices = {"Принять в отряд", "Отказать", "Обменяться предметами"};
+        event->choices = {"Accept into party", "Refuse", "Exchange items"};
         break;
     }
-    
+
     return event;
 }
 ```
 
-**Система последствий выборов:**
-- Каждый выбор в событии имеет последствия
-- Влияние на отношения между персонажами
-- Изменение вероятностей будущих событий
-- Временные эффекты (баффы/дебаффы)
+**Choice Consequence System:**
+- Each event choice has consequences
+- Influence on character relationships
+- Change in future event probabilities
+- Temporary effects (buffs/debuffs)
 
-## Интерфейсные решения
+## Interface Solutions
 
-### Консольный интерфейс (текущий этап)
-- Текстовое представление состояния игры
-- Командный ввод для управления
-- Пошаговое отображение боя
+### Console Interface (Current Stage)
+- Text representation of game state
+- Command input for control
+- Step-by-step battle display
 
-### Планируемый графический интерфейс
-- SDL2 или аналогичная библиотека
-- Изометрическое или 2D представление
-- Анимации боя и перемещений
+### Planned Graphical Interface
+- SDL2 or similar library
+- Isometric or 2D representation
+- Battle and movement animations
 
-## Алгоритмы и структуры данных
+## Algorithms and Data Structures
 
-### 1. Очередь ходов в бою
+### 1. Battle Turn Queue
 ```cpp
 vector<pair<Entity*, int>> calculateTurnOrder() {
     vector<pair<Entity*, int>> order;
-    
+
     for (Entity* entity : allEntities) {
         int weight = entity->getInitiative() / 10;
         for (int i = 0; i < weight; i++) {
             order.push_back({entity, calculatePriority(entity)});
         }
     }
-    
-    sort(order.begin(), order.end(), 
-         [](auto a, auto b) { return a.second > b.second; });
+
+    sort(order.begin(), order.end(),
+          [](auto a, auto b) { return a.second > b.second; });
     return order;
 }
 ```
 
-### 2. Поиск пути между локациями
+### 2. Path Finding Between Locations
 ```cpp
 vector<Location*> findPath(Location* start, Location* end) {
-    // Алгоритм A* или BFS для нахождения кратчайшего пути
-    // Учитывает стоимость перемещения и доступность локаций
+    // A* or BFS algorithm to find shortest path
+    // Considers travel cost and location accessibility
 }
 ```
 
-### 3. Распределение опыта
+### 3. Experience Distribution
 ```cpp
 void Party::distributeExperience(int totalExp) {
     int expPerMember = totalExp / members.size();
@@ -246,49 +246,49 @@ void Party::distributeExperience(int totalExp) {
 }
 ```
 
-## Ограничения и требования
+## Limitations and Requirements
 
-### Технические ограничения
-- Максимальный размер отряда: 4 персонажа
-- Максимальное количество врагов в бою: 6
-- Количество локаций: 4 основных + связи
-- Глубина инвентаря: ограничена только памятью
+### Technical Limitations
+- Maximum party size: 4 characters
+- Maximum enemies in battle: 6
+- Number of locations: 4 main + connections
+- Inventory depth: limited only by memory
 
-### Требования к производительности
-- Быстрая генерация случайных событий
-- Эффективный расчет очереди ходов
-- Минимальные задержки при отображении боя
+### Performance Requirements
+- Fast random event generation
+- Efficient turn order calculation
+- Minimal delays in battle display
 
-## Рекомендации по разработке
+## Development Recommendations
 
-### 1. Приоритеты реализации
-1. **Базовые системы** - BattleSystem, PartySystem
-2. **Навигация** - LocationSystem, EventSystem  
-3. **Контент** - враги, предметы, события
-4. **Интерфейс** - консольный → графический
+### 1. Implementation Priorities
+1. **Core systems** - BattleSystem, PartySystem
+2. **Navigation** - LocationSystem, EventSystem
+3. **Content** - enemies, items, events
+4. **Interface** - console → graphical
 
-### 2. Тестирование
-- Модульные тесты для каждой системы
-- Интеграционные тесты для взаимодействия систем
-- Тесты баланса боя и генерации событий
+### 2. Testing
+- Unit tests for each system
+- Integration tests for system interactions
+- Balance tests for battle and event generation
 
-### 3. Балансировка
-- Постепенная настройка характеристик врагов
-- Баланс системы инициативы
-- Равномерное распределение событий по локациям
+### 3. Balancing
+- Gradual enemy stat adjustment
+- Initiative system balance
+- Even event distribution across locations
 
-## Будущие расширения
+## Future Expansions
 
-### Возможные улучшения
-1. **Система навыков** - уникальные способности персонажей
-2. **Эффекты статусов** - отравление, ослабление и т.д.
-3. **Погодные условия** - влияние на бой и перемещения
-4. **Диалоговая система** - взаимодействие с NPC
-5. **Система достижений** - отслеживание прогресса
+### Possible Improvements
+1. **Skill system** - unique character abilities
+2. **Status effects** - poison, weakening, etc.
+3. **Weather conditions** - influence on battle and movement
+4. **Dialogue system** - interaction with NPCs
+5. **Achievement system** - progress tracking
 
-### Мета-прогресс (опционально)
-- Перманентные улучшения между забегами
-- Разблокировка новых персонажей
-- Улучшение базовых характеристик
+### Meta-progress (Optional)
+- Permanent improvements between runs
+- Unlocking new characters
+- Improving base stats
 
-Эта архитектура обеспечивает прочную основу для разработки полноценной игры в стиле Darkest Dungeon с возможностью постепенного расширения функциональности.
+This architecture provides a solid foundation for developing a full-fledged game in the style of Darkest Dungeon with the possibility of gradual functionality expansion.

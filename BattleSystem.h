@@ -75,6 +75,7 @@ public:
     vector<pair<Entity *, int>> getAvailableTargetsForCurrent() const;
     vector<pair<Entity *, string>> getAllEntitiesWithStatus() const;
     string getBattleStatus() const;
+    string getTurnOrderString() const;
     const vector<BattlePosition> &getPlayerPositions() const { return playerPositions; }
     const vector<BattlePosition> &getEnemyPositions() const { return enemyPositions; }
     const vector<Entity *> &getTurnOrder() const { return turnOrder; }

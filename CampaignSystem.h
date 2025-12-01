@@ -12,52 +12,57 @@
 #include <iostream>
 #include <limits>
 
-// Типы событий в походовом режиме
+// Event types in campaign mode
 enum class EventType
 {
-    BATTLE,     // Бой
-    TREASURE,   // Находка
-    TEXT_EVENT, // Текстовый ивент с выбором
-    EXIT,       // Выход из локации
-    BOSS_BATTLE // Бой с боссом
+    BATTLE,     // Battle
+    TREASURE,   // Find
+    TEXT_EVENT, // Text event with choice
+    EXIT,       // Exit from location
+    BOSS_BATTLE // Boss battle
 };
 
-// Структура для хранения информации о событии
+// Structure for storing event information
 struct CampaignEvent
 {
     EventType type;
     std::string description;
-    std::vector<std::string> choices; // Варианты выбора для текстовых ивентов
-    std::vector<EventType> outcomes;  // Результаты выбора
-    Item *reward = nullptr;           // Награда за находку
-    int difficultyModifier = 0;       // Модификатор сложности для боя
+    std::vector<std::string> choices; // Choice options for text events
+    std::vector<EventType> outcomes;  // Choice outcomes
+    Item *reward = nullptr;           // Reward for find
+    int difficultyModifier = 0;       // Difficulty modifier for battle
 };
 
-// Структура для хранения информации о локации
+// Structure for storing location information
 struct Location
 {
     LocationType type;
     std::string name;
     std::string description;
-    std::vector<LocationType> connections; // Связанные локации
-    std::vector<CampaignEvent> events;             // События в локации
-    bool isFinalBossLocation = false;      // Флаг финального босса
+    std::vector<LocationType> connections; // Connected locations
+    std::vector<CampaignEvent> events;             // Events in location
+    bool isFinalBossLocation = false;      // Final boss flag
 };
 
-// Класс для управления походовым режимом
+// Class for managing campaign mode
 class CampaignSystem
 {
 private:
-    std::vector<Player *> playerParty;          // Отряд игрока
-    Location currentLocation;                   // Текущая локация
-    std::map<LocationType, Location> locations; // Все локации
-    Map gameMap;                                // Карта игры
-    int currentDifficulty = 0;                  // Текущая сложность
-    bool gameCompleted = false;                 // Флаг завершения игры
-    std::map<Position, bool> visitedNodes;      // Посещенные узлы на карте
-    std::vector<Item> partyInventory;           // Общий инвентарь отряда
+    std::vector<Player *> playerParty;          // Player party
+    Location currentLocation;                   // Current location
+    std::map<LocationType, Location> locations; // All locations
+    Map gameMap;                                // Game map
+    int currentDifficulty = 0;                  // Current difficulty
+    bool gameCompleted = false;                 // Game completion flag
+    std::map<Position, bool> visitedNodes;      // Visited nodes on map
+    std::vector<Item> partyInventory;           // Shared party inventory
+    Item *pendingTreasure = nullptr;             // Pending treasure for GUI
+    CampaignEvent pendingEvent;                 // Pending event for GUI
+    CampaignEvent pendingExit;                  // Pending exit for GUI
+    bool pendingBattle = false;                 // Pending battle for GUI
+    BattleSystem *currentBattle = nullptr;      // Current battle system for GUI
 
-    // Вспомогательные методы
+    // Helper methods
     void initializeLocations();
     CampaignEvent generateRandomEvent();
     void handleBattleEvent(const CampaignEvent &event);
@@ -79,22 +84,41 @@ public:
     CampaignSystem();
     ~CampaignSystem();
 
-    // Основные методы
+    // Main methods
     void startCampaign();
     void initializeCampaign();
     void createPlayerParty();
     void createPlayerPartyFromPreset(int presetIndex);
     void runCampaignLoop();
     bool isGameCompleted() const { return gameCompleted; }
+    void setGameCompleted(bool completed) { gameCompleted = completed; }
 
-    // Методы для получения информации
+    // Methods for getting information
     const std::vector<Player *> &getPlayerParty() const { return playerParty; }
     const std::vector<Item> &getPartyInventory() const { return partyInventory; }
     const Location &getCurrentLocation() const { return currentLocation; }
+    const Location &getLocation(LocationType type) const { return locations.at(type); }
     int getCurrentDifficulty() const { return currentDifficulty; }
     const Map &getGameMap() const { return gameMap; }
     Map &getGameMapMutable() { return gameMap; }
     const std::map<Position, bool> &getVisitedNodes() const { return visitedNodes; }
     void markNodeVisited(const Position &pos) { visitedNodes[pos] = true; }
     void handleNodeEventPublic(NodeType nodeType) { handleNodeEvent(nodeType); }
+
+    // Methods for GUI events
+    bool hasPendingTreasure() const { return pendingTreasure != nullptr; }
+    bool hasPendingEvent() const { return !pendingEvent.description.empty(); }
+    bool hasPendingExit() const { return !pendingExit.description.empty(); }
+    bool hasPendingBattle() const { return pendingBattle; }
+    Item *getPendingTreasure() { return pendingTreasure; }
+    const CampaignEvent &getPendingEvent() const { return pendingEvent; }
+    const CampaignEvent &getPendingExit() const { return pendingExit; }
+    void clearPendingTreasure() { delete pendingTreasure; pendingTreasure = nullptr; }
+    void takePendingTreasure() { if (pendingTreasure) { partyInventory.push_back(*pendingTreasure); } clearPendingTreasure(); }
+    void clearPendingEvent() { pendingEvent = CampaignEvent(); }
+    void clearPendingExit() { pendingExit = CampaignEvent(); }
+    void clearPendingBattle() { pendingBattle = false; if (currentBattle) { delete currentBattle; currentBattle = nullptr; } }
+    void handleEventChoice(int choiceIndex);
+    void handleExitChoice(int choiceIndex);
+    BattleSystem *getCurrentBattle() { return currentBattle; }
 };

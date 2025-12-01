@@ -1,6 +1,7 @@
 #include "CampaignSystem.h"
 #include "utils.h"
 #include "ItemTemplates.h"
+#include "EnemyTemplates.h"
 #include <iostream>
 #include <algorithm>
 #include <ctime>
@@ -18,6 +19,10 @@ CampaignSystem::~CampaignSystem()
 {
     cout << "[DEBUG] CampaignSystem destructor called\n";
     cleanupParty();
+    if (pendingTreasure) {
+        delete pendingTreasure;
+        pendingTreasure = nullptr;
+    }
     cout << "[DEBUG] CampaignSystem destructor completed\n";
 }
 
@@ -102,7 +107,7 @@ void CampaignSystem::createPlayerParty()
 {
     cout << "\n=== PARTY BUILD SELECTION ===\n";
 
-    // Получаем доступные пресеты
+    // Get available presets
     const vector<PartyPreset> &presets = HeroFactory::getPartyPresets();
 
     cout << "Available party builds:\n";
@@ -123,10 +128,10 @@ void CampaignSystem::createPlayerParty()
 
     int presetChoice = getSafeIntInput("Choose build (1-" + to_string(presets.size()) + "): ", 1, static_cast<int>(presets.size()));
 
-    // Создаем отряд по выбранному пресету
+    // Create party from selected preset
     playerParty = HeroFactory::createPartyFromPreset(presetChoice - 1);
 
-    // Выводим информацию о созданном отряде
+    // Display information about created party
     cout << "\nCreated party:\n";
     for (Player *hero : playerParty)
     {
@@ -140,7 +145,7 @@ void CampaignSystem::createPlayerParty()
 
 void CampaignSystem::createPlayerPartyFromPreset(int presetIndex)
 {
-    // Создаем отряд по выбранному пресету без консольного вывода
+    // Create party from selected preset without console output
     playerParty = HeroFactory::createPartyFromPreset(presetIndex);
 }
 
@@ -148,22 +153,22 @@ void CampaignSystem::runCampaignLoop()
 {
     while (!gameCompleted && !playerParty.empty())
     {
-        // Очистка консоли перед каждым новым сообщением
+        // Clear console before each new message
         system("cls");
 
         displayLocationInfo();
 
-        // Генерируем случайное событие (предотвращаем бой на первом событии)
+        // Generate random event (prevent battle on first event)
         CampaignEvent currentEvent = generateRandomEvent();
         if (currentDifficulty == 0 && currentEvent.type == EventType::BATTLE)
         {
-            // Если первое событие - бой, заменяем на текст или сокровище
+            // If first event is battle, replace with text or treasure
             currentEvent.type = EventType::TREASURE;
-            currentEvent.description = "Вы нашли скрытое сокровище!";
-            currentEvent.reward = new Item("Золотая монета", "Ценная монета", ItemType::CONSUMABLE, EquipmentSlot::NONE, {{"health_restore", 10}});
+            currentEvent.description = "You found a hidden treasure!";
+            currentEvent.reward = new Item("Gold coin", "Valuable coin", ItemType::CONSUMABLE, EquipmentSlot::NONE, {{"health_restore", 10}});
         }
 
-        // Обрабатываем событие
+        // Handle event
         switch (currentEvent.type)
         {
         case EventType::BATTLE:
@@ -183,7 +188,7 @@ void CampaignSystem::runCampaignLoop()
             break;
         }
 
-        // Проверяем, жив ли отряд
+        // Check if party is alive
         bool partyAlive = false;
         for (Player *player : playerParty)
         {
@@ -196,11 +201,11 @@ void CampaignSystem::runCampaignLoop()
 
         if (!partyAlive)
         {
-            cout << "\n[SKULL] Ваш отряд пал в бою! Игра окончена.\n";
+            cout << "\n[SKULL] Your party has fallen in battle! Game over.\n";
             break;
         }
 
-        // Увеличиваем сложность после каждого события
+        // Increase difficulty after each event
         currentDifficulty++;
     }
 }
@@ -209,44 +214,44 @@ CampaignEvent CampaignSystem::generateRandomEvent()
 {
     CampaignEvent event;
 
-    // Распределение вероятностей событий
+    // Event probability distribution
     int randomValue = rand() % 100;
 
     if (currentLocation.isFinalBossLocation)
     {
-        // В замке всегда бой с боссом
+        // In castle always boss battle
         event.type = EventType::BOSS_BATTLE;
-        event.description = "Вы столкнулись с финальным боссом!";
+        event.description = "You encountered the final boss!";
     }
     else if (randomValue < 40)
     {
-        // 40% шанс на бой
+        // 40% chance for battle
         event.type = EventType::BATTLE;
-        event.description = "Вы наткнулись на группу врагов!";
+        event.description = "You stumbled upon a group of enemies!";
         event.difficultyModifier = currentDifficulty;
     }
     else if (randomValue < 70)
     {
-        // 30% шанс на находку
+        // 30% chance for find
         event.type = EventType::TREASURE;
-        event.description = "Вы нашли скрытое сокровище!";
-        // Генерируем случайный предмет
+        event.description = "You found a hidden treasure!";
+        // Generate random item
         Item randomItem = ItemFactory::createRandomItem();
         event.reward = new Item(randomItem);
     }
     else if (randomValue < 90)
     {
-        // 20% шанс на текстовый ивент
+        // 20% chance for text event
         event.type = EventType::TEXT_EVENT;
-        event.description = "Вы обнаружили странное явление...";
-        event.choices = {"Исследовать", "Игнорировать", "Атаковать"};
+        event.description = "You discovered a strange phenomenon...";
+        event.choices = {"Investigate", "Ignore", "Attack"};
         event.outcomes = {EventType::TREASURE, EventType::BATTLE, EventType::BATTLE};
     }
     else
     {
-        // 10% шанс на выход
+        // 10% chance for exit
         event.type = EventType::EXIT;
-        event.description = "Вы нашли выход из этой локации.";
+        event.description = "You found the exit from this location.";
     }
 
     return event;
@@ -254,374 +259,44 @@ CampaignEvent CampaignSystem::generateRandomEvent()
 
 void CampaignSystem::handleBattleEvent(const CampaignEvent &event)
 {
-    cout << "\n=== BATTLE ===\n";
-    cout << event.description << "\n";
-
-    // Создаем врагов для текущей локации
+    // Create enemies based on difficulty
     vector<Entity *> enemies;
-    int enemyCount = 1 + (rand() % 3); // 1-3 врага
-
+    int enemyCount = 1 + (rand() % 4); // 1-4 enemies
     for (int i = 0; i < enemyCount; ++i)
     {
         Enemy *enemy = EnemyFactory::createRandomEnemy(currentLocation.type, event.difficultyModifier);
         enemies.push_back(enemy);
-        cout << "Appeared " << enemy->getName() << "!\n";
     }
 
-    // Создаем систему боя
-    BattleSystem battleSystem;
-
-    // Начинаем бой
-    // Конвертируем Player* в Entity*
+    // Convert Player* to Entity*
     vector<Entity *> playerEntities;
     for (Player *player : playerParty)
     {
         playerEntities.push_back(player);
     }
-    battleSystem.startBattle(playerEntities, enemies);
 
-    // Основной цикл боя
-    bool playerWon = false; // Флаг победы игрока
-    while (battleSystem.isBattleActive())
-    {
-        cout << "\n"
-             << battleSystem.getBattleStatus() << "\n";
-        battleSystem.printBattlefield();
+    // Create battle system
+    currentBattle = new BattleSystem();
+    currentBattle->startBattle(playerEntities, enemies);
 
-        Entity *currentEntity = battleSystem.getCurrentTurnEntity();
-        if (!currentEntity)
-            break;
-
-        // Пропускаем мертвых сущностей
-        if (currentEntity->getCurrentHealthPoint() <= 0)
-        {
-            battleSystem.nextTurn();
-            continue;
-        }
-
-        // Определяем, игрок это или ИИ
-        bool isPlayerEntity = false;
-        for (Player *player : playerParty)
-        {
-            if (player == currentEntity)
-            {
-                isPlayerEntity = true;
-                break;
-            }
-        }
-
-        // Ход персонажа - повторяем пока есть стамина
-        while (currentEntity->getCurrentStamina() > 0 && battleSystem.isBattleActive())
-        {
-            if (isPlayerEntity)
-            {
-                // Player turn (simplified version)
-                cout << "\n=== TURN " << currentEntity->getName() << " ===\n";
-                cout << "Stamina left: " << currentEntity->getCurrentStamina() << "/" << currentEntity->getMaxStamina() << "\n";
-                // Show available actions
-                cout << "Choose action:\n";
-                cout << "1. Attack\n";
-                cout << "2. Use ability\n";
-                cout << "3. Skip turn\n";
-                int actionChoice = getSafeIntInput("Choose (1-3): ", 1, 3);
-
-                if (actionChoice == 1)
-                {
-                    // Attack
-                    vector<pair<Entity *, int>> targets = battleSystem.getAvailableTargetsForCurrent();
-                    if (!targets.empty())
-                    {
-                        cout << "Available targets:\n";
-                        for (int i = 0; i < targets.size(); ++i)
-                        {
-                            cout << i + 1 << ". " << targets[i].first->getName() << " (HP: " << targets[i].first->getCurrentHealthPoint() << ", Pos: " << targets[i].second << ")\n";
-                        }
-                        int targetChoice;
-                        cout << "Choose target (1-" << targets.size() << "): ";
-                        cin >> targetChoice;
-                        cin.ignore();
-                        if (targetChoice > 0 && targetChoice <= static_cast<int>(targets.size()))
-                        {
-                            battleSystem.attack(currentEntity, targets[targetChoice - 1].first);
-                        }
-                        else
-                        {
-                            cout << "Invalid target choice!\n";
-                            continue;
-                        }
-                    }
-                    else
-                    {
-                        cout << "No available targets for attack!\n";
-                        continue;
-                    }
-                }
-                else if (actionChoice == 2)
-                {
-                    // Использование способности
-                    Player *player = static_cast<Player *>(currentEntity);
-                    const vector<AbilityType> &abilities = player->getAvailableAbilities();
-
-                    if (!abilities.empty())
-                    {
-                        cout << "Доступные способности:\n";
-                        for (int i = 0; i < abilities.size(); ++i)
-                        {
-                            const AbilityInfo &info = HeroFactory::getAbilityInfo(abilities[i]);
-                            cout << i + 1 << ". " << info.name << " - " << info.description << "\n";
-                            cout << "   Эффект: " << info.effect << "\n";
-                        }
-
-                        int abilityChoice;
-                        cout << "Выберите способность (1-" << abilities.size() << "): ";
-                        cin >> abilityChoice;
-                        cin.ignore();
-
-                        if (abilityChoice > 0 && abilityChoice <= static_cast<int>(abilities.size()))
-                        {
-                            AbilityType chosenAbility = abilities[abilityChoice - 1];
-                            if (!battleSystem.useAbility(currentEntity, chosenAbility))
-                            {
-                                cout << "Не удалось использовать способность!\n";
-                            }
-                            else
-                            {
-                                // Показываем активные эффекты после использования способности
-                                const vector<Effect> &effects = currentEntity->getActiveEffects();
-                                if (!effects.empty())
-                                {
-                                    cout << "\nАктивные эффекты " << currentEntity->getName() << ":\n";
-                                    for (const auto &effect : effects)
-                                    {
-                                        cout << "- " << effect.name << " (" << effect.duration << " ходов";
-                                        if (effect.value != 0)
-                                        {
-                                            string sign = (effect.value > 0) ? "+" : "";
-                                            cout << ", " << sign << effect.value;
-                                        }
-                                        cout << ")\n";
-                                    }
-                                }
-                            }
-                        }
-                        else
-                        {
-                            cout << "Неверный выбор способности!\n";
-                            continue;
-                        }
-                    }
-                    else
-                    {
-                        cout << "Нет доступных способностей!\n";
-                        continue;
-                    }
-                }
-                else if (actionChoice == 3)
-                {
-                    // Skip turn
-                    cout << currentEntity->getName() << " skips turn.\n";
-                    currentEntity->setCurrentStamina(0); // End turn
-                }
-                else
-                {
-                    cout << "Invalid action choice!\n";
-                    continue;
-                }
-            }
-            else
-            {
-                // AI turn (random attack)
-                vector<pair<Entity *, int>> targets = battleSystem.getAvailableTargetsForCurrent();
-                if (!targets.empty())
-                {
-                    int targetIndex = rand() % targets.size();
-                    battleSystem.attack(currentEntity, targets[targetIndex].first);
-                }
-                else
-                {
-                    // No targets, skip turn
-                    break;
-                }
-            }
-
-            // Проверяем, не закончен ли бой после атаки
-            if (!battleSystem.isBattleActive())
-            {
-                break;
-            }
-
-            cout << "\nНажмите Enter для продолжения...";
-            cin.get();
-        }
-
-        // Проверяем, закончен ли бой
-        if (battleSystem.isPlayerVictory())
-        {
-            playerWon = true;
-            cout << "[DEBUG] endBattle called from handleBattleCampaignEvent victory/defeat check\n";
-            battleSystem.endBattle();
-            break;
-        }
-        else if (battleSystem.isPlayerDefeat())
-        {
-            playerWon = false;
-            cout << "[DEBUG] endBattle called from handleBattleCampaignEvent victory/defeat check\n";
-            battleSystem.endBattle();
-            break;
-        }
-
-        // Переходим к следующему персонажу
-        battleSystem.nextTurn();
-    }
-
-    // Собираем мертвых игроков для удаления после завершения боя
-    vector<Player *> deadPlayers;
-
-    // Проверяем результат боя
-    if (playerWon)
-    {
-        cout << "\n[PARTY] VICTORY! You have successfully defeated the enemies!\n";
-
-        for (auto it = playerParty.begin(); it != playerParty.end();)
-        {
-            if (*it && (*it)->getCurrentHealthPoint() <= 0)
-            {
-                cout << (*it)->getName() << " пал в бою и покидает отряд!\n";
-                deadPlayers.push_back(*it);
-                it = playerParty.erase(it);
-            }
-            else
-            {
-                ++it;
-            }
-        }
-
-        // Начисляем опыт всем оставшимся игрокам
-        int totalExp = 0;
-        for (Entity *enemy : enemies)
-        {
-            Enemy *e = static_cast<Enemy *>(enemy);
-            totalExp += e->getExperienceValue();
-        }
-
-        int expPerPlayer = static_cast<int>(totalExp) / static_cast<int>(playerParty.size());
-        for (Player *player : playerParty)
-        {
-            if (player->getCurrentHealthPoint() > 0)
-            {
-                player->setReceivedExperience(player->getReceivedExperience() + expPerPlayer);
-                player->upLevel();
-                cout << player->getName() << " получает " << expPerPlayer << " опыта!\n";
-            }
-        }
-
-        cout << "\nPress Enter to return to map mode...";
-        cin.get();
-    }
-    else
-    {
-        cout << "\n[SKULL] DEFEAT! Your party has fallen in battle!\n";
-
-        // Удаляем мертвых игроков из отряда
-        for (auto it = playerParty.begin(); it != playerParty.end();)
-        {
-            if (*it && (*it)->getCurrentHealthPoint() <= 0)
-            {
-                cout << (*it)->getName() << " пал в бою и покидает отряд!\n";
-                deadPlayers.push_back(*it);
-                it = playerParty.erase(it);
-            }
-            else
-            {
-                ++it;
-            }
-        }
-    }
-
-    // Удаляем мертвых игроков после завершения боя
-    for (Player *deadPlayer : deadPlayers)
-    {
-        delete deadPlayer;
-    }
-
-    // Удаляем врагов после боя
-    for (Entity *enemy : enemies)
-    {
-        delete enemy;
-    }
-    enemies.clear();
-    cout << "[DEBUG] Enemies deleted and vector cleared\n";
+    // Set pending for GUI
+    pendingBattle = true;
 }
 
 void CampaignSystem::handleTreasureEvent(const CampaignEvent &event)
 {
-    cout << "\n=== TREASURE ===\n";
-    cout << event.description << "\n";
-
     if (event.reward)
     {
-        cout << "You found: " << event.reward->getName() << "\n";
-        // Добавить предмет в общий инвентарь отряда
-        partyInventory.push_back(*event.reward);
-        cout << "[DEBUG] Added item to partyInventory, size: " << partyInventory.size() << "\n";
-        cout << "Item added to party inventory.\n";
+        // Set pending for GUI - item will be added only if player chooses to take it
+        pendingTreasure = new Item(*event.reward);
         delete event.reward;
     }
-    else
-    {
-        cout << "Unfortunately, the treasure was empty.\n";
-    }
-
-    // Предложить управление инвентарем
-    if (!playerParty.empty())
-    {
-        manageInventory();
-    }
-
-    cout << "\nPress Enter to continue...";
-    cin.get();
 }
 
 void CampaignSystem::handleTextEvent(const CampaignEvent &event)
 {
-    cout << "\n=== CampaignEvent ===\n";
-    cout << event.description << "\n";
-
-    if (!event.choices.empty())
-    {
-        cout << "Action options:\n";
-        for (int i = 0; i < event.choices.size(); ++i)
-        {
-            cout << i + 1 << ". " << event.choices[i] << "\n";
-        }
-
-        int choice = getSafeIntInput("Choose action (1-" + to_string(event.choices.size()) + "): ", 1, static_cast<int>(event.choices.size()));
-
-        if (choice > 0 && choice <= static_cast<int>(event.choices.size()))
-        {
-            EventType outcome = event.outcomes[choice - 1];
-
-            // Обрабатываем результат выбора
-            switch (outcome)
-            {
-            case EventType::BATTLE:
-                handleBattleEvent(CampaignEvent{EventType::BATTLE, "Your choice led to a battle!", {}, {}, nullptr, currentDifficulty});
-                break;
-            case EventType::TREASURE:
-            {
-                Item randomAccessory = ItemFactory::createRandomItemOfType(ItemType::ACCESSORY);
-                handleTreasureEvent(CampaignEvent{EventType::TREASURE, "Your choice brought a reward!", {}, {}, new Item(randomAccessory), 0});
-                break;
-            }
-            default:
-                cout << "Your choice did not bring noticeable results.\n";
-                break;
-            }
-        }
-    }
-
-    cout << "\nPress Enter to continue...";
-    cin.get();
+    // Set pending for GUI
+    pendingEvent = event;
 }
 
 void CampaignSystem::handleExitEvent(const CampaignEvent &event)
@@ -693,9 +368,6 @@ void CampaignSystem::handleExitEvent(const CampaignEvent &event)
 
 void CampaignSystem::handleBossBattleEvent(const CampaignEvent &event)
 {
-    cout << "\n=== FINAL BATTLE ===\n";
-    cout << "You have encountered the LORD OF DARKNESS - the final boss of the game!\n";
-
     // Create the final boss
     vector<Entity *> bossParty;
     Enemy *finalBoss = new Enemy("Lord of Darkness", 300, 25, 10, 8, 3, 3, 15, 2, AbilityType::LIFE_STEAL, 200, 5, "final_boss", 0.1);
@@ -707,275 +379,19 @@ void CampaignSystem::handleBossBattleEvent(const CampaignEvent &event)
     bossParty.push_back(minion1);
     bossParty.push_back(minion2);
 
-    BattleSystem battleSystem;
-    // Конвертируем Player* в Entity*
+    // Convert Player* to Entity*
     vector<Entity *> playerEntities;
     for (Player *player : playerParty)
     {
         playerEntities.push_back(player);
     }
-    battleSystem.startBattle(playerEntities, bossParty);
 
-    // Бой с боссом
-    while (battleSystem.isBattleActive())
-    {
-        cout << "\n"
-             << battleSystem.getBattleStatus() << "\n";
-        battleSystem.printBattlefield();
+    // Create battle system
+    currentBattle = new BattleSystem();
+    currentBattle->startBattle(playerEntities, bossParty);
 
-        Entity *currentEntity = battleSystem.getCurrentTurnEntity();
-        if (!currentEntity)
-            break;
-
-        // Определяем, игрок это или ИИ
-        bool isPlayerEntity = false;
-        for (Player *player : playerParty)
-        {
-            if (player == currentEntity)
-            {
-                isPlayerEntity = true;
-                break;
-            }
-        }
-
-        // Ход персонажа - повторяем пока есть стамина
-        while (currentEntity->getCurrentStamina() > 0 && battleSystem.isBattleActive())
-        {
-            if (isPlayerEntity)
-            {
-                // Ход игрока
-                cout << "\n=== ХОД " << currentEntity->getName() << " ===\n";
-                cout << "Осталось стамины: " << currentEntity->getCurrentStamina() << "/" << currentEntity->getMaxStamina() << "\n";
-
-                // Показываем доступные действия
-                cout << "Выберите действие:\n";
-                cout << "1. Атаковать\n";
-                cout << "2. Использовать способность\n";
-                cout << "3. Пропустить ход\n";
-
-                int actionChoice = getSafeIntInput("Выберите (1-3): ", 1, 3);
-
-                if (actionChoice == 1)
-                {
-                    // Атака
-                    vector<pair<Entity *, int>> targets = battleSystem.getAvailableTargetsForCurrent();
-
-                    if (!targets.empty())
-                    {
-                        cout << "Доступные цели:\n";
-                        for (int i = 0; i < targets.size(); ++i)
-                        {
-                            cout << i + 1 << ". " << targets[i].first->getName() << " (HP: " << targets[i].first->getCurrentHealthPoint() << ")\n";
-                        }
-
-                        int targetChoice = getSafeIntInput("Выберите цель (1-" + to_string(targets.size()) + "): ", 1, static_cast<int>(targets.size()));
-
-                        if (targetChoice > 0 && targetChoice <= static_cast<int>(targets.size()))
-                        {
-                            battleSystem.attack(currentEntity, targets[targetChoice - 1].first);
-                        }
-                        else
-                        {
-                            cout << "Неверный выбор цели!\n";
-                            continue;
-                        }
-                    }
-                    else
-                    {
-                        cout << "Нет доступных целей для атаки!\n";
-                        continue;
-                    }
-                }
-                else if (actionChoice == 2)
-                {
-                    // Использование способности
-                    Player *player = static_cast<Player *>(currentEntity);
-                    const vector<AbilityType> &abilities = player->getAvailableAbilities();
-
-                    if (!abilities.empty())
-                    {
-                        cout << "Доступные способности:\n";
-                        for (int i = 0; i < abilities.size(); ++i)
-                        {
-                            const AbilityInfo &info = HeroFactory::getAbilityInfo(abilities[i]);
-                            cout << i + 1 << ". " << info.name << " - " << info.description << "\n";
-                            cout << "   Эффект: " << info.effect << "\n";
-                        }
-
-                        int abilityChoice = getSafeIntInput("Выберите способность (1-" + to_string(abilities.size()) + "): ", 1, static_cast<int>(abilities.size()));
-
-                        if (abilityChoice > 0 && abilityChoice <= static_cast<int>(abilities.size()))
-                        {
-                            AbilityType chosenAbility = abilities[abilityChoice - 1];
-                            if (!battleSystem.useAbility(currentEntity, chosenAbility))
-                            {
-                                cout << "Не удалось использовать способность!\n";
-                            }
-                            else
-                            {
-                                // Показываем активные эффекты после использования способности
-                                const vector<Effect> &effects = currentEntity->getActiveEffects();
-                                if (!effects.empty())
-                                {
-                                    cout << "\nАктивные эффекты " << currentEntity->getName() << ":\n";
-                                    for (const auto &effect : effects)
-                                    {
-                                        cout << "- " << effect.name << " (" << effect.duration << " ходов";
-                                        if (effect.value != 0)
-                                        {
-                                            string sign = (effect.value > 0) ? "+" : "";
-                                            string statName;
-                                            switch (effect.type)
-                                            {
-                                            case EffectType::BUFF_DAMAGE:
-                                                statName = "урон";
-                                                break;
-                                            case EffectType::BUFF_DEFENSE:
-                                                statName = "защита";
-                                                break;
-                                            case EffectType::BUFF_INITIATIVE:
-                                                statName = "инициатива";
-                                                break;
-                                            case EffectType::DEBUFF_DAMAGE:
-                                                statName = "урон";
-                                                break;
-                                            case EffectType::DEBUFF_DEFENSE:
-                                                statName = "защита";
-                                                break;
-                                            case EffectType::DEBUFF_INITIATIVE:
-                                                statName = "инициатива";
-                                                break;
-                                            case EffectType::POISON_DAMAGE:
-                                                statName = "урон от яда";
-                                                break;
-                                            case EffectType::REGENERATION:
-                                                statName = "регенерация";
-                                                break;
-                                            default:
-                                                statName = "стат";
-                                                break;
-                                            }
-                                            cout << ", " << statName << " " << sign << effect.value;
-                                        }
-                                        cout << ")\n";
-                                    }
-                                }
-                            }
-                        }
-                        else
-                        {
-                            cout << "Неверный выбор способности!\n";
-                            continue;
-                        }
-                    }
-                    else
-                    {
-                        cout << "Нет доступных способностей!\n";
-                        continue;
-                    }
-                }
-                else if (actionChoice == 3)
-                {
-                    // Пропустить ход
-                    cout << currentEntity->getName() << " пропускает ход.\n";
-                    currentEntity->setCurrentStamina(0); // Завершить ход
-                }
-                else
-                {
-                    cout << "Неверный выбор действия!\n";
-                    continue;
-                }
-            }
-            else
-            {
-                // Ход ИИ (случайная атака)
-                vector<pair<Entity *, int>> targets = battleSystem.getAvailableTargetsForCurrent();
-                if (!targets.empty())
-                {
-                    int targetIndex = rand() % targets.size();
-                    battleSystem.attack(currentEntity, targets[targetIndex].first);
-                    cout << currentEntity->getName() << " атакует " << targets[targetIndex].first->getName() << "!\n";
-                }
-                else
-                {
-                    // Нет целей, пропускаем ход
-                    break;
-                }
-            }
-
-            // Проверяем, не закончен ли бой после атаки
-            if (!battleSystem.isBattleActive())
-            {
-                break;
-            }
-
-            cout << "\nНажмите Enter для продолжения...";
-            cin.get();
-        }
-
-        // Проверяем, закончен ли бой
-        if (battleSystem.isPlayerVictory() || battleSystem.isPlayerDefeat())
-        {
-            battleSystem.endBattle();
-            break;
-        }
-
-        // Переходим к следующему персонажу
-        battleSystem.nextTurn();
-    }
-
-    if (battleSystem.isPlayerVictory())
-    {
-        cout << "\n[VICTORY] ПОБЕДА! Вы победили Властелина Тьмы и спасли мир!\n";
-
-        // Удаляем мертвых игроков из отряда
-        for (auto it = playerParty.begin(); it != playerParty.end();)
-        {
-            if (*it && (*it)->getCurrentHealthPoint() <= 0)
-            {
-                cout << (*it)->getName() << " пал в бою и покидает отряд!\n";
-                delete *it;
-                it = playerParty.erase(it);
-            }
-            else
-            {
-                ++it;
-            }
-        }
-
-        // Начисляем опыт всем оставшимся игрокам
-        int totalExp = 0;
-        for (Entity *enemy : bossParty)
-        {
-            Enemy *e = static_cast<Enemy *>(enemy);
-            totalExp += e->getExperienceValue();
-        }
-
-        int expPerPlayer = static_cast<int>(totalExp) / static_cast<int>(playerParty.size());
-        for (Player *player : playerParty)
-        {
-            if (player->getCurrentHealthPoint() > 0)
-            {
-                player->setReceivedExperience(player->getReceivedExperience() + expPerPlayer);
-                player->upLevel();
-                cout << player->getName() << " получает " << expPerPlayer << " опыта!\n";
-            }
-        }
-
-        gameCompleted = true;
-    }
-    else
-    {
-        cout << "\n[DEFEAT] Поражение... Властелин Тьмы победил.\n";
-    }
-
-    battleSystem.endBattle();
-
-    // Освобождаем память
-    for (Entity *enemy : bossParty)
-    {
-        delete enemy;
-    }
+    // Set pending for GUI
+    pendingBattle = true;
 }
 
 void CampaignSystem::displayLocationInfo()
@@ -991,7 +407,7 @@ void CampaignSystem::displayAvailableConnections()
 {
     if (!currentLocation.connections.empty())
     {
-        cout << "\nДоступные переходы:\n";
+        cout << "\nAvailable transitions:\n";
         for (LocationType locType : currentLocation.connections)
         {
             Location loc = locations[locType];
@@ -1006,7 +422,7 @@ bool CampaignSystem::moveToLocation(LocationType targetLocation)
     if (it != locations.end())
     {
         currentLocation = it->second;
-        cout << "Вы переместились в " << currentLocation.name << ".\n";
+        cout << "You have moved to " << currentLocation.name << ".\n";
         return true;
     }
     return false;
@@ -1077,7 +493,7 @@ void CampaignSystem::runMapMode()
 
         if (!partyAlive)
         {
-            cout << "\n[SKULL] Ваш отряд пал в бою! Игра окончена.\n";
+            cout << "\n[SKULL] Your party has fallen in battle! Game over.\n";
             cout << "[DEBUG] Breaking from runMapMode loop\n";
             break;
         }
@@ -1086,7 +502,7 @@ void CampaignSystem::runMapMode()
 
 char CampaignSystem::getPlayerMovementInput()
 {
-    cout << "Введите направление движения (w/a/s/d): ";
+    cout << "Enter movement direction (w/a/s/d): ";
     string input;
     while (true)
     {
@@ -1099,7 +515,7 @@ char CampaignSystem::getPlayerMovementInput()
                 return move;
             }
         }
-        cout << "Неверный ввод. Используйте w/a/s/d: ";
+        cout << "Invalid input. Use w/a/s/d: ";
     }
 }
 
@@ -1112,16 +528,16 @@ void CampaignSystem::displayMap()
 
     gameMap.printMap();
 
-    cout << "\nУсловные обозначения:\n";
-    cout << "@ - Вы (игрок)\n";
-    cout << "I - Вход (старт)\n";
-    cout << "B - Бой\n";
-    cout << "S - Событие\n";
-    cout << "P - Предмет (сокровище)\n";
-    cout << "V - Выход\n";
-    cout << ". - Пустая клетка\n";
-    cout << "? - Непосещенная клетка в радиусе видимости\n";
-    cout << "  - Клетка вне радиуса видимости\n";
+    cout << "\nLegend:\n";
+    cout << "@ - You (player)\n";
+    cout << "I - Entrance (start)\n";
+    cout << "B - Battle\n";
+    cout << "S - Event\n";
+    cout << "P - Item (treasure)\n";
+    cout << "V - Exit\n";
+    cout << ". - Empty cell\n";
+    cout << "? - Unvisited cell in visibility radius\n";
+    cout << "  - Cell outside visibility radius\n";
 }
 
 void CampaignSystem::handleNodeEvent(NodeType nodeType)
@@ -1132,100 +548,108 @@ void CampaignSystem::handleNodeEvent(NodeType nodeType)
     {
         if (currentLocation.type == LocationType::CASTLE)
         {
-            CampaignEvent bossEvent{EventType::BOSS_BATTLE, "Вы столкнулись с финальным боссом!"};
+            CampaignEvent bossEvent{EventType::BOSS_BATTLE, "You have encountered the final boss!"};
             handleBossBattleEvent(bossEvent);
         }
         else
         {
-            CampaignEvent battleEvent{EventType::BATTLE, "Вы наткнулись на группу врагов!", {}, {}, nullptr, currentDifficulty};
+            CampaignEvent battleEvent{EventType::BATTLE, "You have stumbled upon a group of enemies!", {}, {}, nullptr, currentDifficulty};
             handleBattleEvent(battleEvent);
         }
         break;
     }
     case NodeType::EVENT:
     {
-        CampaignEvent eventEvent{EventType::TEXT_EVENT, "Вы обнаружили странное явление...", {"Исследовать", "Игнорировать"}, {EventType::TREASURE, EventType::BATTLE}, nullptr, 0};
+        CampaignEvent eventEvent{EventType::TEXT_EVENT, "You have discovered a strange phenomenon...", {"Investigate", "Ignore"}, {EventType::TREASURE, EventType::BATTLE}, nullptr, 0};
         handleTextEvent(eventEvent);
         break;
     }
     case NodeType::TREASURE:
     {
         Item randomItem = ItemFactory::createRandomItem();
-        CampaignEvent treasureEvent{EventType::TREASURE, "Вы нашли скрытое сокровище!", {}, {}, new Item(randomItem), 0};
+        CampaignEvent treasureEvent{EventType::TREASURE, "You have found a hidden treasure!", {}, {}, new Item(randomItem), 0};
         handleTreasureEvent(treasureEvent);
         break;
     }
     case NodeType::EXIT:
     {
-        CampaignEvent exitEvent{EventType::EXIT, "Вы нашли выход из этой локации."};
-        handleExitEvent(exitEvent);
+        if (currentLocation.type == LocationType::CASTLE)
+        {
+            CampaignEvent bossEvent{EventType::BOSS_BATTLE, "You have found the exit and faced the final boss!"};
+            handleBossBattleEvent(bossEvent);
+        }
+        else
+        {
+            CampaignEvent exitEvent{EventType::EXIT, "You have found the exit from this location."};
+            pendingExit = exitEvent;
+        }
         break;
     }
     case NodeType::FOREST:
     {
-        // Точка интереса: Лес - случайное событие
+        // Point of interest: Forest - random event
         int randEvent = rand() % 3;
         if (randEvent == 0)
         {
-            CampaignEvent battleEvent{EventType::BATTLE, "В лесу вы наткнулись на диких зверей!", {}, {}, nullptr, currentDifficulty};
+            CampaignEvent battleEvent{EventType::BATTLE, "In the forest, you stumbled upon wild beasts!", {}, {}, nullptr, currentDifficulty};
             handleBattleEvent(battleEvent);
         }
         else if (randEvent == 1)
         {
             Item randomItem = ItemFactory::createRandomItem();
-            CampaignEvent treasureEvent{EventType::TREASURE, "Вы нашли древний артефакт в лесу!", {}, {}, new Item(randomItem), 0};
+            CampaignEvent treasureEvent{EventType::TREASURE, "You found an ancient artifact in the forest!", {}, {}, new Item(randomItem), 0};
             handleTreasureEvent(treasureEvent);
         }
         else
         {
-            CampaignEvent eventEvent{EventType::TEXT_EVENT, "Вы услышали шепот деревьев...", {"Прислушаться", "Игнорировать"}, {EventType::TREASURE, EventType::BATTLE}, nullptr, 0};
+            CampaignEvent eventEvent{EventType::TEXT_EVENT, "You heard the whisper of the trees...", {"Listen", "Ignore"}, {EventType::TREASURE, EventType::BATTLE}, nullptr, 0};
             handleTextEvent(eventEvent);
         }
         break;
     }
     case NodeType::CAVE:
     {
-        // Точка интереса: Пещера - чаще бой
+        // Point of interest: Cave - more battles
         int randEvent = rand() % 3;
         if (randEvent < 2)
         {
-            CampaignEvent battleEvent{EventType::BATTLE, "Из пещеры выскочили монстры!", {}, {}, nullptr, currentDifficulty};
+            CampaignEvent battleEvent{EventType::BATTLE, "Monsters jumped out of the cave!", {}, {}, nullptr, currentDifficulty};
             handleBattleEvent(battleEvent);
         }
         else
         {
             Item randomItem = ItemFactory::createRandomItem();
-            CampaignEvent treasureEvent{EventType::TREASURE, "В пещере вы нашли кристалл!", {}, {}, new Item(randomItem), 0};
+            CampaignEvent treasureEvent{EventType::TREASURE, "You found a crystal in the cave!", {}, {}, new Item(randomItem), 0};
             handleTreasureEvent(treasureEvent);
         }
         break;
     }
     case NodeType::DEAD_CITY:
     {
-        // Точка интереса: Мертвый город - чаще событие
+        // Point of interest: Dead City - more events
         int randEvent = rand() % 3;
         if (randEvent == 0)
         {
-            CampaignEvent battleEvent{EventType::BATTLE, "Призраки города атакуют!", {}, {}, nullptr, currentDifficulty};
+            CampaignEvent battleEvent{EventType::BATTLE, "Ghosts of the city attack!", {}, {}, nullptr, currentDifficulty};
             handleBattleEvent(battleEvent);
         }
         else if (randEvent == 1)
         {
             Item randomItem = ItemFactory::createRandomItem();
-            CampaignEvent treasureEvent{EventType::TREASURE, "Вы нашли забытые реликвии!", {}, {}, new Item(randomItem), 0};
+            CampaignEvent treasureEvent{EventType::TREASURE, "You found forgotten relics!", {}, {}, new Item(randomItem), 0};
             handleTreasureEvent(treasureEvent);
         }
         else
         {
-            CampaignEvent eventEvent{EventType::TEXT_EVENT, "Город шепчет свои секреты...", {"Исследовать", "Уйти"}, {EventType::TREASURE, EventType::BATTLE}, nullptr, 0};
+            CampaignEvent eventEvent{EventType::TEXT_EVENT, "The city whispers its secrets...", {"Investigate", "Leave"}, {EventType::TREASURE, EventType::BATTLE}, nullptr, 0};
             handleTextEvent(eventEvent);
         }
         break;
     }
     case NodeType::CASTLE:
     {
-        // Точка интереса: Замок - финальный босс
-        CampaignEvent bossEvent{EventType::BOSS_BATTLE, "Вы проникли в сердце замка и столкнулись с Властелином Тьмы!"};
+        // Point of interest: Castle - final boss
+        CampaignEvent bossEvent{EventType::BOSS_BATTLE, "You have penetrated the heart of the castle and faced the Lord of Darkness!"};
         handleBossBattleEvent(bossEvent);
         break;
     }
@@ -1241,16 +665,16 @@ void CampaignSystem::manageInventory(Player *player)
 
     if (player == nullptr)
     {
-        // Выбор персонажа для управления инвентарем
-        cout << "\n=== ВЫБОР ПЕРСОНАЖА ===\n";
-        cout << "Выберите персонажа для управления инвентарем:\n";
+        // Character selection for inventory management
+        cout << "\n=== CHARACTER SELECTION ===\n";
+        cout << "Choose a character to manage inventory:\n";
         for (int i = 0; i < playerParty.size(); ++i)
         {
             cout << i + 1 << ". " << playerParty[i]->getName() << " (HP: " << playerParty[i]->getCurrentHealthPoint() << "/" << playerParty[i]->getMaxHealthPoint() << ")\n";
         }
-        cout << playerParty.size() + 1 << ". Выйти из управления инвентарем\n";
+        cout << playerParty.size() + 1 << ". Exit inventory management\n";
 
-        int heroChoice = getSafeIntInput("Выберите (1-" + to_string(playerParty.size() + 1) + "): ", 1, static_cast<int>(playerParty.size() + 1));
+        int heroChoice = getSafeIntInput("Choose (1-" + to_string(playerParty.size() + 1) + "): ", 1, static_cast<int>(playerParty.size() + 1));
 
         if (heroChoice > 0 && heroChoice <= static_cast<int>(playerParty.size()))
         {
@@ -1258,51 +682,51 @@ void CampaignSystem::manageInventory(Player *player)
         }
         else if (heroChoice == playerParty.size() + 1)
         {
-            // Выход
+            // Exit
             return;
         }
         else
         {
-            cout << "Неверный выбор!\n";
+            cout << "Invalid choice!\n";
             return;
         }
     }
 
     while (true)
     {
-        cout << "\n=== УПРАВЛЕНИЕ ИНВЕНТАРЕМ ===\n";
-        cout << "Герой: " << player->getName() << "\n\n";
+        cout << "\n=== INVENTORY MANAGEMENT ===\n";
+        cout << "Hero: " << player->getName() << "\n\n";
         cout << "[DEBUG] manageInventory called, partyInventory size: " << partyInventory.size() << ", player inventory size: " << player->getInventory().size() << "\n";
 
         player->displayInventory();
         cout << "\n";
         player->displayEquipment();
 
-        cout << "\nВыберите действие:\n";
-        cout << "1. Надеть предмет\n";
-        cout << "2. Снять предмет\n";
-        cout << "3. Использовать расходуемый предмет\n";
-        cout << "4. Взять предмет из общего инвентаря\n";
-        cout << "5. Выйти из управления инвентарем\n";
+        cout << "\nChoose action:\n";
+        cout << "1. Equip item\n";
+        cout << "2. Unequip item\n";
+        cout << "3. Use consumable item\n";
+        cout << "4. Take item from party inventory\n";
+        cout << "5. Exit inventory management\n";
 
-        int choice = getSafeIntInput("Выберите (1-5): ", 1, 5);
+        int choice = getSafeIntInput("Choose (1-5): ", 1, 5);
 
         if (choice == 1)
         {
-            // Надеть предмет
+            // Equip item
             if (player->getInventory().empty())
             {
-                cout << "Инвентарь пуст!\n";
+                cout << "Inventory is empty!\n";
                 continue;
             }
 
-            cout << "Выберите предмет для надевания:\n";
+            cout << "Choose item to equip:\n";
             for (int i = 0; i < player->getInventory().size(); ++i)
             {
                 cout << i + 1 << ". " << player->getInventory()[i].getName() << "\n";
             }
 
-            int itemChoice = getSafeIntInput("Выберите предмет (1-" + to_string(player->getInventory().size()) + "): ", 1, static_cast<int>(player->getInventory().size()));
+            int itemChoice = getSafeIntInput("Choose item (1-" + to_string(player->getInventory().size()) + "): ", 1, static_cast<int>(player->getInventory().size()));
 
             if (itemChoice > 0 && itemChoice <= static_cast<int>(player->getInventory().size()))
             {
@@ -1310,25 +734,25 @@ void CampaignSystem::manageInventory(Player *player)
             }
             else
             {
-                cout << "Неверный выбор!\n";
+                cout << "Invalid choice!\n";
             }
         }
         else if (choice == 2)
         {
-            // Снять предмет
-            cout << "Выберите слот для снятия:\n";
-            cout << "1. Голова\n";
-            cout << "2. Грудь\n";
-            cout << "3. Руки\n";
-            cout << "4. Ноги\n";
-            cout << "5. Ступни\n";
-            cout << "6. Правая рука\n";
-            cout << "7. Левая рука\n";
-            cout << "8. Шея\n";
-            cout << "9. Кольцо 1\n";
-            cout << "10. Кольцо 2\n";
+            // Unequip item
+            cout << "Choose slot to unequip:\n";
+            cout << "1. Head\n";
+            cout << "2. Chest\n";
+            cout << "3. Hands\n";
+            cout << "4. Legs\n";
+            cout << "5. Feet\n";
+            cout << "6. Right hand\n";
+            cout << "7. Left hand\n";
+            cout << "8. Neck\n";
+            cout << "9. Ring 1\n";
+            cout << "10. Ring 2\n";
 
-            int slotChoice = getSafeIntInput("Выберите слот (1-10): ", 1, 10);
+            int slotChoice = getSafeIntInput("Choose slot (1-10): ", 1, 10);
 
             EquipmentSlot slot;
             switch (slotChoice)
@@ -1364,7 +788,7 @@ void CampaignSystem::manageInventory(Player *player)
                 slot = EquipmentSlot::RING2;
                 break;
             default:
-                cout << "Неверный выбор!\n";
+                cout << "Invalid choice!\n";
                 continue;
             }
 
@@ -1372,20 +796,20 @@ void CampaignSystem::manageInventory(Player *player)
         }
         else if (choice == 3)
         {
-            // Использовать расходуемый предмет
+            // Use consumable item
             if (player->getInventory().empty())
             {
-                cout << "Инвентарь пуст!\n";
+                cout << "Inventory is empty!\n";
                 continue;
             }
 
-            cout << "Выберите предмет для использования:\n";
+            cout << "Choose item to use:\n";
             for (int i = 0; i < player->getInventory().size(); ++i)
             {
                 cout << i + 1 << ". " << player->getInventory()[i].getName() << "\n";
             }
 
-            int itemChoice = getSafeIntInput("Выберите предмет (1-" + to_string(player->getInventory().size()) + "): ", 1, static_cast<int>(player->getInventory().size()));
+            int itemChoice = getSafeIntInput("Choose item (1-" + to_string(player->getInventory().size()) + "): ", 1, static_cast<int>(player->getInventory().size()));
 
             if (itemChoice > 0 && itemChoice <= static_cast<int>(player->getInventory().size()))
             {
@@ -1393,49 +817,97 @@ void CampaignSystem::manageInventory(Player *player)
             }
             else
             {
-                cout << "Неверный выбор!\n";
+                cout << "Invalid choice!\n";
             }
         }
         else if (choice == 4)
         {
-            // Взять предмет из общего инвентаря
+            // Take item from party inventory
             if (partyInventory.empty())
             {
-                cout << "Общий инвентарь пуст!\n";
+                cout << "Party inventory is empty!\n";
                 continue;
             }
 
-            cout << "Общий инвентарь отряда:\n";
+            cout << "Party inventory:\n";
             for (int i = 0; i < partyInventory.size(); ++i)
             {
                 cout << i + 1 << ". " << partyInventory[i].getName() << "\n";
             }
 
-            int itemChoice = getSafeIntInput("Выберите предмет для взятия (1-" + to_string(partyInventory.size()) + "): ", 1, static_cast<int>(partyInventory.size()));
+            int itemChoice = getSafeIntInput("Choose item to take (1-" + to_string(partyInventory.size()) + "): ", 1, static_cast<int>(partyInventory.size()));
 
             if (itemChoice > 0 && itemChoice <= static_cast<int>(partyInventory.size()))
             {
                 player->addItem(partyInventory[itemChoice - 1]);
                 partyInventory.erase(partyInventory.begin() + itemChoice - 1);
-                cout << "Предмет взят в личный инвентарь.\n";
+                cout << "Item taken to personal inventory.\n";
             }
             else
             {
-                cout << "Неверный выбор!\n";
+                cout << "Invalid choice!\n";
             }
         }
         else if (choice == 5)
         {
-            // Выход
+            // Exit
             break;
         }
         else
         {
-            cout << "Неверный выбор!\n";
+            cout << "Invalid choice!\n";
         }
 
         cout << "\nНажмите Enter для продолжения...";
         cin.get();
+    }
+}
+
+void CampaignSystem::handleEventChoice(int choiceIndex)
+{
+    if (choiceIndex < 0 || choiceIndex >= static_cast<int>(pendingEvent.outcomes.size()))
+        return;
+
+    EventType outcome = pendingEvent.outcomes[choiceIndex];
+    switch (outcome)
+    {
+    case EventType::BATTLE:
+        handleBattleEvent(CampaignEvent{EventType::BATTLE, "Your choice led to a battle!", {}, {}, nullptr, currentDifficulty});
+        break;
+    case EventType::TREASURE:
+    {
+        Item randomAccessory = ItemFactory::createRandomItemOfType(ItemType::ACCESSORY);
+        handleTreasureEvent(CampaignEvent{EventType::TREASURE, "Your choice brought a reward!", {}, {}, new Item(randomAccessory), 0});
+        break;
+    }
+    default:
+        // No action
+        break;
+    }
+}
+
+void CampaignSystem::handleExitChoice(int choiceIndex)
+{
+    if (choiceIndex < 0 || choiceIndex >= static_cast<int>(currentLocation.connections.size()))
+        return;
+
+    LocationType targetLocation = currentLocation.connections[choiceIndex];
+    Location newLoc = locations[targetLocation];
+
+    // Change current location
+    currentLocation = newLoc;
+    // Generate new map for new location
+    gameMap.generateFixedMap();
+    visitedNodes.clear();
+    currentDifficulty++;
+
+    // Restore health of all party members upon transitioning to new location
+    for (Player *player : playerParty)
+    {
+        if (player && player->getCurrentHealthPoint() > 0)
+        {
+            player->setCurrentHealthPoint(player->getMaxHealthPoint());
+        }
     }
 }
 

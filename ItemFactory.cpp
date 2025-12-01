@@ -29,21 +29,21 @@ void ItemFactory::initializeTemplates()
         auto stats = std::map<std::string, int>{{"damage", 8}, {"attack", 1}};
         std::string abilityStr = generateAbilityString(stats);
         itemTemplates.push_back({
-            "Ржавый Меч" + (abilityStr.empty() ? "" : " " + abilityStr), "Старый, но надежный меч, видевший лучшие времена", ItemType::WEAPON, EquipmentSlot::MAIN_HAND, stats});
+            "Rusty Sword" + (abilityStr.empty() ? "" : " " + abilityStr), "Old but reliable sword that has seen better days", ItemType::WEAPON, EquipmentSlot::MAIN_HAND, stats});
     }
 
     {
         auto stats = std::map<std::string, int>{{"damage", 12}, {"attack", 2}, {"initiative", 1}};
         std::string abilityStr = generateAbilityString(stats);
         itemTemplates.push_back({
-            "Эльфийский Клинок" + (abilityStr.empty() ? "" : " " + abilityStr), "Легкий и острый меч, выкованный эльфийскими мастерами", ItemType::WEAPON, EquipmentSlot::MAIN_HAND, stats});
+            "Elven Blade" + (abilityStr.empty() ? "" : " " + abilityStr), "Light and sharp sword forged by elven masters", ItemType::WEAPON, EquipmentSlot::MAIN_HAND, stats});
     }
 
     {
         auto stats = std::map<std::string, int>{{"damage", 15}, {"attack", 3}, {"defense", -1}};
         std::string abilityStr = generateAbilityString(stats);
         itemTemplates.push_back({
-            "Молот Грома" + (abilityStr.empty() ? "" : " " + abilityStr), "Тяжелый молот, заряженный силой бури", ItemType::WEAPON, EquipmentSlot::MAIN_HAND, stats});
+            "Hammer of Thunder" + (abilityStr.empty() ? "" : " " + abilityStr), "Heavy hammer charged with storm power", ItemType::WEAPON, EquipmentSlot::MAIN_HAND, stats});
     }
 
     {
@@ -107,7 +107,7 @@ void ItemFactory::initializeTemplates()
         auto stats = std::map<std::string, int>{{"damage", 3}, {"defense", 2}};
         std::string abilityStr = generateAbilityString(stats);
         itemTemplates.push_back({
-            "Перчатки Воина" + (abilityStr.empty() ? "" : " " + abilityStr), "Укрепленные перчатки для мощных ударов", ItemType::ARMOR, EquipmentSlot::HANDS, stats});
+            "Warrior Gloves" + (abilityStr.empty() ? "" : " " + abilityStr), "Reinforced gloves for powerful strikes", ItemType::ARMOR, EquipmentSlot::HANDS, stats});
     }
 
     {
@@ -172,7 +172,7 @@ void ItemFactory::initializeTemplates()
         auto stats = std::map<std::string, int>{{"stamina_restore", 2}};
         std::string abilityStr = generateAbilityString(stats);
         itemTemplates.push_back({
-            "Зелье Выносливости" + (abilityStr.empty() ? "" : " " + abilityStr), "Голубая жидкость, восстанавливающая энергию", ItemType::CONSUMABLE, EquipmentSlot::NONE, stats});
+            "Stamina Potion" + (abilityStr.empty() ? "" : " " + abilityStr), "Blue liquid that restores energy", ItemType::CONSUMABLE, EquipmentSlot::NONE, stats});
     }
 
     {
@@ -271,14 +271,14 @@ void ItemFactory::initializeTemplates()
         auto stats = std::map<std::string, int>{{"damage", 15}, {"attack", 3}, {"defense", -2}};
         std::string abilityStr = generateAbilityString(stats);
         itemTemplates.push_back({
-            "Зелье Ярости" + (abilityStr.empty() ? "" : " " + abilityStr), "Вызывает неконтролируемую ярость", ItemType::CONSUMABLE, EquipmentSlot::NONE, stats}); // Временный берсерк
+            "Rage Potion" + (abilityStr.empty() ? "" : " " + abilityStr), "Causes uncontrollable rage", ItemType::CONSUMABLE, EquipmentSlot::NONE, stats}); // Temporary berserk
     }
 
     {
         auto stats = std::map<std::string, int>{{"fire_damage", 50}};
         std::string abilityStr = generateAbilityString(stats);
         itemTemplates.push_back({
-            "Свиток Огненного Шара" + (abilityStr.empty() ? "" : " " + abilityStr), "Вызывает огненный шар", ItemType::CONSUMABLE, EquipmentSlot::NONE, stats});
+            "Fireball Scroll" + (abilityStr.empty() ? "" : " " + abilityStr), "Summons a fireball", ItemType::CONSUMABLE, EquipmentSlot::NONE, stats});
     }
 
     {

@@ -14,26 +14,26 @@ BattleSystem::BattleSystem()
 
 void BattleSystem::startBattle(const vector<Entity *> &players, const vector<Entity *> &enemies)
 {
-    // Очистка предыдущего боя
+    // Clearing previous battle
     playerPositions.clear();
     enemyPositions.clear();
     turnOrder.clear();
     currentTurnIndex = 0;
     battleActive = true;
 
-    // Расстановка игроков (позиции 0-3)
+    // Player placement (positions 0-3)
     for (int i = 0; i < players.size() && i < 4; ++i)
     {
         playerPositions.push_back(BattlePosition(players[i], static_cast<int>(i)));
     }
 
-    // Расстановка врагов (позиции 0-3)
+    // Enemy placement (positions 0-3)
     for (int i = 0; i < enemies.size() && i < 4; ++i)
     {
         enemyPositions.push_back(BattlePosition(enemies[i], static_cast<int>(i)));
     }
 
-    // Регенерация стамины для всех участников
+    // Stamina regeneration for all participants
     for (auto &pos : playerPositions)
     {
         if (pos.entity)
@@ -45,10 +45,10 @@ void BattleSystem::startBattle(const vector<Entity *> &players, const vector<Ent
             pos.entity->regenerateStamina();
     }
 
-    // Расчет очереди ходов
+    // Turn order calculation
     calculateTurnOrder();
 
-    cout << "=== БОЙ НАЧАЛСЯ ===\n";
+    cout << "=== BATTLE STARTED ===\n";
     printBattlefield();
 }
 
@@ -59,12 +59,12 @@ void BattleSystem::endBattle()
     // Display victory or defeat screen before clearing
     if (isPlayerVictory())
     {
-        cout << "\nПОБЕДА!\n";
+        cout << "\nVICTORY!\n";
         cout << "\n";
     }
     else if (isPlayerDefeat())
     {
-        cout << "\nПОРАЖЕНИЕ!\n";
+        cout << "\nDEFEAT!\n";
         cout << "\n";
     }
 
@@ -73,7 +73,7 @@ void BattleSystem::endBattle()
     enemyPositions.clear();
     turnOrder.clear();
     currentTurnIndex = 0;
-    cout << "=== БОЙ ЗАКОНЧЕН ===\n";
+    cout << "=== BATTLE ENDED ===\n";
     cout << "[DEBUG] BattleSystem::endBattle() completed\n";
 }
 
@@ -357,25 +357,25 @@ vector<pair<Entity *, int>> BattleSystem::getAvailableTargets(Entity *attacker, 
 
 void BattleSystem::removeDeadEntities()
 {
-    // Удаляем мертвых игроков (только помечаем как nullptr, удаление в CampaignSystem)
+    // Remove dead players (only mark as nullptr, deletion in CampaignSystem)
     for (auto &pos : playerPositions)
     {
         if (pos.entity && pos.entity->getCurrentHealthPoint() <= 0)
         {
-            cout << pos.entity->getName() << " пал в бою!\n";
+            cout << pos.entity->getName() << " fell in battle!\n";
             pos.entity = nullptr;
             shiftPositionsAfterDeath(playerPositions, pos.position);
         }
     }
 
-    // Помечаем мертвых врагов как nullptr и создаем трупы (удаление в CampaignSystem)
+    // Mark dead enemies as nullptr and create corpses (deletion in CampaignSystem)
     for (auto &pos : enemyPositions)
     {
         if (pos.entity && pos.entity->getCurrentHealthPoint() <= 0)
         {
-            cout << pos.entity->getName() << " повержен!\n";
+            cout << pos.entity->getName() << " defeated!\n";
             pos.entity = nullptr;
-            pos.corpseHP = 50; // Создаем труп с 50 HP
+            pos.corpseHP = 50; // Create corpse with 50 HP
             shiftPositionsAfterDeath(enemyPositions, pos.position);
         }
     }
@@ -388,12 +388,21 @@ void BattleSystem::regenerateStaminaForTurn()
     {
         current->regenerateStamina();
         current->updateEffects(); // Применить эффекты в начале хода
+
+        // Проверить смерть от эффектов и окончание боя
+        removeDeadEntities();
+        if (isPlayerVictory() || isPlayerDefeat())
+        {
+            battleActive = false;
+        }
     }
 }
 
 bool BattleSystem::attack(Entity *attacker, Entity *target)
 {
     if (!battleActive || !attacker || !target)
+        return false;
+    if (attacker->getCurrentHealthPoint() <= 0)
         return false;
     if (attacker->getCurrentStamina() <= 0)
         return false;
@@ -409,7 +418,7 @@ bool BattleSystem::attack(Entity *attacker, Entity *target)
     applyAbilityEffect(attacker, target, damage);
 
     cout << getAttackDescription(attacker, target) << "\n";
-    cout << "Наносит " << damage << " урона!\n";
+    cout << "Deals " << damage << " damage!\n";
 
     // Проверка на смерть
     bool targetWasDead = target->getCurrentHealthPoint() <= 0;
@@ -442,6 +451,8 @@ bool BattleSystem::movePosition(Entity *entity, int newPosition)
 {
     if (!battleActive || !entity || newPosition < 0 || newPosition > 3)
         return false;
+    if (entity->getCurrentHealthPoint() <= 0)
+        return false;
     if (entity->getCurrentStamina() <= 0)
         return false;
 
@@ -456,8 +467,8 @@ bool BattleSystem::movePosition(Entity *entity, int newPosition)
         }
     }
 
-    const vector<BattlePosition> &sameSidePositions = isPlayerEntity ? playerPositions : enemyPositions;
-    const vector<BattlePosition> &opponentPositions = isPlayerEntity ? enemyPositions : playerPositions;
+    vector<BattlePosition> &sameSidePositions = isPlayerEntity ? playerPositions : enemyPositions;
+    vector<BattlePosition> &opponentPositions = isPlayerEntity ? enemyPositions : playerPositions;
 
     // Проверяем, есть ли союзник на новой позиции
     bool hasAllyAtPosition = false;
@@ -496,7 +507,7 @@ bool BattleSystem::movePosition(Entity *entity, int newPosition)
     {
         if (hasAllyAtPosition)
         {
-            // Меняем местами с союзником
+            // Swap places with ally
             vector<BattlePosition> &positions = isPlayerEntity ? playerPositions : enemyPositions;
             int currentPosition = -1;
             for (auto &pos : positions)
@@ -511,7 +522,7 @@ bool BattleSystem::movePosition(Entity *entity, int newPosition)
             if (currentPosition == -1)
                 return false;
 
-            // Находим союзника и меняем позиции
+            // Find ally and swap positions
             for (auto &pos : positions)
             {
                 if (pos.position == newPosition && pos.entity && pos.entity != entity)
@@ -521,28 +532,61 @@ bool BattleSystem::movePosition(Entity *entity, int newPosition)
                 }
             }
 
-            // Обновляем позицию текущего персонажа
+            // Update current character's position
             for (auto &pos : positions)
             {
                 if (pos.entity == entity)
                 {
                     pos.position = newPosition;
                     entity->spendStamina();
-                    cout << entity->getName() << " меняется местами с союзником на позицию " << newPosition << "\n";
+                    cout << entity->getName() << " swaps places with ally to position " << newPosition << "\n";
                     return true;
                 }
             }
         }
         else
         {
-            // Позиция занята врагом - нельзя переместиться
-            cout << "Позиция занята врагом! Нельзя переместиться.\n";
-            return false;
+            // Position occupied by enemy - swap places without visible indication
+            vector<BattlePosition> &opponentPositions = isPlayerEntity ? enemyPositions : playerPositions;
+            int currentPosition = -1;
+            for (auto &pos : sameSidePositions)
+            {
+                if (pos.entity == entity)
+                {
+                    currentPosition = pos.position;
+                    break;
+                }
+            }
+
+            if (currentPosition == -1)
+                return false;
+
+            // Find enemy and swap positions
+            for (auto &pos : opponentPositions)
+            {
+                if (pos.position == newPosition && pos.entity)
+                {
+                    pos.position = currentPosition;
+                    break;
+                }
+            }
+
+            // Update current character's position
+            for (auto &pos : sameSidePositions)
+            {
+                if (pos.entity == entity)
+                {
+                    pos.position = newPosition;
+                    entity->spendStamina();
+                    // No visible indication of the swap
+                    return true;
+                }
+            }
         }
     }
     else
     {
-        // Перемещаемся на пустую позицию
+        // Move to empty position
         vector<BattlePosition> &positions = isPlayerEntity ? playerPositions : enemyPositions;
         for (auto &pos : positions)
         {
@@ -550,7 +594,7 @@ bool BattleSystem::movePosition(Entity *entity, int newPosition)
             {
                 pos.position = newPosition;
                 entity->spendStamina();
-                cout << entity->getName() << " перемещается на позицию " << newPosition << "\n";
+                cout << entity->getName() << " moves to position " << newPosition << "\n";
                 return true;
             }
         }
@@ -623,9 +667,9 @@ vector<pair<Entity *, string>> BattleSystem::getAllEntitiesWithStatus() const
 string BattleSystem::getBattleStatus() const
 {
     if (!battleActive)
-        return "Бой не активен";
+        return "Battle not active";
 
-    string status = "Игроки:\n";
+    string status = "Players:\n";
     for (const auto &pos : playerPositions)
     {
         if (pos.entity)
@@ -634,21 +678,52 @@ string BattleSystem::getBattleStatus() const
             status += "  " + player->getName() + " (Lv." + to_string(player->getLevel()) + ")\n";
             status += "  " + player->getHealthBarString() + "\n";
             status += "  " + player->getExperienceBarString() + "\n";
+            // Add effects
+            const vector<Effect> &effects = player->getActiveEffects();
+            if (!effects.empty())
+            {
+                status += "  Effects: ";
+                for (size_t i = 0; i < effects.size(); ++i)
+                {
+                    status += effects[i].name + " (" + to_string(effects[i].duration) + ")";
+                    if (i < effects.size() - 1) status += ", ";
+                }
+                status += "\n";
+            }
         }
     }
 
-    status += "\nВраги:\n";
+    status += "\nEnemies:\n";
     for (const auto &pos : enemyPositions)
     {
         if (pos.entity)
         {
             status += "  " + pos.entity->getName() + "\n";
             status += "  " + pos.entity->getHealthBarString() + "\n";
+            // Add effects
+            const vector<Effect> &effects = pos.entity->getActiveEffects();
+            if (!effects.empty())
+            {
+                status += "  Effects: ";
+                for (size_t i = 0; i < effects.size(); ++i)
+                {
+                    status += effects[i].name + " (" + to_string(effects[i].duration) + ")";
+                    if (i < effects.size() - 1) status += ", ";
+                }
+                status += "\n";
+            }
         }
     }
 
-    // Добавляем очередь ходов
-    status += "\nОчередь ходов:\n";
+    return status;
+}
+
+string BattleSystem::getTurnOrderString() const
+{
+    if (!battleActive)
+        return "";
+
+    string status = "Turn order:\n";
     for (int i = 0; i < turnOrder.size(); ++i)
     {
         string marker = (i == currentTurnIndex) ? " -> " : "    ";
@@ -686,14 +761,14 @@ bool BattleSystem::isPlayerDefeat() const
 
 void BattleSystem::printBattlefield() const
 {
-    cout << "\n=== ПОЛЕ БОЯ ===\n";
+    cout << "\n=== BATTLEFIELD ===\n";
 
-    // Отображение в столбик: дружественные позиции 4-3-2-1, вражеские 1-2-3-4
-    cout << "Дружественные позиции:\n";
+    // Display in column: friendly positions 4-3-2-1, enemy 1-2-3-4
+    cout << "Friendly positions:\n";
     for (int i = 3; i >= 0; --i)
     {
-        cout << (i + 1) << " дружественная: ";
-        string display = "[ПУСТО]";
+        cout << (i + 1) << " friendly: ";
+        string display = "[EMPTY]";
         for (const auto &pos : playerPositions)
         {
             if (pos.position == i)
@@ -701,22 +776,22 @@ void BattleSystem::printBattlefield() const
                 if (pos.entity && pos.entity->getCurrentHealthPoint() > 0)
                 {
                     display = "[" + pos.entity->getName() + "]";
-                    break; // Приоритет живому
+                    break; // Priority to alive
                 }
                 else if (pos.corpseHP > 0)
                 {
-                    display = "[ТРУП]";
+                    display = "[CORPSE]";
                 }
             }
         }
         cout << display << "\n";
     }
 
-    cout << "\nВражеские позиции:\n";
+    cout << "\nEnemy positions:\n";
     for (int i = 0; i < 4; ++i)
     {
-        cout << (i + 1) << " вражеская:     ";
-        string display = "[ПУСТО]";
+        cout << (i + 1) << " enemy:     ";
+        string display = "[EMPTY]";
         for (const auto &pos : enemyPositions)
         {
             if (pos.position == i)
@@ -724,11 +799,11 @@ void BattleSystem::printBattlefield() const
                 if (pos.entity && pos.entity->getCurrentHealthPoint() > 0)
                 {
                     display = "[" + pos.entity->getName() + "]";
-                    break; // Приоритет живому
+                    break; // Priority to alive
                 }
                 else if (pos.corpseHP > 0)
                 {
-                    display = "[ТРУП]";
+                    display = "[CORPSE]";
                 }
             }
         }
@@ -763,16 +838,16 @@ void BattleSystem::displayEntityDetails(Entity *entity) const
     if (!entity)
         return;
 
-    cout << "\n=== ХАРАКТЕРИСТИКИ " << entity->getName() << " ===\n";
-    cout << "Здоровье: " << entity->getCurrentHealthPoint() << "/" << entity->getMaxHealthPoint() << "\n";
-    cout << "Урон: " << entity->getDamage() << "\n";
-    cout << "Защита: " << entity->getDefense() << "\n";
-    cout << "Атака: " << entity->getAttack() << "\n";
-    cout << "Инициатива: " << entity->getInitiative() << "\n";
-    cout << "Дальность атаки: " << entity->getAttackRange() << "\n";
-    cout << "Выносливость: " << entity->getCurrentStamina() << "/" << entity->getMaxStamina() << "\n";
+    cout << "\n=== CHARACTERISTICS " << entity->getName() << " ===\n";
+    cout << "Health: " << entity->getCurrentHealthPoint() << "/" << entity->getMaxHealthPoint() << "\n";
+    cout << "Damage: " << entity->getDamage() << "\n";
+    cout << "Defense: " << entity->getDefense() << "\n";
+    cout << "Attack: " << entity->getAttack() << "\n";
+    cout << "Initiative: " << entity->getInitiative() << "\n";
+    cout << "Attack range: " << entity->getAttackRange() << "\n";
+    cout << "Stamina: " << entity->getCurrentStamina() << "/" << entity->getMaxStamina() << "\n";
 
-    // Проверяем, является ли сущность игроком (проверяем по наличию в playerPositions)
+    // Check if entity is a player (check by presence in playerPositions)
     bool isPlayer = false;
     for (const auto &pos : playerPositions)
     {
@@ -783,14 +858,14 @@ void BattleSystem::displayEntityDetails(Entity *entity) const
         }
     }
 
-    // Показываем активные эффекты
+    // Show active effects
     const vector<Effect> &effects = entity->getActiveEffects();
     if (!effects.empty())
     {
-        cout << "\nАктивные эффекты:\n";
+        cout << "\nActive effects:\n";
         for (const auto &effect : effects)
         {
-            cout << "- " << effect.name << " (" << effect.duration << " ходов";
+            cout << "- " << effect.name << " (" << effect.duration << " turns";
             if (effect.value != 0)
             {
                 string sign = (effect.value > 0) ? "+" : "";
@@ -801,43 +876,43 @@ void BattleSystem::displayEntityDetails(Entity *entity) const
     }
     else
     {
-        cout << "\nАктивные эффекты: Нет\n";
+        cout << "\nActive effects: None\n";
     }
 
     if (isPlayer)
     {
-        // Показываем все доступные способности героя
+        // Show all available hero abilities
         Player *player = static_cast<Player *>(entity);
         const vector<AbilityType> &abilities = player->getAvailableAbilities();
 
         if (!abilities.empty())
         {
-            cout << "\nСпособности героя:\n";
+            cout << "\nHero abilities:\n";
             for (int i = 0; i < abilities.size(); ++i)
             {
                 const AbilityInfo &info = HeroFactory::getAbilityInfo(abilities[i]);
                 cout << i + 1 << ". " << info.name << ": " << info.description << "\n";
-                cout << "   Эффект: " << info.effect << "\n";
+                cout << "   Effect: " << info.effect << "\n";
             }
         }
         else
         {
-            cout << "\nСпособности: Нет доступных способностей\n";
+            cout << "\nAbilities: No available abilities\n";
         }
     }
     else
     {
-        // Для врагов показываем базовую способность
+        // For enemies show basic ability
         AbilityType ability = entity->getAbility();
         if (ability != AbilityType::NONE)
         {
             const AbilityInfo &info = HeroFactory::getAbilityInfo(ability);
-            cout << "\nСпособность: " << info.name << ": " << info.description << "\n";
-            cout << "Эффект: " << info.effect << "\n";
+            cout << "\nAbility: " << info.name << ": " << info.description << "\n";
+            cout << "Effect: " << info.effect << "\n";
         }
         else
         {
-            cout << "\nСпособность: Нет специальной способности\n";
+            cout << "\nAbility: No special ability\n";
         }
     }
     cout << "=====================================\n";
@@ -850,48 +925,48 @@ string BattleSystem::getAttackDescription(Entity *attacker, Entity *target) cons
 
     string description = attacker->getName() + " ";
 
-    // Описания атак в зависимости от типа способности
+    // Attack descriptions depending on ability type
     AbilityType ability = attacker->getAbility();
     switch (ability)
     {
     case AbilityType::FIRE_DAMAGE:
-        description += "извергает поток пламени на ";
+        description += "spews a stream of flame at ";
         break;
     case AbilityType::ICE_DAMAGE:
-        description += "замораживает ледяным дыханием ";
+        description += "freezes with icy breath ";
         break;
     case AbilityType::LIGHTNING:
-        description += "поражает молнией ";
+        description += "strikes with lightning ";
         break;
     case AbilityType::POISON:
-        description += "отравляет ядом ";
+        description += "poisons with venom ";
         break;
     case AbilityType::LIFE_STEAL:
-        description += "высасывает жизненную силу из ";
+        description += "drains life force from ";
         break;
     case AbilityType::BERSERK:
-        description += "в ярости обрушивается на ";
+        description += "rages and crashes into ";
         break;
     case AbilityType::CHARGE:
-        description += "с разбега врезается в ";
+        description += "charges and slams into ";
         break;
     case AbilityType::MAGIC_MISSILE:
-        description += "запускает магическую стрелу в ";
+        description += "launches a magic arrow at ";
         break;
     case AbilityType::CHAIN_LIGHTNING:
-        description += "вызывает цепную молнию, ударяющую по ";
+        description += "calls chain lightning striking ";
         break;
     case AbilityType::FLAME_BURST:
-        description += "взрывает огненным шаром ";
+        description += "explodes with fireball ";
         break;
     case AbilityType::SHADOW_STEP:
-        description += "выныривает из тени и атакует ";
+        description += "emerges from shadow and attacks ";
         break;
     case AbilityType::ARCANE_MISSILE:
-        description += "пускает чародейскую стрелу в ";
+        description += "shoots arcane arrow at ";
         break;
     default:
-        description += "атакует ";
+        description += "attacks ";
         break;
     }
 
@@ -901,12 +976,12 @@ string BattleSystem::getAttackDescription(Entity *attacker, Entity *target) cons
 
 void BattleSystem::printTurnOrder() const
 {
-    cout << "\nОчередь ходов:\n";
+    cout << "\nTurn order:\n";
     for (int i = 0; i < turnOrder.size(); ++i)
     {
         string marker = (i == currentTurnIndex) ? " -> " : "    ";
         cout << marker << i + 1 << ". " << turnOrder[i]->getName()
-             << " (Дальность: " << turnOrder[i]->getAttackRange() << ")\n";
+             << " (Range: " << turnOrder[i]->getAttackRange() << ")\n";
     }
 }
 
@@ -917,56 +992,56 @@ void BattleSystem::applyAbilityEffect(Entity *attacker, Entity *target, int dama
     {
     case AbilityType::LIFE_STEAL:
     {
-        int healAmount = static_cast<int>(damage * 0.5); // 50% от нанесенного урона
+        int healAmount = static_cast<int>(damage * 0.5); // 50% of dealt damage
         if (healAmount > 0)
         {
             attacker->heal(healAmount);
-            cout << attacker->getName() << " восстанавливает " << healAmount << " HP благодаря вампиризму!\n";
+            cout << attacker->getName() << " restores " << healAmount << " HP thanks to vampirism!\n";
         }
         break;
     }
     case AbilityType::BERSERK:
     {
-        // Временное увеличение урона (уже учтено в описании, но можно добавить бафф)
+        // Temporary damage increase (already accounted in description, but can add buff)
         break;
     }
     case AbilityType::POISON:
     {
-        // Отравление: урон со временем (упрощенная версия)
+        // Poison: damage over time (simplified version)
         int poisonDamage = 5;
         target->takeDamage(poisonDamage);
-        cout << target->getName() << " получает " << poisonDamage << " урона от яда!\n";
+        cout << target->getName() << " takes " << poisonDamage << " damage from poison!\n";
         break;
     }
     case AbilityType::FIRE_DAMAGE:
     {
-        // Огненный урон: дополнительный урон огнем
-        int fireDamage = static_cast<int>(damage * 0.3); // 30% от основного урона
+        // Fire damage: additional fire damage
+        int fireDamage = static_cast<int>(damage * 0.3); // 30% of main damage
         if (fireDamage > 0)
         {
             target->takeDamage(fireDamage);
-            cout << target->getName() << " получает " << fireDamage << " дополнительного огненного урона!\n";
+            cout << target->getName() << " takes " << fireDamage << " additional fire damage!\n";
         }
         break;
     }
     case AbilityType::ICE_DAMAGE:
     {
-        // Ледяной урон: дополнительный урон и замедление
-        int iceDamage = static_cast<int>(damage * 0.25); // 25% от основного урона
+        // Ice damage: additional damage and slowing
+        int iceDamage = static_cast<int>(damage * 0.25); // 25% of main damage
         if (iceDamage > 0)
         {
             target->takeDamage(iceDamage);
             target->setInitiative(max(1, target->getInitiative() - 1));
-            cout << target->getName() << " получает " << iceDamage << " ледяного урона и замедлен!\n";
+            cout << target->getName() << " takes " << iceDamage << " ice damage and is slowed!\n";
         }
         break;
     }
     case AbilityType::LIGHTNING:
     {
-        // Молния: шанс цепной реакции
-        if (rand() % 100 < 20) // 20% шанс
+        // Lightning: chance of chain reaction
+        if (rand() % 100 < 20) // 20% chance
         {
-            // Найти другого врага и нанести половину урона
+            // Find another enemy and deal half damage
             bool isAttackerPlayer = false;
             for (const auto &pos : playerPositions)
             {
@@ -983,14 +1058,14 @@ void BattleSystem::applyAbilityEffect(Entity *attacker, Entity *target, int dama
                 {
                     int chainDamage = damage / 2;
                     pos.entity->takeDamage(chainDamage);
-                    cout << "Молния перескакивает на " << pos.entity->getName() << " за " << chainDamage << " урона!\n";
+                    cout << "Lightning jumps to " << pos.entity->getName() << " for " << chainDamage << " damage!\n";
                     break;
                 }
             }
         }
         break;
     }
-    // Другие способности можно добавить по аналогии
+    // Other abilities can be added similarly
     default:
         break;
     }
@@ -1000,10 +1075,12 @@ bool BattleSystem::useAbility(Entity *user, AbilityType ability)
 {
     if (!battleActive || !user)
         return false;
+    if (user->getCurrentHealthPoint() <= 0)
+        return false;
     if (user->getCurrentStamina() <= 0)
         return false;
 
-    // Проверяем, доступна ли способность для пользователя
+    // Check if ability is available for user
     bool isPlayer = false;
     for (const auto &pos : playerPositions)
     {
@@ -1016,60 +1093,60 @@ bool BattleSystem::useAbility(Entity *user, AbilityType ability)
 
     if (isPlayer)
     {
-        // Для игроков проверяем доступные способности
+        // For players check available abilities
         Player *player = static_cast<Player *>(user);
         const vector<AbilityType> &available = player->getAvailableAbilities();
         if (find(available.begin(), available.end(), ability) == available.end())
         {
-            cout << "Способность недоступна!\n";
+            cout << "Ability unavailable!\n";
             return false;
         }
     }
     else
     {
-        // Для врагов проверяем базовую способность
+        // For enemies check basic ability
         if (user->getAbility() != ability)
         {
-            cout << "Способность недоступна!\n";
+            cout << "Ability unavailable!\n";
             return false;
         }
     }
 
-    // Применяем эффект способности
+    // Apply ability effect
     switch (ability)
     {
     case AbilityType::BERSERK:
     {
-        // Увеличиваем урон и уменьшаем защиту
-        user->addEffect(Effect(EffectType::BUFF_DAMAGE, 5, 3, "Берсерк"));
-        user->addEffect(Effect(EffectType::DEBUFF_DEFENSE, 2, 3, "Берсерк"));
-        cout << user->getName() << " входит в состояние берсерка! Урон +5, защита -2 на 3 хода.\n";
+        // Increase damage and decrease defense
+        user->addEffect(Effect(EffectType::BUFF_DAMAGE, 5, 3, "Berserk"));
+        user->addEffect(Effect(EffectType::DEBUFF_DEFENSE, 2, 3, "Berserk"));
+        cout << user->getName() << " enters berserk state! Damage +5, defense -2 for 3 turns.\n";
         break;
     }
     case AbilityType::HEALING_WAVE:
     {
-        // Исцеляем всех союзников
+        // Heal all allies
         vector<BattlePosition> &allies = isPlayer ? playerPositions : enemyPositions;
         for (auto &pos : allies)
         {
             if (pos.entity && pos.entity->getCurrentHealthPoint() > 0)
             {
                 pos.entity->heal(50);
-                cout << pos.entity->getName() << " исцелен на 50 HP!\n";
+                cout << pos.entity->getName() << " healed for 50 HP!\n";
             }
         }
         break;
     }
     case AbilityType::TELEPORT:
     {
-        // Телепортация на случайную позицию (упрощенная версия)
+        // Teleport to random position (simplified version)
         int newPos = rand() % 4;
         movePosition(user, newPos);
         break;
     }
     case AbilityType::FEAR:
     {
-        // Страх: снижаем инициативу и урон врагов
+        // Fear: reduce initiative and damage of enemies
         vector<BattlePosition> &opponents = isPlayer ? enemyPositions : playerPositions;
         for (auto &pos : opponents)
         {
@@ -1077,7 +1154,7 @@ bool BattleSystem::useAbility(Entity *user, AbilityType ability)
             {
                 pos.entity->setInitiative(max(1, pos.entity->getInitiative() - 2));
                 pos.entity->setDamage(max(1, pos.entity->getDamage() - 3));
-                cout << pos.entity->getName() << " напуган! Инициатива -2, урон -3.\n";
+                cout << pos.entity->getName() << " frightened! Initiative -2, damage -3.\n";
             }
         }
         break;
@@ -1158,6 +1235,14 @@ bool BattleSystem::useAbility(Entity *user, AbilityType ability)
                 break; // Только один враг
             }
         }
+        break;
+    }
+    case AbilityType::HEAL:
+    {
+        // Лечение: лечим себя
+        int healAmount = 40;
+        user->heal(healAmount);
+        cout << user->getName() << " лечит себя на " << healAmount << " HP!\n";
         break;
     }
     case AbilityType::REGENERATION:
@@ -1306,6 +1391,13 @@ bool BattleSystem::useAbility(Entity *user, AbilityType ability)
                 int shadowDamage = user->getDamage() * 2; // x2 урон
                 pos.entity->takeDamage(shadowDamage);
                 cout << user->getName() << " выныривает из тени и наносит " << shadowDamage << " урона!\n";
+
+                // Проверка на смерть и окончание боя
+                removeDeadEntities();
+                if (isPlayerVictory() || isPlayerDefeat())
+                {
+                    battleActive = false;
+                }
                 break;
             }
         }

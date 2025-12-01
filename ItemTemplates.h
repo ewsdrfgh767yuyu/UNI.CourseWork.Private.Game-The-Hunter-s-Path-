@@ -4,7 +4,7 @@
 #include <map>
 #include <string>
 
-// Структура шаблона предмета
+// Item template structure
 struct ItemTemplate
 {
     std::string name = "";
@@ -14,7 +14,7 @@ struct ItemTemplate
     std::map<std::string, int> stats = {};
 };
 
-// Фабрика для создания предметов
+// Factory for creating items
 class ItemFactory
 {
 private:
@@ -23,21 +23,21 @@ private:
     static void initializeTemplates();
 
 public:
-    // Получить список всех предметов
+    // Get list of all items
     static const std::vector<ItemTemplate> &getAllItems();
 
-    // Получить предметы по типу
+    // Get items by type
     static std::vector<ItemTemplate> getItemsByType(ItemType type);
 
-    // Создать предмет по индексу
+    // Create item by index
     static Item createItem(int index);
 
-    // Создать случайный предмет
+    // Create random item
     static Item createRandomItem();
 
-    // Создать случайный предмет определенного типа
+    // Create random item of specific type
     static Item createRandomItemOfType(ItemType type);
 
-    // Генерировать строку способностей
+    // Generate ability string
     static std::string generateAbilityString(const std::map<std::string, int>& stats);
 };

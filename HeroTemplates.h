@@ -4,7 +4,7 @@
 #include <map>
 #include <string>
 
-// Структура шаблона героя
+// Hero template structure
 struct HeroTemplate
 {
     std::string name = "";
@@ -21,18 +21,18 @@ struct HeroTemplate
     AbilityType baseAbility = AbilityType::NONE;
     std::vector<AbilityType> availableAbilities = {};
     bool isLoner = false;
-    double damageVariance = 0.2; // Разброс урона по умолчанию
+    double damageVariance = 0.2; // Default damage variance
 };
 
-// Структура пресета сборки отряда
+// Party preset structure
 struct PartyPreset
 {
     std::string name = "";
     std::string description = "";
-    std::vector<std::pair<HeroClass, std::string>> heroes = {}; // Класс и имя героя
+    std::vector<std::pair<HeroClass, std::string>> heroes = {}; // Class and hero name
 };
 
-// Структура для описания способности
+// Structure for ability description
 struct AbilityInfo
 {
     AbilityType type = AbilityType::NONE;
@@ -42,7 +42,7 @@ struct AbilityInfo
     std::string effect = "";
 };
 
-// Фабрика для создания героев
+// Factory for creating heroes
 class HeroFactory
 {
 private:
@@ -55,24 +55,24 @@ private:
     static void initializePartyPresets();
 
 public:
-    // Получить список доступных классов
+    // Get list of available classes
     static std::vector<HeroClass> getAvailableClasses();
 
-    // Получить информацию о классе
+    // Get class information
     static const HeroTemplate &getHeroTemplate(HeroClass heroClass);
 
-    // Создать героя по классу
+    // Create hero by class
     static Player *createHero(HeroClass heroClass, const std::string &customName = "");
 
-    // Получить информацию о способности
+    // Get ability information
     static const AbilityInfo &getAbilityInfo(AbilityType ability);
 
-    // Получить список способностей для класса
+    // Get list of abilities for class
     static std::vector<AbilityType> getClassAbilities(HeroClass heroClass);
 
-    // Получить список пресетов сборок
+    // Get list of party presets
     static const std::vector<PartyPreset> &getPartyPresets();
 
-    // Создать отряд по пресету
+    // Create party by preset
     static std::vector<Player *> createPartyFromPreset(int presetIndex);
 };

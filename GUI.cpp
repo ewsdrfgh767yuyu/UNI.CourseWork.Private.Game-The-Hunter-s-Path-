@@ -65,6 +65,14 @@ void TextDisplay::draw(sf::RenderWindow &window)
     window.draw(text);
 }
 
+void TextDisplay::drawWithOffset(sf::RenderWindow &window, float offsetY)
+{
+    sf::Vector2f originalPos = text.getPosition();
+    text.setPosition(originalPos.x, originalPos.y - offsetY);
+    window.draw(text);
+    text.setPosition(originalPos);
+}
+
 void TextDisplay::setText(const std::string &newText)
 {
     text.setString(newText);
@@ -79,9 +87,15 @@ Menu::Menu(sf::RenderWindow &window, const sf::Font &font) : window(window), fon
 
 void Menu::addButton(const std::string &text, const sf::Vector2f &position, const sf::Vector2f &size, std::function<void()> callback)
 {
-    buttons.emplace_back(text, font, 24, position, size);
+    buttons.emplace_back(text, font, 28, position, size);
     buttons.back().setCallback(callback);
     totalHeight = std::max(totalHeight, position.y + size.y);
+}
+
+void Menu::addText(const std::string &text, unsigned int characterSize, const sf::Vector2f &position, sf::Color color)
+{
+    texts.emplace_back(text, font, characterSize, position, color);
+    totalHeight = std::max(totalHeight, position.y + static_cast<float>(characterSize));
 }
 
 void Menu::setScrollable(bool scrollable, float maxHeight)
@@ -109,7 +123,7 @@ void Menu::handleEvent(const sf::Event &event)
     else if (isScrollable && event.type == sf::Event::MouseWheelScrolled)
     {
         float delta = event.mouseWheelScroll.delta * 20.0f; // скорость прокрутки
-        scrollOffset += delta;
+        scrollOffset -= delta;
         scrollOffset = std::max(-100.0f, std::min(scrollOffset, totalHeight - maxVisibleHeight));
     }
 }
@@ -126,6 +140,10 @@ void Menu::draw()
                 button.drawWithOffset(window, scrollOffset);
             }
         }
+        for (auto &text : texts)
+        {
+            text.drawWithOffset(window, scrollOffset);
+        }
     }
     else
     {
@@ -133,10 +151,10 @@ void Menu::draw()
         {
             button.draw(window);
         }
-    }
-    for (auto &text : texts)
-    {
-        text.draw(window);
+        for (auto &text : texts)
+        {
+            text.draw(window);
+        }
     }
 }
 

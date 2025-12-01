@@ -53,70 +53,70 @@ void HeroFactory::initializeTemplates()
 
 void HeroFactory::initializePartyPresets()
 {
-    // Пресет 1: Одиночка - Легендарный герой
+    // Preset 1: Lone - Legendary hero
     partyPresets.push_back({
         "Legendary Lone Hero",
         "In dark times, when the shadows of the Lord of Darkness engulfed the kingdoms, a lone wanderer, marked by ancient curses and blessings, decided to stand against evil. His path is one of despair and greatness, where one sword decides the fate of the world.",
         {{HeroClass::LONER, "Legend"}}
     });
 
-    // Пресет 2: Воин и Маг - Классическая пара
+    // Preset 2: Warrior and Mage - Classic pair
     partyPresets.push_back({
         "Brothers in Arms",
         "Lotric, the unyielding warrior from the ruined castle, and Lorian, his mage brother, lost everything to the invasion of the forces of Darkness. Together they swore to avenge the Lord, whose servants burned their home and destroyed their family.",
         {{HeroClass::WARRIOR, "Lotric"}, {HeroClass::MAGE, "Lorian"}}
     });
 
-    // Пресет 3: Варвар и Разбойник - Дикая пара
+    // Preset 3: Barbarian and Rogue - Wild pair
     partyPresets.push_back({
         "Wild Avengers",
         "Krag, barbarian from the northern lands, saw hordes of undead destroy his tribe. Laslo, cunning rogue from the slums, lost his sister in captivity to the Lord's servants. Together they sow chaos in the enemy ranks, avenging the lost.",
         {{HeroClass::BARBARIAN, "Krag"}, {HeroClass::ROGUE, "Laslo"}}
     });
 
-    // Пресет 4: Варвар, Разбойник и Друид - Полная тройка
+    // Preset 4: Barbarian, Rogue and Druid - Full trio
     partyPresets.push_back({
         "Guardians of the Ancient Forest",
         "When the Lord of Darkness began poisoning the sacred forests, Krag, Laslo and Kendrick united. The barbarian carries the fury of nature, the rogue the cunning of shadows, and the druid the wisdom of ancient spirits. Their mission is to restore the balance of the world.",
         {{HeroClass::BARBARIAN, "Krag"}, {HeroClass::ROGUE, "Laslo"}, {HeroClass::DRUID, "Kendrick"}}
     });
 
-    // Пресет 5: Паладин и Следопыт - Защитная пара
+    // Preset 5: Paladin and Ranger - Defensive pair
     partyPresets.push_back({
         "Holy Wanderers",
         "Eldrin, paladin of a forgotten order, lost faith when the Lord destroyed his temple. Talia, ranger from the elven forests, saw darkness devour her homeland. Together they carry the light of hope through the darkness.",
         {{HeroClass::PALADIN, "Eldrin"}, {HeroClass::RANGER, "Talia"}}
     });
 
-    // Пресет 6: Маг и Колдун - Магическая мощь
+    // Preset 6: Mage and Warlock - Magical power
     partyPresets.push_back({
         "Masters of Forbidden Knowledge",
         "Azrael and Morrigan, two mages from the ancient academy, witnessed the fall of their teachers to the power of the Lord of Darkness. One draws strength from pure magic, the other from dark deals. Their path leads to the final battle for the soul of magic.",
         {{HeroClass::MAGE, "Azrael"}, {HeroClass::WARLOCK, "Morrigan"}}
     });
 
-    // Пресет 7: Воин, Маг и Друид - Классическая тройка
+    // Preset 7: Warrior, Mage and Druid - Classic trio
     partyPresets.push_back({
         "Three Guardians of the Kingdom",
         "Harold, the last knight of the fallen kingdom, Merilin, the court sorceress, and Sylvana, druid of the ancient circle - three whose fates intertwined in the fire of war. The Lord of Darkness destroyed their world, and now they go to restore it.",
         {{HeroClass::WARRIOR, "Harold"}, {HeroClass::MAGE, "Merilin"}, {HeroClass::DRUID, "Sylvana"}}
     });
 
-    // Пресет 8: Разбойник и Следопыт - Скрытная пара
+    // Preset 8: Rogue and Ranger - Stealthy pair
     partyPresets.push_back({
         "Shadows of Forgotten Forests",
         "Shadow, master thief from the underworld, and Huntress, ranger from the mysterious forests, united after the Lord kidnapped their loved ones. They glide through the shadows, sowing death among the servants of Darkness.",
         {{HeroClass::ROGUE, "Shadow"}, {HeroClass::RANGER, "Huntress"}}
     });
 
-    // Пресет 9: Паладин, Варвар и Колдун - Сбалансированная тройка
+    // Preset 9: Paladin, Barbarian and Warlock - Balanced trio
     partyPresets.push_back({
         "Sacred Fury",
         "Galahad, paladin rejected by his order for too radical methods; Grom, barbarian exiled from his tribe for uncontrollable rage; Sandro, warlock who sold his soul for power. The Lord of Darkness is their common enemy, uniting the outcasts.",
         {{HeroClass::PALADIN, "Galahad"}, {HeroClass::BARBARIAN, "Grom"}, {HeroClass::WARLOCK, "Sandro"}}
     });
 
-    // Пресет 10: Полная четверка - Воин, Маг, Разбойник, Друид
+    // Preset 10: Full quartet - Warrior, Mage, Rogue, Druid
     partyPresets.push_back({
         "Legendary Quartet",
         "Arthur, noble warrior; Merlin, wise mage; Robin, cunning rogue; Morgana, mysterious druid. Prophecy foretold their meeting in the hour of greatest need. The Lord of Darkness awakened ancient evil, and only this quartet can stop it.",
@@ -198,6 +198,10 @@ void HeroFactory::initializeAbilities()
         AbilityType::FEAR, "Fear", "Instills terror, reducing enemies' combat ability",
         3, "Enemies: initiative -2, damage -3 for 2 turns"};
 
+    abilityDatabase[AbilityType::HEAL] = {
+        AbilityType::HEAL, "Heal", "Restores health instantly",
+        4, "Restore 40 HP"};
+
     abilityDatabase[AbilityType::REGENERATION] = {
         AbilityType::REGENERATION, "Regeneration", "Restores health naturally",
         5, "Restore 30 HP at start of turn"};
@@ -264,15 +268,15 @@ Player *HeroFactory::createHero(HeroClass heroClass, const std::string &customNa
         tmpl.baseAbility,
         tmpl.damageVariance);
 
-    // Устанавливаем дополнительные свойства через методы
+    // Set additional properties through methods
     hero->setAvailableAbilities(tmpl.availableAbilities);
     hero->setProgressionType(tmpl.progressionType);
     hero->setIsLoner(tmpl.isLoner);
 
-    // Инициализируем уровни способностей
+    // Initialize ability levels
     for (AbilityType ability : tmpl.availableAbilities)
     {
-        hero->setAbilityLevel(ability, 1); // Базовый уровень
+        hero->setAbilityLevel(ability, 1); // Base level
     }
 
     return hero;
