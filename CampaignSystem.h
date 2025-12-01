@@ -23,7 +23,7 @@ enum class EventType
 };
 
 // Структура для хранения информации о событии
-struct Event
+struct CampaignEvent
 {
     EventType type;
     std::string description;
@@ -40,7 +40,7 @@ struct Location
     std::string name;
     std::string description;
     std::vector<LocationType> connections; // Связанные локации
-    std::vector<Event> events;             // События в локации
+    std::vector<CampaignEvent> events;             // События в локации
     bool isFinalBossLocation = false;      // Флаг финального босса
 };
 
@@ -59,12 +59,12 @@ private:
 
     // Вспомогательные методы
     void initializeLocations();
-    Event generateRandomEvent();
-    void handleBattleEvent(const Event &event);
-    void handleTreasureEvent(const Event &event);
-    void handleTextEvent(const Event &event);
-    void handleExitEvent(const Event &event);
-    void handleBossBattleEvent(const Event &event);
+    CampaignEvent generateRandomEvent();
+    void handleBattleEvent(const CampaignEvent &event);
+    void handleTreasureEvent(const CampaignEvent &event);
+    void handleTextEvent(const CampaignEvent &event);
+    void handleExitEvent(const CampaignEvent &event);
+    void handleBossBattleEvent(const CampaignEvent &event);
     void handleNodeEvent(NodeType nodeType);
     void displayLocationInfo();
     void displayAvailableConnections();
@@ -81,7 +81,9 @@ public:
 
     // Основные методы
     void startCampaign();
+    void initializeCampaign();
     void createPlayerParty();
+    void createPlayerPartyFromPreset(int presetIndex);
     void runCampaignLoop();
     bool isGameCompleted() const { return gameCompleted; }
 
@@ -91,4 +93,8 @@ public:
     const Location &getCurrentLocation() const { return currentLocation; }
     int getCurrentDifficulty() const { return currentDifficulty; }
     const Map &getGameMap() const { return gameMap; }
+    Map &getGameMapMutable() { return gameMap; }
+    const std::map<Position, bool> &getVisitedNodes() const { return visitedNodes; }
+    void markNodeVisited(const Position &pos) { visitedNodes[pos] = true; }
+    void handleNodeEventPublic(NodeType nodeType) { handleNodeEvent(nodeType); }
 };

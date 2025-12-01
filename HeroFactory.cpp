@@ -11,43 +11,43 @@ std::vector<PartyPreset> HeroFactory::partyPresets;
 
 void HeroFactory::initializeTemplates()
 {
-    // ВОИН - танкующий боец ближнего боя
+    // WARRIOR - tanky melee fighter
     heroTemplates[HeroClass::WARRIOR] = {
-        "Воин", "Могучий боец ближнего боя, специализирующийся на защите и мощных ударах", HeroClass::WARRIOR, ProgressionType::LEVEL_BASED, 120, 15, 5, 3, 2, 12, 0, AbilityType::CHARGE, {AbilityType::CHARGE, AbilityType::SHIELD_WALL, AbilityType::BATTLE_CRY, AbilityType::FEAR}, false, 0.15};
+        "Warrior", "Mighty melee fighter specializing in defense and powerful strikes", HeroClass::WARRIOR, ProgressionType::LEVEL_BASED, 120, 15, 5, 3, 2, 12, 0, AbilityType::CHARGE, {AbilityType::CHARGE, AbilityType::SHIELD_WALL, AbilityType::BATTLE_CRY, AbilityType::FEAR}, false, 0.15};
 
-    // ПАЛАДИН - защитник с лечением
+    // PALADIN - defender with healing
     heroTemplates[HeroClass::PALADIN] = {
-        "Паладин", "Святой воин, сочетающий защиту, лечение и поддержку союзников", HeroClass::PALADIN, ProgressionType::MASTERY, 130, 12, 8, 2, 2, 10, 0, AbilityType::HEALING_WAVE, {AbilityType::HEALING_WAVE, AbilityType::FROST_ARMOR, AbilityType::COMMAND, AbilityType::REGENERATION}, false, 0.1};
+        "Paladin", "Holy warrior combining defense, healing and ally support", HeroClass::PALADIN, ProgressionType::MASTERY, 130, 12, 8, 2, 2, 10, 0, AbilityType::HEALING_WAVE, {AbilityType::HEALING_WAVE, AbilityType::FROST_ARMOR, AbilityType::COMMAND, AbilityType::REGENERATION}, false, 0.1};
 
-    // ВАРВАР - берсерк с высоким уроном
+    // BARBARIAN - berserker with high damage
     heroTemplates[HeroClass::BARBARIAN] = {
-        "Варвар", "Дикий воин, черпающий силу из ярости и неистовства", HeroClass::BARBARIAN, ProgressionType::SACRIFICE, 110, 18, 3, 4, 3, 14, 0, AbilityType::BERSERK, {AbilityType::BERSERK, AbilityType::BLOOD_RITUAL, AbilityType::LIFE_STEAL, AbilityType::SHADOW_STEP}, false, 0.4 // Высокий разброс - может нанести очень много или почти ничего
+        "Barbarian", "Wild warrior drawing strength from rage and fury", HeroClass::BARBARIAN, ProgressionType::SACRIFICE, 110, 18, 3, 4, 3, 14, 0, AbilityType::BERSERK, {AbilityType::BERSERK, AbilityType::BLOOD_RITUAL, AbilityType::LIFE_STEAL, AbilityType::SHADOW_STEP}, false, 0.4 // High variance - can deal a lot or almost nothing
     };
 
-    // РАЗБОЙНИК - stealth и критические удары
+    // ROGUE - stealth and critical strikes
     heroTemplates[HeroClass::ROGUE] = {
-        "Разбойник", "Ловкий убийца, специализирующийся на скрытности и внезапных атаках", HeroClass::ROGUE, ProgressionType::SKILL_POINTS, 90, 14, 2, 3, 3, 16, 1, AbilityType::STEALTH, {AbilityType::STEALTH, AbilityType::SHADOW_STEP, AbilityType::HEAL, AbilityType::INVISIBLE}, false, 0.25};
+        "Rogue", "Agile assassin specializing in stealth and surprise attacks", HeroClass::ROGUE, ProgressionType::SKILL_POINTS, 90, 14, 2, 3, 3, 16, 1, AbilityType::STEALTH, {AbilityType::STEALTH, AbilityType::SHADOW_STEP, AbilityType::HEAL, AbilityType::INVISIBLE}, false, 0.25};
 
-    // СЛЕДОПЫТ - дальний бой и мобильность
+    // RANGER - ranged combat and mobility
     heroTemplates[HeroClass::RANGER] = {
-        "Следопыт", "Мастер лука и леса, сочетающий дальний бой с мобильностью", HeroClass::RANGER, ProgressionType::LEVEL_BASED, 100, 13, 3, 3, 2, 15, 2, AbilityType::ARCANE_MISSILE, {AbilityType::ARCANE_MISSILE, AbilityType::TELEPORT, AbilityType::HEAL, AbilityType::FLAME_BURST}, false, 0.2};
+        "Ranger", "Master of bow and forest, combining ranged combat with mobility", HeroClass::RANGER, ProgressionType::LEVEL_BASED, 100, 13, 3, 3, 2, 15, 2, AbilityType::ARCANE_MISSILE, {AbilityType::ARCANE_MISSILE, AbilityType::TELEPORT, AbilityType::HEAL, AbilityType::FLAME_BURST}, false, 0.2};
 
-    // МАГ - магический урон и контроль
+    // MAGE - magical damage and control
     heroTemplates[HeroClass::MAGE] = {
-        "Маг", "Повелитель магии, специализирующийся на заклинаниях и контроле поля боя", HeroClass::MAGE, ProgressionType::SKILL_POINTS, 80, 8, 1, 2, 2, 11, 3, AbilityType::CHAIN_LIGHTNING, {AbilityType::CHAIN_LIGHTNING, AbilityType::TELEPORT, AbilityType::FLAME_BURST, AbilityType::FROST_ARMOR}, false, 0.05 // Почти без разброса - маги стреляют точно
+        "Mage", "Master of magic, specializing in spells and battlefield control", HeroClass::MAGE, ProgressionType::SKILL_POINTS, 80, 8, 1, 2, 2, 11, 3, AbilityType::CHAIN_LIGHTNING, {AbilityType::CHAIN_LIGHTNING, AbilityType::TELEPORT, AbilityType::FLAME_BURST, AbilityType::FROST_ARMOR}, false, 0.05 // Almost no variance - mages shoot accurately
     };
 
-    // КОЛДУН - демоническая магия и жертвы
+    // WARLOCK - demonic magic and sacrifices
     heroTemplates[HeroClass::WARLOCK] = {
-        "Колдун", "Темный маг, черпающий силу из демонических сделок и жертв", HeroClass::WARLOCK, ProgressionType::SACRIFICE, 85, 10, 2, 3, 2, 13, 2, AbilityType::BLOOD_RITUAL, {AbilityType::BLOOD_RITUAL, AbilityType::LIFE_STEAL, AbilityType::FEAR, AbilityType::ARCANE_MISSILE}, false, 0.3};
+        "Warlock", "Dark mage drawing power from demonic deals and sacrifices", HeroClass::WARLOCK, ProgressionType::SACRIFICE, 85, 10, 2, 3, 2, 13, 2, AbilityType::BLOOD_RITUAL, {AbilityType::BLOOD_RITUAL, AbilityType::LIFE_STEAL, AbilityType::FEAR, AbilityType::ARCANE_MISSILE}, false, 0.3};
 
-    // ДРУИД - природная магия и трансформация
+    // DRUID - nature magic and transformation
     heroTemplates[HeroClass::DRUID] = {
-        "Друид", "Страж природы, владеющий магией земли и исцелением", HeroClass::DRUID, ProgressionType::TRANSCENDENCE, 105, 11, 4, 2, 2, 12, 1, AbilityType::REGENERATION, {AbilityType::REGENERATION, AbilityType::HEALING_WAVE, AbilityType::POISON, AbilityType::STEALTH}, false};
+        "Druid", "Guardian of nature, wielding earth magic and healing", HeroClass::DRUID, ProgressionType::TRANSCENDENCE, 105, 11, 4, 2, 2, 12, 1, AbilityType::REGENERATION, {AbilityType::REGENERATION, AbilityType::HEALING_WAVE, AbilityType::POISON, AbilityType::STEALTH}, false};
 
-    // ОДИНОЧКА - уникальный класс без отряда
+    // LONER - unique class without party
     heroTemplates[HeroClass::LONER] = {
-        "Одиночка", "Легендарный герой, идущий один против всего мира. Повышенные характеристики, но без союзников", HeroClass::LONER, ProgressionType::TRANSCENDENCE, 200, 25, 10, 8, 4, 18, 1, AbilityType::BERSERK, {AbilityType::BERSERK, AbilityType::CHARGE, AbilityType::SHIELD_WALL, AbilityType::HEALING_WAVE, AbilityType::TELEPORT}, true, 0.5 // Максимальный разброс - может нанести очень много или почти ничего
+        "Loner", "Legendary hero going alone against the whole world. Enhanced stats, but no allies", HeroClass::LONER, ProgressionType::TRANSCENDENCE, 200, 25, 10, 8, 4, 18, 1, AbilityType::BERSERK, {AbilityType::BERSERK, AbilityType::CHARGE, AbilityType::SHIELD_WALL, AbilityType::HEALING_WAVE, AbilityType::TELEPORT}, true, 0.5 // Maximum variance - can deal a lot or almost nothing
     };
 }
 
@@ -55,160 +55,160 @@ void HeroFactory::initializePartyPresets()
 {
     // Пресет 1: Одиночка - Легендарный герой
     partyPresets.push_back({
-        "Легендарный Одиночка",
-        "В темные времена, когда тени Властелина Тьмы поглотили королевства, одинокий странник, отмеченный древними проклятиями и благословениями, решил встать против зла. Его путь - это путь отчаяния и величия, где один меч решает судьбу мира.",
-        {{HeroClass::LONER, "Легенда"}}
+        "Legendary Lone Hero",
+        "In dark times, when the shadows of the Lord of Darkness engulfed the kingdoms, a lone wanderer, marked by ancient curses and blessings, decided to stand against evil. His path is one of despair and greatness, where one sword decides the fate of the world.",
+        {{HeroClass::LONER, "Legend"}}
     });
 
     // Пресет 2: Воин и Маг - Классическая пара
     partyPresets.push_back({
-        "Братья по Оружию",
-        "Лотрик, непреклонный воин из разрушенного замка, и Лориан, его брат-маг, потеряли все из-за нашествия сил Тьмы. Вместе они клялись отомстить Властелину, чьи слуги сожгли их родной дом и погубили их семью.",
-        {{HeroClass::WARRIOR, "Лотрик"}, {HeroClass::MAGE, "Лориан"}}
+        "Brothers in Arms",
+        "Lotric, the unyielding warrior from the ruined castle, and Lorian, his mage brother, lost everything to the invasion of the forces of Darkness. Together they swore to avenge the Lord, whose servants burned their home and destroyed their family.",
+        {{HeroClass::WARRIOR, "Lotric"}, {HeroClass::MAGE, "Lorian"}}
     });
 
     // Пресет 3: Варвар и Разбойник - Дикая пара
     partyPresets.push_back({
-        "Дикие Мстители",
-        "Краг, варвар из северных земель, видел, как орды нежити уничтожили его племя. Ласло, хитрый разбойник из трущоб, потерял сестру в плену у слуг Властелина. Вместе они сеют хаос в рядах врага, мстя за утраченное.",
-        {{HeroClass::BARBARIAN, "Краг"}, {HeroClass::ROGUE, "Ласло"}}
+        "Wild Avengers",
+        "Krag, barbarian from the northern lands, saw hordes of undead destroy his tribe. Laslo, cunning rogue from the slums, lost his sister in captivity to the Lord's servants. Together they sow chaos in the enemy ranks, avenging the lost.",
+        {{HeroClass::BARBARIAN, "Krag"}, {HeroClass::ROGUE, "Laslo"}}
     });
 
     // Пресет 4: Варвар, Разбойник и Друид - Полная тройка
     partyPresets.push_back({
-        "Стражи Древнего Леса",
-        "Когда Властелин Тьмы начал отравлять священные леса, Краг, Ласло и Кендрик объединились. Варвар несет ярость природы, разбойник - хитрость теней, а друид - мудрость древних духов. Их миссия - восстановить баланс мира.",
-        {{HeroClass::BARBARIAN, "Краг"}, {HeroClass::ROGUE, "Ласло"}, {HeroClass::DRUID, "Кендрик"}}
+        "Guardians of the Ancient Forest",
+        "When the Lord of Darkness began poisoning the sacred forests, Krag, Laslo and Kendrick united. The barbarian carries the fury of nature, the rogue the cunning of shadows, and the druid the wisdom of ancient spirits. Their mission is to restore the balance of the world.",
+        {{HeroClass::BARBARIAN, "Krag"}, {HeroClass::ROGUE, "Laslo"}, {HeroClass::DRUID, "Kendrick"}}
     });
 
     // Пресет 5: Паладин и Следопыт - Защитная пара
     partyPresets.push_back({
-        "Святые Странники",
-        "Элдрин, паладин забытого ордена, потерял веру, когда Властелин уничтожил его храм. Талия, следопыт из эльфийских лесов, видела, как тьма пожирает ее родину. Вместе они несут свет надежды сквозь мрак.",
-        {{HeroClass::PALADIN, "Элдрин"}, {HeroClass::RANGER, "Талия"}}
+        "Holy Wanderers",
+        "Eldrin, paladin of a forgotten order, lost faith when the Lord destroyed his temple. Talia, ranger from the elven forests, saw darkness devour her homeland. Together they carry the light of hope through the darkness.",
+        {{HeroClass::PALADIN, "Eldrin"}, {HeroClass::RANGER, "Talia"}}
     });
 
     // Пресет 6: Маг и Колдун - Магическая мощь
     partyPresets.push_back({
-        "Повелители Запретного Знания",
-        "Азраэль и Морриган, два мага из древней академии, были свидетелями падения их учителей под властью Властелина Тьмы. Один черпает силу из чистой магии, другой - из темных сделок. Их путь ведет к финальной битве за душу магии.",
-        {{HeroClass::MAGE, "Азраэль"}, {HeroClass::WARLOCK, "Морриган"}}
+        "Masters of Forbidden Knowledge",
+        "Azrael and Morrigan, two mages from the ancient academy, witnessed the fall of their teachers to the power of the Lord of Darkness. One draws strength from pure magic, the other from dark deals. Their path leads to the final battle for the soul of magic.",
+        {{HeroClass::MAGE, "Azrael"}, {HeroClass::WARLOCK, "Morrigan"}}
     });
 
     // Пресет 7: Воин, Маг и Друид - Классическая тройка
     partyPresets.push_back({
-        "Три Стража Королевства",
-        "Гарольд, последний рыцарь павшего королевства, Мерилин, придворная волшебница, и Сильвана, друид древнего круга - трое, чьи судьбы переплелись в огне войны. Властелин Тьмы разрушил их мир, и теперь они идут, чтобы восстановить его.",
-        {{HeroClass::WARRIOR, "Гарольд"}, {HeroClass::MAGE, "Мерилин"}, {HeroClass::DRUID, "Сильвана"}}
+        "Three Guardians of the Kingdom",
+        "Harold, the last knight of the fallen kingdom, Merilin, the court sorceress, and Sylvana, druid of the ancient circle - three whose fates intertwined in the fire of war. The Lord of Darkness destroyed their world, and now they go to restore it.",
+        {{HeroClass::WARRIOR, "Harold"}, {HeroClass::MAGE, "Merilin"}, {HeroClass::DRUID, "Sylvana"}}
     });
 
     // Пресет 8: Разбойник и Следопыт - Скрытная пара
     partyPresets.push_back({
-        "Тени Забытых Лесов",
-        "Шэдоу, мастер воровства из подземного мира, и Хантресс, следопыт из таинственных лесов, объединились после того, как Властелин похитил их близких. Они скользят сквозь тени, сея смерть среди слуг Тьмы.",
-        {{HeroClass::ROGUE, "Шэдоу"}, {HeroClass::RANGER, "Хантресс"}}
+        "Shadows of Forgotten Forests",
+        "Shadow, master thief from the underworld, and Huntress, ranger from the mysterious forests, united after the Lord kidnapped their loved ones. They glide through the shadows, sowing death among the servants of Darkness.",
+        {{HeroClass::ROGUE, "Shadow"}, {HeroClass::RANGER, "Huntress"}}
     });
 
     // Пресет 9: Паладин, Варвар и Колдун - Сбалансированная тройка
     partyPresets.push_back({
-        "Священная Ярость",
-        "Галахад, паладин, отвергнутый своим орденом за слишком радикальные методы; Гром, варвар, изгнанный из племени за неконтролируемую ярость; Сандро, колдун, продавший душу за силу. Властелин Тьмы - их общий враг, объединивший отверженных.",
-        {{HeroClass::PALADIN, "Галахад"}, {HeroClass::BARBARIAN, "Гром"}, {HeroClass::WARLOCK, "Сандро"}}
+        "Sacred Fury",
+        "Galahad, paladin rejected by his order for too radical methods; Grom, barbarian exiled from his tribe for uncontrollable rage; Sandro, warlock who sold his soul for power. The Lord of Darkness is their common enemy, uniting the outcasts.",
+        {{HeroClass::PALADIN, "Galahad"}, {HeroClass::BARBARIAN, "Grom"}, {HeroClass::WARLOCK, "Sandro"}}
     });
 
     // Пресет 10: Полная четверка - Воин, Маг, Разбойник, Друид
     partyPresets.push_back({
-        "Легендарная Четверка",
-        "Артур, благородный воин; Мерлин, мудрый маг; Робин, хитрый разбойник; Моргана, таинственная друидка. Пророчество предсказало их встречу в час величайшей нужды. Властелин Тьмы пробудил древнее зло, и только эта четверка может остановить его.",
-        {{HeroClass::WARRIOR, "Артур"}, {HeroClass::MAGE, "Мерлин"}, {HeroClass::ROGUE, "Робин"}, {HeroClass::DRUID, "Моргана"}}
+        "Legendary Quartet",
+        "Arthur, noble warrior; Merlin, wise mage; Robin, cunning rogue; Morgana, mysterious druid. Prophecy foretold their meeting in the hour of greatest need. The Lord of Darkness awakened ancient evil, and only this quartet can stop it.",
+        {{HeroClass::WARRIOR, "Arthur"}, {HeroClass::MAGE, "Merlin"}, {HeroClass::ROGUE, "Robin"}, {HeroClass::DRUID, "Morgana"}}
     });
 }
 
 void HeroFactory::initializeAbilities()
 {
     abilityDatabase[AbilityType::CHARGE] = {
-        AbilityType::CHARGE, "Рывок", "Мгновенное перемещение к цели с мощной атакой",
-        5, "Урон +50%, 30% шанс оглушения (-2 инициативы) на 1 ход"};
+        AbilityType::CHARGE, "Charge", "Instant movement to target with powerful attack",
+        5, "Damage +50%, 30% chance to stun (-2 initiative) for 1 turn"};
 
     abilityDatabase[AbilityType::SHIELD_WALL] = {
-        AbilityType::SHIELD_WALL, "Стена щитов", "Создает мощный барьер, блокирующий урон",
-        3, "Защита +5, блокирует 80% урона на 2 хода"};
+        AbilityType::SHIELD_WALL, "Shield Wall", "Creates a powerful barrier blocking damage",
+        3, "Defense +5, blocks 80% damage for 2 turns"};
 
     abilityDatabase[AbilityType::BERSERK] = {
-        AbilityType::BERSERK, "Берсерк", "Впадает в ярость, увеличивая силу",
-        5, "Урон +5, защита -2 на 3 хода"};
+        AbilityType::BERSERK, "Berserk", "Enters rage, increasing strength",
+        5, "Damage +5, defense -2 for 3 turns"};
 
     abilityDatabase[AbilityType::BATTLE_CRY] = {
-        AbilityType::BATTLE_CRY, "Боевой клич", "Воодушевляет союзников и устрашает врагов",
-        3, "Союзники: +2 атаки и защиты на 2 хода, Враги: -2 атаки и инициативы на 2 хода"};
+        AbilityType::BATTLE_CRY, "Battle Cry", "Inspires allies and intimidates enemies",
+        3, "Allies: +2 attack and defense for 2 turns, Enemies: -2 attack and initiative for 2 turns"};
 
     abilityDatabase[AbilityType::HEALING_WAVE] = {
-        AbilityType::HEALING_WAVE, "Волна исцеления", "Исцеляет всех союзников волной целительной энергии",
-        4, "Исцеление 50 HP всем союзникам"};
+        AbilityType::HEALING_WAVE, "Healing Wave", "Heals all allies with a wave of healing energy",
+        4, "Heal 50 HP to all allies"};
 
     abilityDatabase[AbilityType::COMMAND] = {
-        AbilityType::COMMAND, "Команда", "Отдает приказ, усиливая боевой дух союзников",
-        3, "Союзники: +2 инициативы, +1 урона на 2 хода"};
+        AbilityType::COMMAND, "Command", "Gives an order, boosting allies' morale",
+        3, "Allies: +2 initiative, +1 damage for 2 turns"};
 
     abilityDatabase[AbilityType::FROST_ARMOR] = {
-        AbilityType::FROST_ARMOR, "Ледяная броня", "Покрывает ледяной броней, замедляя врагов",
-        3, "Защита +5 на 3 хода, враги: -2 инициативы на 2 хода"};
+        AbilityType::FROST_ARMOR, "Frost Armor", "Covers with ice armor, slowing enemies",
+        3, "Defense +5 for 3 turns, enemies: -2 initiative for 2 turns"};
 
     abilityDatabase[AbilityType::STEALTH] = {
-        AbilityType::STEALTH, "Скрытность", "Сливается с тенями для внезапной атаки",
-        4, "Невидимость, следующая атака: x2 урон"};
+        AbilityType::STEALTH, "Stealth", "Blends with shadows for surprise attack",
+        4, "Invisible, next attack: x2 damage"};
 
     abilityDatabase[AbilityType::SHADOW_STEP] = {
-        AbilityType::SHADOW_STEP, "Теневой шаг", "Телепортируется сквозь тени для внезапного удара",
-        3, "Телепортация к цели, урон x2 (игнорирует защиту)"};
+        AbilityType::SHADOW_STEP, "Shadow Step", "Teleports through shadows for surprise strike",
+        3, "Teleport to target, damage x2 (ignores defense)"};
 
     abilityDatabase[AbilityType::POISON] = {
-        AbilityType::POISON, "Яд", "Отравляет цель ядом, наносящим урон со временем",
-        4, "Цель получает 8 урона в начале каждого своего хода в течение 3 ходов"};
+        AbilityType::POISON, "Poison", "Poisons target with damage over time",
+        4, "Target takes 8 damage at start of each turn for 3 turns"};
 
     abilityDatabase[AbilityType::INVISIBLE] = {
-        AbilityType::INVISIBLE, "Невидимость", "Становится полностью невидимым",
-        2, "Невидим до следующей атаки или способности"};
+        AbilityType::INVISIBLE, "Invisible", "Becomes completely invisible",
+        2, "Invisible until next attack or ability"};
 
     abilityDatabase[AbilityType::ARCANE_MISSILE] = {
-        AbilityType::ARCANE_MISSILE, "Магический снаряд", "Запускает мощный магический снаряд",
-        5, "Урон 15-25, игнорирует защиту цели"};
+        AbilityType::ARCANE_MISSILE, "Arcane Missile", "Launches a powerful magic missile",
+        5, "Damage 15-25, ignores target's defense"};
 
     abilityDatabase[AbilityType::TELEPORT] = {
-        AbilityType::TELEPORT, "Телепортация", "Мгновенно перемещается в указанную точку",
-        3, "Перемещение на любую свободную позицию"};
+        AbilityType::TELEPORT, "Teleport", "Instantly moves to a specified point",
+        3, "Move to any free position"};
 
     abilityDatabase[AbilityType::CHAIN_LIGHTNING] = {
-        AbilityType::CHAIN_LIGHTNING, "Цепная молния", "Вызывает молнию, поражающую несколько целей",
-        4, "Урон 20 по 3 ближайшим врагам"};
+        AbilityType::CHAIN_LIGHTNING, "Chain Lightning", "Calls lightning striking multiple targets",
+        4, "20 damage to 3 nearest enemies"};
 
     abilityDatabase[AbilityType::FLAME_BURST] = {
-        AbilityType::FLAME_BURST, "Взрыв пламени", "Создает огненный взрыв вокруг себя",
-        3, "Урон 25 всем врагам"};
+        AbilityType::FLAME_BURST, "Flame Burst", "Creates a flame explosion around self",
+        3, "25 damage to all enemies"};
 
     abilityDatabase[AbilityType::BLOOD_RITUAL] = {
-        AbilityType::BLOOD_RITUAL, "Кровавый ритуал", "Жертвует кровью за демоническую силу",
-        3, "Жертва 30 HP, урон +50% на 3 хода"};
+        AbilityType::BLOOD_RITUAL, "Blood Ritual", "Sacrifices blood for demonic power",
+        3, "Sacrifice 30 HP, damage +50% for 3 turns"};
 
     abilityDatabase[AbilityType::LIFE_STEAL] = {
-        AbilityType::LIFE_STEAL, "Похищение жизни", "Крадет жизненную силу у врагов",
-        4, "Восстановление 50% от нанесенного урона"};
+        AbilityType::LIFE_STEAL, "Life Steal", "Steals life force from enemies",
+        4, "Restore 50% of damage dealt"};
 
     abilityDatabase[AbilityType::FEAR] = {
-        AbilityType::FEAR, "Страх", "Внушает ужас, снижая боеспособность врагов",
-        3, "Враги: инициатива -2, урон -3 на 2 хода"};
+        AbilityType::FEAR, "Fear", "Instills terror, reducing enemies' combat ability",
+        3, "Enemies: initiative -2, damage -3 for 2 turns"};
 
     abilityDatabase[AbilityType::REGENERATION] = {
-        AbilityType::REGENERATION, "Регенерация", "Восстанавливает здоровье естественным путем",
-        5, "Восстановление 30 HP в начале хода"};
+        AbilityType::REGENERATION, "Regeneration", "Restores health naturally",
+        5, "Restore 30 HP at start of turn"};
 
     abilityDatabase[AbilityType::FLYING] = {
-        AbilityType::FLYING, "Полет", "Взлетает и перемещается по воздуху",
-        4, "Перемещение на любую позицию"};
+        AbilityType::FLYING, "Flying", "Takes off and moves through air",
+        4, "Move to any position"};
 
     abilityDatabase[AbilityType::FIRE_DAMAGE] = {
-        AbilityType::FIRE_DAMAGE, "Огненный урон", "Атаки наносят дополнительный огненный урон",
-        4, "Дополнительный урон 30% от базового при каждой атаке"};
+        AbilityType::FIRE_DAMAGE, "Fire Damage", "Attacks deal additional fire damage",
+        4, "Additional damage 30% of base per attack"};
 }
 
 std::vector<HeroClass> HeroFactory::getAvailableClasses()

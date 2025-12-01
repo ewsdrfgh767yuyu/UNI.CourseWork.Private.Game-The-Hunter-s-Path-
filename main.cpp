@@ -1,411 +1,278 @@
-#define WIN32_LEAN_AND_MEAN
-#define NOMINMAX
-#include <Windows.h>
+#include <SFML/Graphics.hpp>
+#include <SFML/System.hpp>
 #include <iostream>
-#include <stdexcept>
 #include <vector>
 #include <string>
-#include <limits>
 #include <ctime>
-#include <clocale>
-#include <io.h>
-#include <fcntl.h>
-#include "entity.h"
-#include "BattleSystem.h"
-#include "EnemyTemplates.h"
-#include "HeroTemplates.h"
+#include "GUI.h"
 #include "CampaignSystem.h"
+#include "HeroTemplates.h"
 #include "utils.h"
 
 using namespace std;
+using namespace sf;
 
-// Функция для очистки консоли
-void clearConsole()
+enum class GameState
 {
-    system("cls");
-}
-
-// Функция для выбора из списка
-int selectFromList(const vector<string> &options, const string &prompt)
-{
-    cout << "\n"
-         << prompt << "\n";
-    for (int i = 0; i < options.size(); ++i)
-    {
-        cout << i + 1 << ". " << options[i] << "\n";
-    }
-
-    int choice = getSafeIntInput("Выберите (1-" + to_string(options.size()) + "): ", 1, static_cast<int>(options.size()));
-    return choice - 1;
-}
-
-// Функция для создания отряда игроков
-vector<Entity *> createPlayerParty()
-{
-    vector<Entity *> party;
-
-    cout << "\n=== СОЗДАНИЕ ОТРЯДА ===\n";
-
-    // Выбор размера отряда
-    vector<string> partySizes = {"Одиночка (1 герой)", "Малый отряд (2 героя)", "Полный отряд (3 героя)"};
-    int partySizeChoice = selectFromList(partySizes, "Выберите размер отряда:");
-
-    int maxHeroes = partySizeChoice + 1;
-
-    // Получаем доступные классы
-    vector<HeroClass> availableClasses = HeroFactory::getAvailableClasses();
-    vector<string> classNames;
-    for (HeroClass cls : availableClasses)
-    {
-        const HeroTemplate &tmpl = HeroFactory::getHeroTemplate(cls);
-        classNames.push_back(tmpl.name + " - " + tmpl.description);
-    }
-
-    for (int i = 0; i < maxHeroes; ++i)
-    {
-        cout << "\n--- Выбор героя " << (i + 1) << " ---\n";
-
-        int classChoice = selectFromList(classNames, "Выберите класс героя:");
-
-        HeroClass selectedClass = availableClasses[classChoice];
-        const HeroTemplate &tmpl = HeroFactory::getHeroTemplate(selectedClass);
-
-        // Если выбран одиночка, создаем только его
-        if (tmpl.isLoner)
-        {
-            cout << "Вы выбрали Одиночку! Отряд будет состоять только из него.\n";
-            Player *loner = HeroFactory::createHero(selectedClass, "Одиночка");
-            party.push_back(loner);
-            break;
-        }
-
-        // Ввод имени героя
-        string heroName;
-        cout << "Введите имя героя: ";
-        getline(cin, heroName);
-        if (heroName.empty())
-        {
-            heroName = tmpl.name;
-        }
-
-        Player *hero = HeroFactory::createHero(selectedClass, heroName);
-        party.push_back(hero);
-
-        cout << "Создан " << hero->getName() << " (" << tmpl.name << ")\n";
-        cout << "Характеристики: HP " << hero->getCurrentHealthPoint()
-             << ", Урон " << hero->getDamage() << ", Защита " << hero->getDefense()
-             << ", Дальность атаки " << hero->getAttackRange() << "\n";
-    }
-
-    return party;
-}
-
-// Функция для создания группы врагов
-vector<Entity *> createEnemyGroup(LocationType location, int difficultyModifier = 0)
-{
-    vector<Entity *> enemies;
-
-    // Получаем доступных врагов для локации
-    vector<string> availableEnemies = EnemyFactory::getAvailableEnemies(location);
-
-    if (availableEnemies.empty())
-    {
-        cout << "Ошибка: нет доступных врагов для этой локации!\n";
-        return enemies;
-    }
-
-    // Выбор количества врагов
-    vector<string> enemyCounts = {"1 враг", "2 врага", "3 врага"};
-    int enemyCountChoice = selectFromList(enemyCounts, "Выберите количество врагов:");
-    int enemyCount = enemyCountChoice + 1;
-
-    cout << "\n=== ВРАГИ ЛЕСА ===\n";
-
-    for (int i = 0; i < enemyCount; ++i)
-    {
-        // Случайный выбор врага из доступных
-        int randomIndex = rand() % availableEnemies.size();
-        string enemyName = availableEnemies[randomIndex];
-
-        Enemy *enemy = EnemyFactory::createEnemyByName(enemyName, difficultyModifier);
-
-        if (enemy)
-        {
-            enemies.push_back(enemy);
-            cout << "Появился " << enemy->getName() << "!\n";
-            cout << "Характеристики: HP " << enemy->getCurrentHealthPoint()
-                 << ", Урон " << enemy->getDamage() << ", Защита " << enemy->getDefense()
-                 << ", Дальность атаки " << enemy->getAttackRange() << "\n";
-
-            // Показываем способность
-            AbilityType ability = enemy->getAbility();
-            if (ability != AbilityType::NONE)
-            {
-                const AbilityInfo &info = HeroFactory::getAbilityInfo(ability);
-                cout << "Способность: " << info.name << " - " << info.description << "\n";
-            }
-            cout << "\n";
-        }
-    }
-
-    return enemies;
-}
-
-// Функция для выполнения хода игрока
-void executePlayerTurn(BattleSystem &battleSystem, Entity *currentEntity)
-{
-    cout << "\n=== ХОД " << currentEntity->getName() << " ===\n";
-    cout << "Осталось стамины: " << currentEntity->getCurrentStamina() << "/" << currentEntity->getMaxStamina() << "\n";
-
-    int viewCount = 0; // Счетчик просмотров характеристик за ход
-
-    while (currentEntity->getCurrentStamina() > 0)
-    {
-        // Показываем доступные действия
-        vector<string> actions = {"Атаковать", "Переместиться", "Посмотреть характеристики", "Пропустить половину хода", "Закончить ход"};
-        int actionChoice = selectFromList(actions, "Выберите действие:");
-
-        switch (actionChoice)
-        {
-        case 0:
-        { // Атаковать
-            vector<pair<Entity *, int>> targets = battleSystem.getAvailableTargetsForCurrent();
-            if (targets.empty())
-            {
-                cout << "Нет доступных целей для атаки!\n";
-                continue; // Не завершаем ход
-            }
-
-            vector<string> targetNames;
-            for (const auto &targetPair : targets)
-            {
-                Entity *target = targetPair.first;
-                int position = targetPair.second;
-                targetNames.push_back(target->getName() + " (HP: " + to_string(target->getCurrentHealthPoint()) + ", Pos: " + to_string(position) + ")");
-            }
-
-            int targetChoice = selectFromList(targetNames, "Выберите цель:");
-            battleSystem.attack(currentEntity, targets[targetChoice].first);
-            break;
-        }
-
-        case 1:
-        { // Переместиться
-            vector<string> positions = {"Позиция 0 (передняя линия)", "Позиция 1 (передняя линия)",
-                                        "Позиция 2 (задняя линия)", "Позиция 3 (задняя линия)"};
-            int positionChoice = selectFromList(positions, "Выберите позицию:");
-            battleSystem.movePosition(currentEntity, positionChoice);
-            break;
-        }
-
-        case 2:
-        { // Посмотреть характеристики
-            if (viewCount >= 3)
-            {
-                cout << "Вы уже просмотрели характеристики 3 раза в этом ходу. Выберите другое действие.\n";
-                continue;
-            }
-
-            auto allEntities = battleSystem.getAllEntitiesWithStatus();
-            vector<string> entityNames;
-            vector<Entity *> entityList;
-
-            for (const auto &entityPair : allEntities)
-            {
-                Entity *entity = entityPair.first;
-                if (entity)
-                {
-                    entityNames.push_back(entity->getName() + " (" + entityPair.second + ")");
-                    entityList.push_back(entity);
-                }
-            }
-
-            int entityChoice = selectFromList(entityNames, "Выберите персонажа для просмотра характеристик:");
-            battleSystem.displayEntityDetails(entityList[entityChoice]);
-            viewCount++;
-            continue; // Не тратим стамину на просмотр
-        }
-
-        case 3:
-        { // Пропустить половину хода
-            battleSystem.skipHalfTurn(currentEntity);
-            break;
-        }
-
-        case 4:
-        { // Закончить ход
-            cout << currentEntity->getName() << " заканчивает ход.\n";
-            return;
-        }
-        }
-    }
-
-    cout << currentEntity->getName() << " израсходовал всю стамину и заканчивает ход.\n";
-}
-
-// Функция для выполнения хода ИИ
-void executeAITurn(BattleSystem &battleSystem, Entity *currentEntity)
-{
-    cout << "\n=== ХОД " << currentEntity->getName() << " ===\n";
-
-    // Простая ИИ логика: атаковать случайную цель или двигаться
-    vector<pair<Entity *, int>> targets = battleSystem.getAvailableTargetsForCurrent();
-
-    if (!targets.empty())
-    {
-        // 70% шанс атаковать, 30% шанс двигаться
-        if (rand() % 100 < 70)
-        {
-            int targetIndex = rand() % targets.size();
-            cout << currentEntity->getName() << " атакует " << targets[targetIndex].first->getName() << "!\n";
-            battleSystem.attack(currentEntity, targets[targetIndex].first);
-        }
-        else
-        {
-            // Для ИИ тоже проверяем логику перемещения
-            // Определяем, игрок это или враг
-            bool isPlayerEntity = false;
-            // ИИ всегда враг, но для проверки логики перемещения нужно определить сторону
-            // В данной реализации ИИ всегда на стороне врагов
-
-            // Проверяем, есть ли пустые позиции на стороне врагов
-            // Если есть пустые позиции, ИИ не может перемещаться
-            // Если нет пустых позиций, ИИ может менять местами с союзниками
-
-            // Для простоты ИИ будет пытаться перемещаться только если это возможно
-            // (т.е. менять местами с союзниками, если нет пустых позиций)
-            bool canMove = false;
-
-            // Определяем сторону ИИ (враги)
-            const auto &enemyPositions = battleSystem.getEnemyPositions();
-            // Проверяем, есть ли пустые позиции на стороне врагов
-            bool hasEmpty = false;
-            for (int i = 0; i < 4; ++i)
-            {
-                bool occupied = false;
-                for (const auto &pos : enemyPositions)
-                {
-                    if (pos.position == i)
-                    {
-                        occupied = true;
-                        break;
-                    }
-                }
-                if (!occupied)
-                {
-                    hasEmpty = true;
-                    break;
-                }
-            }
-
-            if (!hasEmpty)
-            {
-                // Если нет пустых позиций, ИИ может менять местами
-                // Для простоты выбираем случайную позицию союзника
-                vector<int> allyPositions;
-                for (const auto &pos : enemyPositions)
-                {
-                    if (pos.entity && pos.entity != currentEntity)
-                    {
-                        allyPositions.push_back(pos.position);
-                    }
-                }
-                if (!allyPositions.empty())
-                {
-                    int randomAllyIndex = rand() % allyPositions.size();
-                    int newPosition = allyPositions[randomAllyIndex];
-                    cout << currentEntity->getName() << " меняется местами с союзником на позицию " << newPosition << "!\n";
-                    battleSystem.movePosition(currentEntity, newPosition);
-                    canMove = true;
-                }
-            }
-
-            if (!canMove)
-            {
-                cout << currentEntity->getName() << " не может перемещаться!\n";
-            }
-        }
-    }
-    else
-    {
-        cout << currentEntity->getName() << " не может действовать!\n";
-    }
-}
+    MAIN_MENU,
+    CREDITS,
+    CHARACTER_SELECTION,
+    CHARACTER_CONFIRMATION,
+    CAMPAIGN,
+    MAP_MODE
+};
 
 int main()
 {
-    // Установка кодовой страницы консоли для корректного отображения русского текста
-    if (setlocale(LC_ALL, ".65001") == nullptr)
-    {
-        cerr << "Ошибка установки локали." << endl;
-    }
-
-    // Устанавливаем кодовую страницу консоли на UTF-8
-    if (!SetConsoleOutputCP(65001))
-    {
-        cerr << "Ошибка установки кодовой страницы консоли." << endl;
-    }
-    if (!SetConsoleCP(65001))
-    {
-        cerr << "Ошибка установки кодовой страницы ввода консоли." << endl;
-    }
-
     // Инициализация генератора случайных чисел
     srand(static_cast<unsigned int>(time(nullptr)));
 
-    // Начальное меню
-    bool exitGame = false;
-    while (!exitGame)
+    // Создаем окно
+    sf::RenderWindow window(sf::VideoMode(800, 600), "The Hunter's Path");
+    window.setFramerateLimit(60);
+
+    // Загружаем шрифт
+    sf::Font font;
+    if (!font.loadFromFile("resources/arial.ttf"))
     {
-        clearConsole();
-        cout << "+================================================================+\n";
-        cout << "|                                                                |\n";
-        cout << "|                    THE HUNTER'S PATH                           |\n";
-        cout << "|                                                                |\n";
-        cout << "|              Эпическая RPG с пошаговыми боями                  |\n";
-        cout << "|                                                                |\n";
-        cout << "|              Добро пожаловать, охотник!                        |\n";
-        cout << "|                                                                |\n";
-        cout << "+================================================================+\n";
-        cout << "\n";
-
-        vector<string> menuOptions = {"Начать игру", "Титры", "Выход из игры"};
-        int menuChoice = selectFromList(menuOptions, "Выберите опцию:");
-
-        switch (menuChoice)
+        // Попробуем загрузить системный шрифт с поддержкой кириллицы
+        if (!font.loadFromFile("C:/Windows/Fonts/tahoma.ttf"))
         {
-        case 0:
-        { // Начать игру
-            clearConsole();
-            // Запускаем походовый режим
-            CampaignSystem campaign;
-            campaign.startCampaign();
-            clearConsole();
-            break;
-        }
-        case 1:
-        { // Титры
-            clearConsole();
-            cout << "+================================================================+\n";
-            cout << "|                                                              |\n";
-            cout << "|                           CREDITS                             |\n";
-            cout << "|                                                              |\n";
-            cout << "|              Mikulski Stanislau - BSUIR student              |\n";
-            cout << "|                                                              |\n";
-            cout << "+================================================================+\n";
-            cout << "\nНажмите Enter для возврата в меню...";
-            cin.get();
-            break;
-        }
-        case 2:
-        { // Выход из игры
-            exitGame = true;
-            break;
-        }
+            cerr << "Ошибка загрузки шрифта resources/arial.ttf и системного tahoma.ttf" << endl;
+            return -1;
         }
     }
 
-    cout << "\nСпасибо за игру! До новых встреч в мире The Hunter's Path.\n";
+    GameState currentState = GameState::MAIN_MENU;
+    int selectedPresetIndex = -1;
+
+    // Главное меню
+    Menu mainMenu(window, font);
+    mainMenu.addButton("Start Game", sf::Vector2f(300, 200), sf::Vector2f(200, 50), [&]()
+                      { currentState = GameState::CHARACTER_SELECTION; });
+    mainMenu.addButton("Credits", sf::Vector2f(300, 270), sf::Vector2f(200, 50), [&]()
+                       { currentState = GameState::CREDITS; });
+    mainMenu.addButton("Exit", sf::Vector2f(300, 340), sf::Vector2f(200, 50), [&]()
+                       { window.close(); });
+
+    // Титры
+    TextDisplay creditsText("Mikulski Stanislau - BSUIR student", font, 24, sf::Vector2f(200, 250));
+    Menu creditsMenu(window, font);
+    creditsMenu.addButton("Back", sf::Vector2f(350, 350), sf::Vector2f(100, 50), [&]()
+                          { currentState = GameState::MAIN_MENU; });
+
+    // Кампания
+    CampaignSystem campaign;
+
+    // Выбор персонажа
+    Menu characterSelectionMenu(window, font);
+    const auto& presets = HeroFactory::getPartyPresets();
+    float yPos = 150;
+    for (size_t i = 0; i < presets.size(); ++i) {
+        characterSelectionMenu.addButton(presets[i].name, sf::Vector2f(100, yPos), sf::Vector2f(600, 50), [&, i]()
+                                        {
+                                            selectedPresetIndex = i;
+                                            currentState = GameState::CHARACTER_CONFIRMATION;
+                                        });
+        yPos += 60;
+    }
+    characterSelectionMenu.addButton("Back", sf::Vector2f(350, yPos), sf::Vector2f(100, 50), [&]()
+                                    { currentState = GameState::MAIN_MENU; });
+    characterSelectionMenu.setScrollable(true, 400.0f);
+
+    // Подтверждение выбора персонажа
+    Menu characterConfirmationMenu(window, font);
+    std::vector<TextDisplay> confirmationTexts;
+
+    // Declare text objects outside the loop to avoid initialization issues
+    sf::Text title("THE HUNTER'S PATH", font, 36);
+    title.setPosition(200, 100);
+    title.setFillColor(sf::Color::Yellow);
+
+    sf::String subtitleText = "An Epic RPG with Turn-Based Battles";
+    sf::Text subtitle(subtitleText, font, 18);
+    subtitle.setPosition(250, 150);
+    subtitle.setFillColor(sf::Color::Yellow);
+
+    sf::Text creditsTitle("CREDITS", font, 36);
+    creditsTitle.setPosition(300, 150);
+    creditsTitle.setFillColor(sf::Color::Yellow);
+
+    sf::Text characterSelectionTitle("CHOOSE YOUR PARTY", font, 36);
+    characterSelectionTitle.setPosition(200, 30);
+    characterSelectionTitle.setFillColor(sf::Color::Yellow);
+
+    sf::Text characterConfirmationTitle("CONFIRM YOUR PARTY", font, 36);
+    characterConfirmationTitle.setPosition(200, 30);
+    characterConfirmationTitle.setFillColor(sf::Color::Yellow);
+
+    while (window.isOpen())
+    {
+        sf::Event event;
+        while (window.pollEvent(event))
+        {
+            if (event.type == sf::Event::Closed)
+            {
+                window.close();
+            }
+
+            switch (currentState)
+            {
+            case GameState::MAIN_MENU:
+                mainMenu.handleEvent(event);
+                break;
+            case GameState::CREDITS:
+                creditsMenu.handleEvent(event);
+                break;
+            case GameState::CHARACTER_SELECTION:
+                characterSelectionMenu.handleEvent(event);
+                break;
+            case GameState::CHARACTER_CONFIRMATION:
+                characterConfirmationMenu.handleEvent(event);
+                break;
+            case GameState::CAMPAIGN:
+                // Обработка событий кампании, если нужно
+                break;
+            case GameState::MAP_MODE:
+                // Обработка клавиш для движения
+                if (event.type == sf::Event::KeyPressed) {
+                    char move = '\0';
+                    if (event.key.code == sf::Keyboard::W) move = 'w';
+                    else if (event.key.code == sf::Keyboard::A) move = 'a';
+                    else if (event.key.code == sf::Keyboard::S) move = 's';
+                    else if (event.key.code == sf::Keyboard::D) move = 'd';
+                    if (move != '\0') {
+                        if (campaign.getGameMapMutable().movePlayer(move)) {
+                            // Проверить, наступили ли на событие
+                            NodeType currentNode = campaign.getGameMap().getCurrentNode();
+                            if (currentNode != NodeType::EMPTY && currentNode != NodeType::START) {
+                                Position currentPos = campaign.getGameMap().getPlayerPosition();
+                                if (campaign.getVisitedNodes().find(currentPos) == campaign.getVisitedNodes().end()) {
+                                    campaign.markNodeVisited(currentPos);
+                                    campaign.handleNodeEventPublic(currentNode);
+                                }
+                            }
+                        }
+                    }
+                }
+                break;
+            }
+        }
+
+        window.clear(sf::Color::Black);
+
+        // Обновление меню подтверждения при необходимости
+        if (currentState == GameState::CHARACTER_CONFIRMATION && selectedPresetIndex != -1) {
+            characterConfirmationMenu.clear();
+            confirmationTexts.clear();
+
+            const auto& presets = HeroFactory::getPartyPresets();
+            const PartyPreset& preset = presets[selectedPresetIndex];
+
+            // Добавить описание пресета
+            confirmationTexts.emplace_back(preset.description, font, 20, sf::Vector2f(50, 80), sf::Color::White);
+
+            float yPos = 120;
+            for (size_t i = 0; i < preset.heroes.size(); ++i) {
+                const auto& heroPair = preset.heroes[i];
+                const HeroTemplate& tmpl = HeroFactory::getHeroTemplate(heroPair.first);
+
+                // Имя героя
+                confirmationTexts.emplace_back(heroPair.second + " (" + tmpl.name + ")", font, 20, sf::Vector2f(50, yPos), sf::Color::Yellow);
+                yPos += 27;
+
+                // Описание класса
+                confirmationTexts.emplace_back(tmpl.description, font, 18, sf::Vector2f(70, yPos), sf::Color::White);
+                yPos += 22;
+
+                // Характеристики
+                std::string statsStr = "Stats: HP: " + std::to_string(tmpl.baseMaxHP) + ", Damage: " + std::to_string(tmpl.baseDamage) + ", Defense: " + std::to_string(tmpl.baseDefense) + ", Attack: " + std::to_string(tmpl.baseAttack) + ", Stamina: " + std::to_string(tmpl.baseMaxStamina) + ", Initiative: " + std::to_string(tmpl.baseInitiative) + ", Range: " + std::to_string(tmpl.baseAttackRange);
+                confirmationTexts.emplace_back(statsStr, font, 16, sf::Vector2f(70, yPos), sf::Color::Magenta);
+                yPos += 20;
+
+                // Способности
+                std::string abilitiesStr = "Abilities: ";
+                for (size_t j = 0; j < tmpl.availableAbilities.size(); ++j) {
+                    const AbilityInfo& ability = HeroFactory::getAbilityInfo(tmpl.availableAbilities[j]);
+                    abilitiesStr += ability.name;
+                    if (j < tmpl.availableAbilities.size() - 1) abilitiesStr += ", ";
+                }
+                confirmationTexts.emplace_back(abilitiesStr, font, 16, sf::Vector2f(70, yPos), sf::Color::Cyan);
+                yPos += 22;
+
+                // Эффекты способностей
+                for (AbilityType abilityType : tmpl.availableAbilities) {
+                    const AbilityInfo& ability = HeroFactory::getAbilityInfo(abilityType);
+                    confirmationTexts.emplace_back("  " + ability.name + ": " + ability.effect, font, 14, sf::Vector2f(70, yPos), sf::Color::Green);
+                    yPos += 17;
+                }
+
+                yPos += 10; // Отступ между героями
+            }
+
+            // Кнопки
+            characterConfirmationMenu.addButton("Confirm", sf::Vector2f(200, yPos), sf::Vector2f(150, 50), [&]()
+                                                {
+                                                    campaign.createPlayerPartyFromPreset(selectedPresetIndex);
+                                                    currentState = GameState::CAMPAIGN;
+                                                });
+            characterConfirmationMenu.addButton("Back", sf::Vector2f(400, yPos), sf::Vector2f(150, 50), [&]()
+                                                {
+                                                    currentState = GameState::CHARACTER_SELECTION;
+                                                });
+            characterConfirmationMenu.setScrollable(true, 500.0f);
+        }
+
+        switch (currentState)
+        {
+        case GameState::MAIN_MENU:
+            window.draw(title);
+            window.draw(subtitle);
+            mainMenu.draw();
+            break;
+        case GameState::CREDITS:
+            window.draw(creditsTitle);
+            creditsText.draw(window);
+            creditsMenu.draw();
+            break;
+        case GameState::CHARACTER_SELECTION:
+            window.draw(characterSelectionTitle);
+            characterSelectionMenu.draw();
+            break;
+        case GameState::CHARACTER_CONFIRMATION:
+            window.draw(characterConfirmationTitle);
+            for (auto& text : confirmationTexts) {
+                text.draw(window);
+            }
+            characterConfirmationMenu.draw();
+            break;
+        case GameState::CAMPAIGN:
+            // Инициализируем кампанию и переходим на карту
+            campaign.createPlayerPartyFromPreset(selectedPresetIndex);
+            campaign.initializeCampaign();
+            currentState = GameState::MAP_MODE;
+            break;
+        case GameState::MAP_MODE:
+            // Отображаем карту
+            {
+                std::string mapStr = campaign.getGameMap().getMapString();
+                sf::Text mapText(mapStr, font, 14);
+                mapText.setPosition(10, 10);
+                mapText.setFillColor(sf::Color::White);
+                window.draw(mapText);
+
+                // Отображаем информацию о локации
+                std::string locationInfo = "Location: " + campaign.getCurrentLocation().name + "\nDifficulty: " + std::to_string(campaign.getCurrentDifficulty());
+                sf::Text infoText(locationInfo, font, 16);
+                infoText.setPosition(10, 500);
+                infoText.setFillColor(sf::Color::Yellow);
+                window.draw(infoText);
+            }
+            break;
+        }
+
+        window.display();
+    }
 
     return 0;
 }

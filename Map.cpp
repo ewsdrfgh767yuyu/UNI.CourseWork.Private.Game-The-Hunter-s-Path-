@@ -1,4 +1,4 @@
- #include "Map.h"
+#include "Map.h"
 #include <iostream>
 #include <algorithm>
 #include <queue>
@@ -39,6 +39,38 @@ NodeType charToNodeType(char c)
 
 #include "mapPrototypesData.h"
 
+void Map::parsePrototype(const char *const *prototype)
+{
+    for (int y = 0; y < MAP_SIZE; ++y)
+    {
+        for (int x = 0; x < MAP_SIZE; ++x)
+        {
+            char c = prototype[y][x];
+            if (c == 'R')
+            {
+                // Randomly assign BATTLE, TREASURE, or EVENT
+                int randType = rng() % 3;
+                switch (randType)
+                {
+                case 0:
+                    grid[y][x] = NodeType::BATTLE;
+                    break;
+                case 1:
+                    grid[y][x] = NodeType::TREASURE;
+                    break;
+                case 2:
+                    grid[y][x] = NodeType::EVENT;
+                    break;
+                }
+            }
+            else
+            {
+                grid[y][x] = charToNodeType(c);
+            }
+        }
+    }
+}
+
 Map::Map() : grid(MAP_SIZE, std::vector<NodeType>(MAP_SIZE, NodeType::EMPTY)),
              visited(MAP_SIZE, std::vector<char>(MAP_SIZE, 0)),
              rng(std::random_device{}())
@@ -77,15 +109,8 @@ void Map::generate()
     // Select a prototype variant randomly [0..3]
     int variantIndex = rng() % 4;
 
-    // Load the selected prototype into grid
-    for (int y = 0; y < MAP_SIZE; ++y)
-    {
-        for (int x = 0; x < MAP_SIZE; ++x)
-        {
-            char c = selectedPrototypes[variantIndex][y][x];
-            grid[y][x] = charToNodeType(c);
-        }
-    }
+    // Parse the selected prototype into grid with randomization for 'R'
+    parsePrototype((const char **)selectedPrototypes[variantIndex]);
 
     // Add points of interest based on map type
     std::vector<Position> emptyPositions;
@@ -1236,9 +1261,11 @@ bool Map::checkAndFixMapIntegrity()
                 break;
             }
         }
-        if (start.x != -1) break;
+        if (start.x != -1)
+            break;
     }
-    if (start.x == -1) return false; // No start found, cannot verify
+    if (start.x == -1)
+        return false; // No start found, cannot verify
 
     // Collect all special nodes except the start
     std::vector<Position> specialNodes;
@@ -1255,7 +1282,7 @@ bool Map::checkAndFixMapIntegrity()
     }
 
     // Check reachability of each special node, carve path if unreachable
-    for (const auto& node : specialNodes)
+    for (const auto &node : specialNodes)
     {
         if (!hasPathToExit(start, grid[node.y][node.x]))
         {
@@ -1275,7 +1302,7 @@ bool Map::checkAndFixMapIntegrity()
         q.pop();
 
         std::vector<Position> directions = {{0, -1}, {0, 1}, {-1, 0}, {1, 0}};
-        for (const auto& dir : directions)
+        for (const auto &dir : directions)
         {
             Position neighbor(current.x + dir.x, current.y + dir.y);
             if (isValidPosition(neighbor.x, neighbor.y) &&

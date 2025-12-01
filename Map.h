@@ -51,6 +51,7 @@ private:
     void placeSpecialNodes();
     void connectNodes();
     void ensureConnectivity();
+    void parsePrototype(const char *const *prototype);
     bool isValidPosition(int x, int y) const;
     bool isSpecialNode(NodeType type) const;
     std::vector<Position> getNeighbors(const Position &pos) const;

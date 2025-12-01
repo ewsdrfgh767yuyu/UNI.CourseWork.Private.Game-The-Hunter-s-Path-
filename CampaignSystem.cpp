@@ -23,35 +23,35 @@ CampaignSystem::~CampaignSystem()
 
 void CampaignSystem::initializeLocations()
 {
-    // ЛЕС
+    // FOREST
     Location forest;
     forest.type = LocationType::FOREST;
-    forest.name = "Лес";
-    forest.description = "Густой лес, полный опасных существ и древних тайн.";
+    forest.name = "Forest";
+    forest.description = "Dense forest full of dangerous creatures and ancient secrets.";
     forest.connections = {LocationType::CAVE, LocationType::DEAD_CITY};
     forest.isFinalBossLocation = false;
 
-    // ПЕЩЕРЫ
+    // CAVES
     Location cave;
     cave.type = LocationType::CAVE;
-    cave.name = "Пещеры";
-    cave.description = "Глубокие подземные пещеры, где обитают троглодиты и элементали.";
+    cave.name = "Caves";
+    cave.description = "Deep underground caves inhabited by troglodytes and elementals.";
     cave.connections = {LocationType::FOREST, LocationType::DEAD_CITY};
     cave.isFinalBossLocation = false;
 
-    // ГОРОД МЕРТВЫХ
+    // DEAD CITY
     Location deadCity;
     deadCity.type = LocationType::DEAD_CITY;
-    deadCity.name = "Город мертвых";
-    deadCity.description = "Заброшенный город, населенный нежитью и призраками.";
+    deadCity.name = "Dead City";
+    deadCity.description = "Abandoned city populated by undead and ghosts.";
     deadCity.connections = {LocationType::CAVE, LocationType::CASTLE};
     deadCity.isFinalBossLocation = false;
 
-    // ЗАМОК
+    // CASTLE
     Location castle;
     castle.type = LocationType::CASTLE;
-    castle.name = "Замок";
-    castle.description = "Древний замок, где обитает финальный босс и его приспешники.";
+    castle.name = "Castle";
+    castle.description = "Ancient castle where the final boss and his minions reside.";
     castle.connections = {};
     castle.isFinalBossLocation = true;
 
@@ -60,7 +60,7 @@ void CampaignSystem::initializeLocations()
     locations[LocationType::DEAD_CITY] = deadCity;
     locations[LocationType::CASTLE] = castle;
 
-    // Начинаем с леса
+    // Start with forest
     currentLocation = forest;
 }
 
@@ -74,34 +74,43 @@ void CampaignSystem::startCampaign()
 
     createPlayerParty();
 
-    // Начинаем с леса
+    // Start with forest
     currentLocation = locations[LocationType::FOREST];
 
-    // Генерируем фиксированную карту
+    // Generate fixed map
     gameMap.generateFixedMap();
-    // Выводим карту сразу после генерации для отладки
-    cout << "Карта после генерации:\n";
+    // Print map immediately after generation for debugging
+    cout << "Map after generation:\n";
     gameMap.printMap();
-    cout << "\nНажмите Enter для продолжения...";
+    cout << "\nPress Enter to continue...";
     cin.get();
 
-    // Запускаем режим карты
+    // Start map mode
     runMapMode();
+}
+
+void CampaignSystem::initializeCampaign()
+{
+    // Start with forest
+    currentLocation = locations[LocationType::FOREST];
+
+    // Generate fixed map
+    gameMap.generateFixedMap();
 }
 
 void CampaignSystem::createPlayerParty()
 {
-    cout << "\n=== ВЫБОР СБОРКИ ОТРЯДА ===\n";
+    cout << "\n=== PARTY BUILD SELECTION ===\n";
 
     // Получаем доступные пресеты
     const vector<PartyPreset> &presets = HeroFactory::getPartyPresets();
 
-    cout << "Доступные сборки отрядов:\n";
+    cout << "Available party builds:\n";
     for (int i = 0; i < presets.size(); ++i)
     {
         cout << i + 1 << ". " << presets[i].name << "\n";
         cout << "   " << presets[i].description << "\n";
-        cout << "   Состав: ";
+        cout << "   Composition: ";
         for (size_t j = 0; j < presets[i].heroes.size(); ++j)
         {
             const HeroTemplate &tmpl = HeroFactory::getHeroTemplate(presets[i].heroes[j].first);
@@ -112,21 +121,27 @@ void CampaignSystem::createPlayerParty()
         cout << "\n\n";
     }
 
-    int presetChoice = getSafeIntInput("Выберите сборку (1-" + to_string(presets.size()) + "): ", 1, static_cast<int>(presets.size()));
+    int presetChoice = getSafeIntInput("Choose build (1-" + to_string(presets.size()) + "): ", 1, static_cast<int>(presets.size()));
 
     // Создаем отряд по выбранному пресету
     playerParty = HeroFactory::createPartyFromPreset(presetChoice - 1);
 
     // Выводим информацию о созданном отряде
-    cout << "\nСоздан отряд:\n";
+    cout << "\nCreated party:\n";
     for (Player *hero : playerParty)
     {
         const HeroTemplate &tmpl = HeroFactory::getHeroTemplate(hero->getHeroClass());
         cout << "- " << hero->getName() << " (" << tmpl.name << ")\n";
-        cout << "  Характеристики: HP " << hero->getCurrentHealthPoint()
-             << ", Урон " << hero->getDamage() << ", Защита " << hero->getDefense()
-             << ", Дальность атаки " << hero->getAttackRange() << "\n";
+        cout << "  Stats: HP " << hero->getCurrentHealthPoint()
+             << ", Damage " << hero->getDamage() << ", Defense " << hero->getDefense()
+             << ", Attack Range " << hero->getAttackRange() << "\n";
     }
+}
+
+void CampaignSystem::createPlayerPartyFromPreset(int presetIndex)
+{
+    // Создаем отряд по выбранному пресету без консольного вывода
+    playerParty = HeroFactory::createPartyFromPreset(presetIndex);
 }
 
 void CampaignSystem::runCampaignLoop()
@@ -139,7 +154,7 @@ void CampaignSystem::runCampaignLoop()
         displayLocationInfo();
 
         // Генерируем случайное событие (предотвращаем бой на первом событии)
-        Event currentEvent = generateRandomEvent();
+        CampaignEvent currentEvent = generateRandomEvent();
         if (currentDifficulty == 0 && currentEvent.type == EventType::BATTLE)
         {
             // Если первое событие - бой, заменяем на текст или сокровище
@@ -190,9 +205,9 @@ void CampaignSystem::runCampaignLoop()
     }
 }
 
-Event CampaignSystem::generateRandomEvent()
+CampaignEvent CampaignSystem::generateRandomEvent()
 {
-    Event event;
+    CampaignEvent event;
 
     // Распределение вероятностей событий
     int randomValue = rand() % 100;
@@ -237,9 +252,9 @@ Event CampaignSystem::generateRandomEvent()
     return event;
 }
 
-void CampaignSystem::handleBattleEvent(const Event &event)
+void CampaignSystem::handleBattleEvent(const CampaignEvent &event)
 {
-    cout << "\n=== БОЙ ===\n";
+    cout << "\n=== BATTLE ===\n";
     cout << event.description << "\n";
 
     // Создаем врагов для текущей локации
@@ -250,7 +265,7 @@ void CampaignSystem::handleBattleEvent(const Event &event)
     {
         Enemy *enemy = EnemyFactory::createRandomEnemy(currentLocation.type, event.difficultyModifier);
         enemies.push_back(enemy);
-        cout << "Появился " << enemy->getName() << "!\n";
+        cout << "Appeared " << enemy->getName() << "!\n";
     }
 
     // Создаем систему боя
@@ -300,49 +315,44 @@ void CampaignSystem::handleBattleEvent(const Event &event)
         {
             if (isPlayerEntity)
             {
-                // Ход игрока (упрощенная версия)
-                cout << "\n=== ХОД " << currentEntity->getName() << " ===\n";
-                cout << "Осталось стамины: " << currentEntity->getCurrentStamina() << "/" << currentEntity->getMaxStamina() << "\n";
-
-                // Показываем доступные действия
-                cout << "Выберите действие:\n";
-                cout << "1. Атаковать\n";
-                cout << "2. Использовать способность\n";
-                cout << "3. Пропустить ход\n";
-
-                int actionChoice = getSafeIntInput("Выберите (1-3): ", 1, 3);
+                // Player turn (simplified version)
+                cout << "\n=== TURN " << currentEntity->getName() << " ===\n";
+                cout << "Stamina left: " << currentEntity->getCurrentStamina() << "/" << currentEntity->getMaxStamina() << "\n";
+                // Show available actions
+                cout << "Choose action:\n";
+                cout << "1. Attack\n";
+                cout << "2. Use ability\n";
+                cout << "3. Skip turn\n";
+                int actionChoice = getSafeIntInput("Choose (1-3): ", 1, 3);
 
                 if (actionChoice == 1)
                 {
-                    // Атака
+                    // Attack
                     vector<pair<Entity *, int>> targets = battleSystem.getAvailableTargetsForCurrent();
-
                     if (!targets.empty())
                     {
-                        cout << "Доступные цели:\n";
+                        cout << "Available targets:\n";
                         for (int i = 0; i < targets.size(); ++i)
                         {
                             cout << i + 1 << ". " << targets[i].first->getName() << " (HP: " << targets[i].first->getCurrentHealthPoint() << ", Pos: " << targets[i].second << ")\n";
                         }
-
                         int targetChoice;
-                        cout << "Выберите цель (1-" << targets.size() << "): ";
+                        cout << "Choose target (1-" << targets.size() << "): ";
                         cin >> targetChoice;
                         cin.ignore();
-
                         if (targetChoice > 0 && targetChoice <= static_cast<int>(targets.size()))
                         {
                             battleSystem.attack(currentEntity, targets[targetChoice - 1].first);
                         }
                         else
                         {
-                            cout << "Неверный выбор цели!\n";
+                            cout << "Invalid target choice!\n";
                             continue;
                         }
                     }
                     else
                     {
-                        cout << "Нет доступных целей для атаки!\n";
+                        cout << "No available targets for attack!\n";
                         continue;
                     }
                 }
@@ -408,19 +418,19 @@ void CampaignSystem::handleBattleEvent(const Event &event)
                 }
                 else if (actionChoice == 3)
                 {
-                    // Пропустить ход
-                    cout << currentEntity->getName() << " пропускает ход.\n";
-                    currentEntity->setCurrentStamina(0); // Завершить ход
+                    // Skip turn
+                    cout << currentEntity->getName() << " skips turn.\n";
+                    currentEntity->setCurrentStamina(0); // End turn
                 }
                 else
                 {
-                    cout << "Неверный выбор действия!\n";
+                    cout << "Invalid action choice!\n";
                     continue;
                 }
             }
             else
             {
-                // Ход ИИ (случайная атака)
+                // AI turn (random attack)
                 vector<pair<Entity *, int>> targets = battleSystem.getAvailableTargetsForCurrent();
                 if (!targets.empty())
                 {
@@ -429,7 +439,7 @@ void CampaignSystem::handleBattleEvent(const Event &event)
                 }
                 else
                 {
-                    // Нет целей, пропускаем ход
+                    // No targets, skip turn
                     break;
                 }
             }
@@ -448,14 +458,14 @@ void CampaignSystem::handleBattleEvent(const Event &event)
         if (battleSystem.isPlayerVictory())
         {
             playerWon = true;
-            cout << "[DEBUG] endBattle called from handleBattleEvent victory/defeat check\n";
+            cout << "[DEBUG] endBattle called from handleBattleCampaignEvent victory/defeat check\n";
             battleSystem.endBattle();
             break;
         }
         else if (battleSystem.isPlayerDefeat())
         {
             playerWon = false;
-            cout << "[DEBUG] endBattle called from handleBattleEvent victory/defeat check\n";
+            cout << "[DEBUG] endBattle called from handleBattleCampaignEvent victory/defeat check\n";
             battleSystem.endBattle();
             break;
         }
@@ -470,7 +480,7 @@ void CampaignSystem::handleBattleEvent(const Event &event)
     // Проверяем результат боя
     if (playerWon)
     {
-        cout << "\n[PARTY] ПОБЕДА! Вы успешно победили врагов!\n";
+        cout << "\n[PARTY] VICTORY! You have successfully defeated the enemies!\n";
 
         for (auto it = playerParty.begin(); it != playerParty.end();)
         {
@@ -505,12 +515,12 @@ void CampaignSystem::handleBattleEvent(const Event &event)
             }
         }
 
-        cout << "\nНажмите Enter для выхода в режим карты...";
+        cout << "\nPress Enter to return to map mode...";
         cin.get();
     }
     else
     {
-        cout << "\n[SKULL] ПОРАЖЕНИЕ! Ваш отряд пал в бою!\n";
+        cout << "\n[SKULL] DEFEAT! Your party has fallen in battle!\n";
 
         // Удаляем мертвых игроков из отряда
         for (auto it = playerParty.begin(); it != playerParty.end();)
@@ -528,7 +538,6 @@ void CampaignSystem::handleBattleEvent(const Event &event)
         }
     }
 
-
     // Удаляем мертвых игроков после завершения боя
     for (Player *deadPlayer : deadPlayers)
     {
@@ -544,23 +553,23 @@ void CampaignSystem::handleBattleEvent(const Event &event)
     cout << "[DEBUG] Enemies deleted and vector cleared\n";
 }
 
-void CampaignSystem::handleTreasureEvent(const Event &event)
+void CampaignSystem::handleTreasureEvent(const CampaignEvent &event)
 {
-    cout << "\n=== НАХОДКА ===\n";
+    cout << "\n=== TREASURE ===\n";
     cout << event.description << "\n";
 
     if (event.reward)
     {
-        cout << "Вы нашли: " << event.reward->getName() << "\n";
+        cout << "You found: " << event.reward->getName() << "\n";
         // Добавить предмет в общий инвентарь отряда
         partyInventory.push_back(*event.reward);
         cout << "[DEBUG] Added item to partyInventory, size: " << partyInventory.size() << "\n";
-        cout << "Предмет добавлен в общий инвентарь отряда.\n";
+        cout << "Item added to party inventory.\n";
         delete event.reward;
     }
     else
     {
-        cout << "К сожалению, сокровище оказалось пустым.\n";
+        cout << "Unfortunately, the treasure was empty.\n";
     }
 
     // Предложить управление инвентарем
@@ -569,24 +578,24 @@ void CampaignSystem::handleTreasureEvent(const Event &event)
         manageInventory();
     }
 
-    cout << "\nНажмите Enter для продолжения...";
+    cout << "\nPress Enter to continue...";
     cin.get();
 }
 
-void CampaignSystem::handleTextEvent(const Event &event)
+void CampaignSystem::handleTextEvent(const CampaignEvent &event)
 {
-    cout << "\n=== СОБЫТИЕ ===\n";
+    cout << "\n=== CampaignEvent ===\n";
     cout << event.description << "\n";
 
     if (!event.choices.empty())
     {
-        cout << "Варианты действий:\n";
+        cout << "Action options:\n";
         for (int i = 0; i < event.choices.size(); ++i)
         {
             cout << i + 1 << ". " << event.choices[i] << "\n";
         }
 
-        int choice = getSafeIntInput("Выберите действие (1-" + to_string(event.choices.size()) + "): ", 1, static_cast<int>(event.choices.size()));
+        int choice = getSafeIntInput("Choose action (1-" + to_string(event.choices.size()) + "): ", 1, static_cast<int>(event.choices.size()));
 
         if (choice > 0 && choice <= static_cast<int>(event.choices.size()))
         {
@@ -596,34 +605,34 @@ void CampaignSystem::handleTextEvent(const Event &event)
             switch (outcome)
             {
             case EventType::BATTLE:
-                handleBattleEvent(Event{EventType::BATTLE, "Ваш выбор привел к бою!", {}, {}, nullptr, currentDifficulty});
+                handleBattleEvent(CampaignEvent{EventType::BATTLE, "Your choice led to a battle!", {}, {}, nullptr, currentDifficulty});
                 break;
             case EventType::TREASURE:
             {
                 Item randomAccessory = ItemFactory::createRandomItemOfType(ItemType::ACCESSORY);
-                handleTreasureEvent(Event{EventType::TREASURE, "Ваш выбор принес награду!", {}, {}, new Item(randomAccessory), 0});
+                handleTreasureEvent(CampaignEvent{EventType::TREASURE, "Your choice brought a reward!", {}, {}, new Item(randomAccessory), 0});
                 break;
             }
             default:
-                cout << "Ваш выбор не принес заметных результатов.\n";
+                cout << "Your choice did not bring noticeable results.\n";
                 break;
             }
         }
     }
 
-    cout << "\nНажмите Enter для продолжения...";
+    cout << "\nPress Enter to continue...";
     cin.get();
 }
 
-void CampaignSystem::handleExitEvent(const Event &event)
+void CampaignSystem::handleExitEvent(const CampaignEvent &event)
 {
-    cout << "\n=== ВЫХОД ===\n";
+    cout << "\n=== EXIT ===\n";
     cout << event.description << "\n";
 
-    // Показываем доступные переходы
+    // Show available transitions
     if (!currentLocation.connections.empty())
     {
-        cout << "Доступные переходы:\n";
+        cout << "Available transitions:\n";
         for (int i = 0; i < currentLocation.connections.size(); ++i)
         {
             LocationType locType = currentLocation.connections[i];
@@ -631,70 +640,70 @@ void CampaignSystem::handleExitEvent(const Event &event)
             cout << i + 1 << ". " << loc.name << " - " << loc.description << "\n";
         }
 
-        int choice = getSafeIntInput("Выберите локацию для перехода (1-" + to_string(currentLocation.connections.size()) + "): ", 1, static_cast<int>(currentLocation.connections.size()));
+        int choice = getSafeIntInput("Choose location to transition to (1-" + to_string(currentLocation.connections.size()) + "): ", 1, static_cast<int>(currentLocation.connections.size()));
 
         if (choice > 0 && choice <= static_cast<int>(currentLocation.connections.size()))
         {
             LocationType targetLocation = currentLocation.connections[choice - 1];
             Location newLoc = locations[targetLocation];
 
-            cout << "\nВы согласны перейти в " << newLoc.name << "? (y/n): ";
+            cout << "\nDo you agree to go to " << newLoc.name << "? (y/n): ";
             char confirm;
             cin >> confirm;
             cin.ignore();
 
             if (confirm == 'y' || confirm == 'Y')
             {
-                cout << "Вы переходите в " << newLoc.name << "...\n";
-                // Меняем текущую локацию
+                cout << "You are transitioning to " << newLoc.name << "...\n";
+                // Change current location
                 currentLocation = newLoc;
-                // Генерируем новую карту для новой локации
+                // Generate new map for new location
                 gameMap.generateFixedMap();
                 visitedNodes.clear();
                 currentDifficulty++;
 
-                // Восстанавливаем здоровье всех членов отряда при переходе в новую локацию
+                // Restore health of all party members upon transitioning to new location
                 for (Player *player : playerParty)
                 {
                     if (player && player->getCurrentHealthPoint() > 0)
                     {
                         player->setCurrentHealthPoint(player->getMaxHealthPoint());
-                        cout << player->getName() << " полностью восстановил здоровье!\n";
+                        cout << player->getName() << " fully restored health!\n";
                     }
                 }
             }
             else
             {
-                cout << "Вы остаетесь на месте.\n";
+                cout << "You stay in place.\n";
             }
         }
         else
         {
-            cout << "Неверный выбор!\n";
+            cout << "Invalid choice!\n";
         }
     }
     else
     {
-        cout << "Нет доступных переходов из этой локации.\n";
+        cout << "No available transitions from this location.\n";
     }
 
-    cout << "\nНажмите Enter для продолжения...";
+    cout << "\nPress Enter to continue...";
     cin.get();
 }
 
-void CampaignSystem::handleBossBattleEvent(const Event &event)
+void CampaignSystem::handleBossBattleEvent(const CampaignEvent &event)
 {
-    cout << "\n=== ФИНАЛЬНЫЙ БОЙ ===\n";
-    cout << "Вы столкнулись с ВЛАСТЕЛИНОМ ТЬМЫ - финальным боссом игры!\n";
+    cout << "\n=== FINAL BATTLE ===\n";
+    cout << "You have encountered the LORD OF DARKNESS - the final boss of the game!\n";
 
-    // Создаем финального босса
+    // Create the final boss
     vector<Entity *> bossParty;
-    Enemy *finalBoss = new Enemy("Властелин Тьмы", 300, 25, 10, 8, 3, 3, 15, 2, AbilityType::LIFE_STEAL, 200, 5, "final_boss", 0.1);
+    Enemy *finalBoss = new Enemy("Lord of Darkness", 300, 25, 10, 8, 3, 3, 15, 2, AbilityType::LIFE_STEAL, 200, 5, "final_boss", 0.1);
     bossParty.push_back(finalBoss);
 
-    // Добавляем пару приспешников (не из замка)
-    Enemy *minion1 = EnemyFactory::createEnemyByName("Вампир", 2);
-    Enemy *minion2 = EnemyFactory::createEnemyByName("Троглодит", 2);
+    // Add a couple of minions (not from the castle)
+    Enemy *minion1 = EnemyFactory::createEnemyByName("Vampire", 2);
+    Enemy *minion2 = EnemyFactory::createEnemyByName("Troglodyte", 2);
     bossParty.push_back(minion1);
     bossParty.push_back(minion2);
 
@@ -1123,33 +1132,101 @@ void CampaignSystem::handleNodeEvent(NodeType nodeType)
     {
         if (currentLocation.type == LocationType::CASTLE)
         {
-            Event bossEvent{EventType::BOSS_BATTLE, "Вы столкнулись с финальным боссом!"};
+            CampaignEvent bossEvent{EventType::BOSS_BATTLE, "Вы столкнулись с финальным боссом!"};
             handleBossBattleEvent(bossEvent);
         }
         else
         {
-            Event battleEvent{EventType::BATTLE, "Вы наткнулись на группу врагов!", {}, {}, nullptr, currentDifficulty};
+            CampaignEvent battleEvent{EventType::BATTLE, "Вы наткнулись на группу врагов!", {}, {}, nullptr, currentDifficulty};
             handleBattleEvent(battleEvent);
         }
         break;
     }
     case NodeType::EVENT:
     {
-        Event eventEvent{EventType::TEXT_EVENT, "Вы обнаружили странное явление...", {"Исследовать", "Игнорировать"}, {EventType::TREASURE, EventType::BATTLE}, nullptr, 0};
+        CampaignEvent eventEvent{EventType::TEXT_EVENT, "Вы обнаружили странное явление...", {"Исследовать", "Игнорировать"}, {EventType::TREASURE, EventType::BATTLE}, nullptr, 0};
         handleTextEvent(eventEvent);
         break;
     }
     case NodeType::TREASURE:
     {
         Item randomItem = ItemFactory::createRandomItem();
-        Event treasureEvent{EventType::TREASURE, "Вы нашли скрытое сокровище!", {}, {}, new Item(randomItem), 0};
+        CampaignEvent treasureEvent{EventType::TREASURE, "Вы нашли скрытое сокровище!", {}, {}, new Item(randomItem), 0};
         handleTreasureEvent(treasureEvent);
         break;
     }
     case NodeType::EXIT:
     {
-        Event exitEvent{EventType::EXIT, "Вы нашли выход из этой локации."};
+        CampaignEvent exitEvent{EventType::EXIT, "Вы нашли выход из этой локации."};
         handleExitEvent(exitEvent);
+        break;
+    }
+    case NodeType::FOREST:
+    {
+        // Точка интереса: Лес - случайное событие
+        int randEvent = rand() % 3;
+        if (randEvent == 0)
+        {
+            CampaignEvent battleEvent{EventType::BATTLE, "В лесу вы наткнулись на диких зверей!", {}, {}, nullptr, currentDifficulty};
+            handleBattleEvent(battleEvent);
+        }
+        else if (randEvent == 1)
+        {
+            Item randomItem = ItemFactory::createRandomItem();
+            CampaignEvent treasureEvent{EventType::TREASURE, "Вы нашли древний артефакт в лесу!", {}, {}, new Item(randomItem), 0};
+            handleTreasureEvent(treasureEvent);
+        }
+        else
+        {
+            CampaignEvent eventEvent{EventType::TEXT_EVENT, "Вы услышали шепот деревьев...", {"Прислушаться", "Игнорировать"}, {EventType::TREASURE, EventType::BATTLE}, nullptr, 0};
+            handleTextEvent(eventEvent);
+        }
+        break;
+    }
+    case NodeType::CAVE:
+    {
+        // Точка интереса: Пещера - чаще бой
+        int randEvent = rand() % 3;
+        if (randEvent < 2)
+        {
+            CampaignEvent battleEvent{EventType::BATTLE, "Из пещеры выскочили монстры!", {}, {}, nullptr, currentDifficulty};
+            handleBattleEvent(battleEvent);
+        }
+        else
+        {
+            Item randomItem = ItemFactory::createRandomItem();
+            CampaignEvent treasureEvent{EventType::TREASURE, "В пещере вы нашли кристалл!", {}, {}, new Item(randomItem), 0};
+            handleTreasureEvent(treasureEvent);
+        }
+        break;
+    }
+    case NodeType::DEAD_CITY:
+    {
+        // Точка интереса: Мертвый город - чаще событие
+        int randEvent = rand() % 3;
+        if (randEvent == 0)
+        {
+            CampaignEvent battleEvent{EventType::BATTLE, "Призраки города атакуют!", {}, {}, nullptr, currentDifficulty};
+            handleBattleEvent(battleEvent);
+        }
+        else if (randEvent == 1)
+        {
+            Item randomItem = ItemFactory::createRandomItem();
+            CampaignEvent treasureEvent{EventType::TREASURE, "Вы нашли забытые реликвии!", {}, {}, new Item(randomItem), 0};
+            handleTreasureEvent(treasureEvent);
+        }
+        else
+        {
+            CampaignEvent eventEvent{EventType::TEXT_EVENT, "Город шепчет свои секреты...", {"Исследовать", "Уйти"}, {EventType::TREASURE, EventType::BATTLE}, nullptr, 0};
+            handleTextEvent(eventEvent);
+        }
+        break;
+    }
+    case NodeType::CASTLE:
+    {
+        // Точка интереса: Замок - финальный босс
+        CampaignEvent bossEvent{EventType::BOSS_BATTLE, "Вы проникли в сердце замка и столкнулись с Властелином Тьмы!"};
+        handleBossBattleEvent(bossEvent);
         break;
     }
     default:
