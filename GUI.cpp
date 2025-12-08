@@ -53,7 +53,7 @@ sf::FloatRect Button::getBounds() const
     return shape.getGlobalBounds();
 }
 
-TextDisplay::TextDisplay(const std::string &text, const sf::Font &font, unsigned int characterSize, const sf::Vector2f &position, sf::Color color)
+TextDisplay::TextDisplay(const sf::String &text, const sf::Font &font, unsigned int characterSize, const sf::Vector2f &position, sf::Color color)
     : text(text, font, characterSize)
 {
     this->text.setPosition(position);
@@ -73,7 +73,7 @@ void TextDisplay::drawWithOffset(sf::RenderWindow &window, float offsetY)
     text.setPosition(originalPos);
 }
 
-void TextDisplay::setText(const std::string &newText)
+void TextDisplay::setText(const sf::String &newText)
 {
     text.setString(newText);
 }
@@ -97,7 +97,7 @@ void Menu::addButton(const std::string &text, const sf::Vector2f &position, cons
     totalHeight = std::max(totalHeight, position.y + size.y);
 }
 
-void Menu::addText(const std::string &text, unsigned int characterSize, const sf::Vector2f &position, sf::Color color)
+void Menu::addText(const sf::String &text, unsigned int characterSize, const sf::Vector2f &position, sf::Color color)
 {
     sf::Vector2u windowSize = window.getSize();
     unsigned int scaledSize = static_cast<unsigned int>(characterSize * (windowSize.y / 768.0f));

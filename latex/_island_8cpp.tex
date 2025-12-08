@@ -1,0 +1,152 @@
+\doxysection{SFML-\/2.6.1/examples/island/\+Island.cpp File Reference}
+\hypertarget{_island_8cpp}{}\label{_island_8cpp}\index{SFML-\/2.6.1/examples/island/Island.cpp@{SFML-\/2.6.1/examples/island/Island.cpp}}
+{\ttfamily \#include $<$stb\+\_\+perlin.\+h$>$}\newline
+{\ttfamily \#include $<$SFML/\+Graphics.\+hpp$>$}\newline
+{\ttfamily \#include $<$vector$>$}\newline
+{\ttfamily \#include $<$deque$>$}\newline
+{\ttfamily \#include $<$sstream$>$}\newline
+{\ttfamily \#include $<$algorithm$>$}\newline
+{\ttfamily \#include $<$cstring$>$}\newline
+{\ttfamily \#include $<$cmath$>$}\newline
+\doxysubsubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \mbox{\hyperlink{_island_8cpp_ad63bc7e124b44adf37ea9e97fa1bf581}{STB\+\_\+\+PERLIN\+\_\+\+IMPLEMENTATION}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{_island_8cpp_a58030615808181acc26b9ea47e0405ef}{thread\+Function}} ()
+\item 
+void \mbox{\hyperlink{_island_8cpp_aaad56ee108fea7db0c2935830adb8d8c}{generate\+Terrain}} (\mbox{\hyperlink{classsf_1_1_vertex}{sf\+::\+Vertex}} \texorpdfstring{$\ast$}{*}vertex\+Buffer)
+\item 
+int \mbox{\hyperlink{_island_8cpp_ae66f6b31b5ad750f1fe042a706a4e3d4}{main}} ()
+\item 
+float \mbox{\hyperlink{_island_8cpp_aef9257df379ba9fe79102d14dee5cdf9}{get\+Elevation}} (float x, float y)
+\item 
+float \mbox{\hyperlink{_island_8cpp_a2f3f6d826db8f707de23993e07973d27}{get\+Elevation}} (unsigned int x, unsigned int y)
+\item 
+float \mbox{\hyperlink{_island_8cpp_a30c20a2787406000d031098087cd6744}{get\+Moisture}} (float x, float y)
+\item 
+float \mbox{\hyperlink{_island_8cpp_a8b80a3943af2a243cb11e8f11ebf042a}{get\+Moisture}} (unsigned int x, unsigned int y)
+\item 
+\mbox{\hyperlink{classsf_1_1_color}{sf\+::\+Color}} \mbox{\hyperlink{_island_8cpp_a8ac8168b51a028b825c90521a5b1cf8d}{color\+From\+Floats}} (float r, float g, float b)
+\item 
+\mbox{\hyperlink{classsf_1_1_color}{sf\+::\+Color}} \mbox{\hyperlink{_island_8cpp_a65a1015eb90d87c84aceccaf36191cd7}{get\+Lowlands\+Terrain\+Color}} (float moisture)
+\item 
+\mbox{\hyperlink{classsf_1_1_color}{sf\+::\+Color}} \mbox{\hyperlink{_island_8cpp_a6ca3410461a3c4cebfd5542cc20e1b18}{get\+Highlands\+Terrain\+Color}} (float elevation, float moisture)
+\item 
+\mbox{\hyperlink{classsf_1_1_color}{sf\+::\+Color}} \mbox{\hyperlink{_island_8cpp_a44ec648e02c291ec5ed3779cbdbd9c92}{get\+Snowcap\+Terrain\+Color}} (float elevation, float moisture)
+\item 
+\mbox{\hyperlink{classsf_1_1_color}{sf\+::\+Color}} \mbox{\hyperlink{_island_8cpp_a1ad42f0af617e224034fd49c16c47927}{get\+Terrain\+Color}} (float elevation, float moisture)
+\item 
+\mbox{\hyperlink{namespacesf_acf03098c2577b869e2fa6836cc48f1a0}{sf\+::\+Vector2f}} \mbox{\hyperlink{_island_8cpp_a186e2d09d65c1caa0c9d4d0eb1906ba5}{compute\+Normal}} (float left, float right, float bottom, float top)
+\item 
+void \mbox{\hyperlink{_island_8cpp_ae562e6fdcd2292b778c8b88369c9290d}{process\+Work\+Item}} (std\+::vector$<$ \mbox{\hyperlink{classsf_1_1_vertex}{sf\+::\+Vertex}} $>$ \&vertices, const Work\+Item \&work\+Item)
+\end{DoxyCompactItemize}
+
+
+\label{doc-define-members}
+\Hypertarget{_island_8cpp_doc-define-members}
+\doxysubsection{Macro Definition Documentation}
+\Hypertarget{_island_8cpp_ad63bc7e124b44adf37ea9e97fa1bf581}\index{Island.cpp@{Island.cpp}!STB\_PERLIN\_IMPLEMENTATION@{STB\_PERLIN\_IMPLEMENTATION}}
+\index{STB\_PERLIN\_IMPLEMENTATION@{STB\_PERLIN\_IMPLEMENTATION}!Island.cpp@{Island.cpp}}
+\doxysubsubsection{\texorpdfstring{STB\_PERLIN\_IMPLEMENTATION}{STB\_PERLIN\_IMPLEMENTATION}}
+{\footnotesize\ttfamily \label{_island_8cpp_ad63bc7e124b44adf37ea9e97fa1bf581} 
+\#define STB\+\_\+\+PERLIN\+\_\+\+IMPLEMENTATION}
+
+
+
+\label{doc-func-members}
+\Hypertarget{_island_8cpp_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{_island_8cpp_a8ac8168b51a028b825c90521a5b1cf8d}\index{Island.cpp@{Island.cpp}!colorFromFloats@{colorFromFloats}}
+\index{colorFromFloats@{colorFromFloats}!Island.cpp@{Island.cpp}}
+\doxysubsubsection{\texorpdfstring{colorFromFloats()}{colorFromFloats()}}
+{\footnotesize\ttfamily \label{_island_8cpp_a8ac8168b51a028b825c90521a5b1cf8d} 
+\mbox{\hyperlink{classsf_1_1_color}{sf\+::\+Color}} color\+From\+Floats (\begin{DoxyParamCaption}\item[{float}]{r}{, }\item[{float}]{g}{, }\item[{float}]{b}{}\end{DoxyParamCaption})}
+
+Get the lowlands terrain color for the given moisture. \Hypertarget{_island_8cpp_a186e2d09d65c1caa0c9d4d0eb1906ba5}\index{Island.cpp@{Island.cpp}!computeNormal@{computeNormal}}
+\index{computeNormal@{computeNormal}!Island.cpp@{Island.cpp}}
+\doxysubsubsection{\texorpdfstring{computeNormal()}{computeNormal()}}
+{\footnotesize\ttfamily \label{_island_8cpp_a186e2d09d65c1caa0c9d4d0eb1906ba5} 
+\mbox{\hyperlink{namespacesf_acf03098c2577b869e2fa6836cc48f1a0}{sf\+::\+Vector2f}} compute\+Normal (\begin{DoxyParamCaption}\item[{float}]{left}{, }\item[{float}]{right}{, }\item[{float}]{bottom}{, }\item[{float}]{top}{}\end{DoxyParamCaption})}
+
+Compute a compressed representation of the surface normal based on the given coordinates, and the elevation of the 4 adjacent neighbours. \Hypertarget{_island_8cpp_aaad56ee108fea7db0c2935830adb8d8c}\index{Island.cpp@{Island.cpp}!generateTerrain@{generateTerrain}}
+\index{generateTerrain@{generateTerrain}!Island.cpp@{Island.cpp}}
+\doxysubsubsection{\texorpdfstring{generateTerrain()}{generateTerrain()}}
+{\footnotesize\ttfamily \label{_island_8cpp_aaad56ee108fea7db0c2935830adb8d8c} 
+void generate\+Terrain (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classsf_1_1_vertex}{sf\+::\+Vertex}} \texorpdfstring{$\ast$}{*}}]{buffer}{}\end{DoxyParamCaption})}
+
+Terrain generation entry point. This queues up the generation work items which the worker threads dequeue and process. \Hypertarget{_island_8cpp_aef9257df379ba9fe79102d14dee5cdf9}\index{Island.cpp@{Island.cpp}!getElevation@{getElevation}}
+\index{getElevation@{getElevation}!Island.cpp@{Island.cpp}}
+\doxysubsubsection{\texorpdfstring{getElevation()}{getElevation()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{_island_8cpp_aef9257df379ba9fe79102d14dee5cdf9} 
+float get\+Elevation (\begin{DoxyParamCaption}\item[{float}]{x}{, }\item[{float}]{y}{}\end{DoxyParamCaption})}
+
+Get the terrain elevation at the given coordinates. \Hypertarget{_island_8cpp_a2f3f6d826db8f707de23993e07973d27}\index{Island.cpp@{Island.cpp}!getElevation@{getElevation}}
+\index{getElevation@{getElevation}!Island.cpp@{Island.cpp}}
+\doxysubsubsection{\texorpdfstring{getElevation()}{getElevation()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{_island_8cpp_a2f3f6d826db8f707de23993e07973d27} 
+float get\+Elevation (\begin{DoxyParamCaption}\item[{unsigned int}]{x}{, }\item[{unsigned int}]{y}{}\end{DoxyParamCaption})}
+
+\Hypertarget{_island_8cpp_a6ca3410461a3c4cebfd5542cc20e1b18}\index{Island.cpp@{Island.cpp}!getHighlandsTerrainColor@{getHighlandsTerrainColor}}
+\index{getHighlandsTerrainColor@{getHighlandsTerrainColor}!Island.cpp@{Island.cpp}}
+\doxysubsubsection{\texorpdfstring{getHighlandsTerrainColor()}{getHighlandsTerrainColor()}}
+{\footnotesize\ttfamily \label{_island_8cpp_a6ca3410461a3c4cebfd5542cc20e1b18} 
+\mbox{\hyperlink{classsf_1_1_color}{sf\+::\+Color}} get\+Highlands\+Terrain\+Color (\begin{DoxyParamCaption}\item[{float}]{elevation}{, }\item[{float}]{moisture}{}\end{DoxyParamCaption})}
+
+Get the highlands terrain color for the given elevation and moisture. \Hypertarget{_island_8cpp_a65a1015eb90d87c84aceccaf36191cd7}\index{Island.cpp@{Island.cpp}!getLowlandsTerrainColor@{getLowlandsTerrainColor}}
+\index{getLowlandsTerrainColor@{getLowlandsTerrainColor}!Island.cpp@{Island.cpp}}
+\doxysubsubsection{\texorpdfstring{getLowlandsTerrainColor()}{getLowlandsTerrainColor()}}
+{\footnotesize\ttfamily \label{_island_8cpp_a65a1015eb90d87c84aceccaf36191cd7} 
+\mbox{\hyperlink{classsf_1_1_color}{sf\+::\+Color}} get\+Lowlands\+Terrain\+Color (\begin{DoxyParamCaption}\item[{float}]{moisture}{}\end{DoxyParamCaption})}
+
+\Hypertarget{_island_8cpp_a30c20a2787406000d031098087cd6744}\index{Island.cpp@{Island.cpp}!getMoisture@{getMoisture}}
+\index{getMoisture@{getMoisture}!Island.cpp@{Island.cpp}}
+\doxysubsubsection{\texorpdfstring{getMoisture()}{getMoisture()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{_island_8cpp_a30c20a2787406000d031098087cd6744} 
+float get\+Moisture (\begin{DoxyParamCaption}\item[{float}]{x}{, }\item[{float}]{y}{}\end{DoxyParamCaption})}
+
+Get the terrain moisture at the given coordinates. \Hypertarget{_island_8cpp_a8b80a3943af2a243cb11e8f11ebf042a}\index{Island.cpp@{Island.cpp}!getMoisture@{getMoisture}}
+\index{getMoisture@{getMoisture}!Island.cpp@{Island.cpp}}
+\doxysubsubsection{\texorpdfstring{getMoisture()}{getMoisture()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{_island_8cpp_a8b80a3943af2a243cb11e8f11ebf042a} 
+float get\+Moisture (\begin{DoxyParamCaption}\item[{unsigned int}]{x}{, }\item[{unsigned int}]{y}{}\end{DoxyParamCaption})}
+
+\Hypertarget{_island_8cpp_a44ec648e02c291ec5ed3779cbdbd9c92}\index{Island.cpp@{Island.cpp}!getSnowcapTerrainColor@{getSnowcapTerrainColor}}
+\index{getSnowcapTerrainColor@{getSnowcapTerrainColor}!Island.cpp@{Island.cpp}}
+\doxysubsubsection{\texorpdfstring{getSnowcapTerrainColor()}{getSnowcapTerrainColor()}}
+{\footnotesize\ttfamily \label{_island_8cpp_a44ec648e02c291ec5ed3779cbdbd9c92} 
+\mbox{\hyperlink{classsf_1_1_color}{sf\+::\+Color}} get\+Snowcap\+Terrain\+Color (\begin{DoxyParamCaption}\item[{float}]{elevation}{, }\item[{float}]{moisture}{}\end{DoxyParamCaption})}
+
+Get the snowcap terrain color for the given elevation and moisture. \Hypertarget{_island_8cpp_a1ad42f0af617e224034fd49c16c47927}\index{Island.cpp@{Island.cpp}!getTerrainColor@{getTerrainColor}}
+\index{getTerrainColor@{getTerrainColor}!Island.cpp@{Island.cpp}}
+\doxysubsubsection{\texorpdfstring{getTerrainColor()}{getTerrainColor()}}
+{\footnotesize\ttfamily \label{_island_8cpp_a1ad42f0af617e224034fd49c16c47927} 
+\mbox{\hyperlink{classsf_1_1_color}{sf\+::\+Color}} get\+Terrain\+Color (\begin{DoxyParamCaption}\item[{float}]{elevation}{, }\item[{float}]{moisture}{}\end{DoxyParamCaption})}
+
+Get the terrain color for the given elevation and moisture. \Hypertarget{_island_8cpp_ae66f6b31b5ad750f1fe042a706a4e3d4}\index{Island.cpp@{Island.cpp}!main@{main}}
+\index{main@{main}!Island.cpp@{Island.cpp}}
+\doxysubsubsection{\texorpdfstring{main()}{main()}}
+{\footnotesize\ttfamily \label{_island_8cpp_ae66f6b31b5ad750f1fe042a706a4e3d4} 
+int main (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+Entry point of application
+
+\begin{DoxyReturn}{Returns}
+Application exit code 
+\end{DoxyReturn}
+\Hypertarget{_island_8cpp_ae562e6fdcd2292b778c8b88369c9290d}\index{Island.cpp@{Island.cpp}!processWorkItem@{processWorkItem}}
+\index{processWorkItem@{processWorkItem}!Island.cpp@{Island.cpp}}
+\doxysubsubsection{\texorpdfstring{processWorkItem()}{processWorkItem()}}
+{\footnotesize\ttfamily \label{_island_8cpp_ae562e6fdcd2292b778c8b88369c9290d} 
+void process\+Work\+Item (\begin{DoxyParamCaption}\item[{std\+::vector$<$ \mbox{\hyperlink{classsf_1_1_vertex}{sf\+::\+Vertex}} $>$ \&}]{vertices}{, }\item[{const Work\+Item \&}]{work\+Item}{}\end{DoxyParamCaption})}
+
+Process a terrain generation work item. Use the vector of vertices as scratch memory and upload the data to the vertex buffer when done. \Hypertarget{_island_8cpp_a58030615808181acc26b9ea47e0405ef}\index{Island.cpp@{Island.cpp}!threadFunction@{threadFunction}}
+\index{threadFunction@{threadFunction}!Island.cpp@{Island.cpp}}
+\doxysubsubsection{\texorpdfstring{threadFunction()}{threadFunction()}}
+{\footnotesize\ttfamily \label{_island_8cpp_a58030615808181acc26b9ea47e0405ef} 
+void thread\+Function (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+Worker thread entry point. We use a thread pool to avoid the heavy cost of constantly recreating and starting new threads whenever we need to regenerate the terrain. 

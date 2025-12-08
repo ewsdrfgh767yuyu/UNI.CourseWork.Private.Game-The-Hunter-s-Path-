@@ -1,0 +1,297 @@
+\doxysection{Campaign\+System Class Reference}
+\hypertarget{class_campaign_system}{}\label{class_campaign_system}\index{CampaignSystem@{CampaignSystem}}
+
+
+{\ttfamily \#include $<$Campaign\+System.\+h$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_campaign_system_a55b40b01565f0604e898e27c194972f1}{Campaign\+System}} ()
+\item 
+\mbox{\hyperlink{class_campaign_system_ad82ef2724d483a123e24fc8a7bd75048}{\texorpdfstring{$\sim$}{\string~}\+Campaign\+System}} ()
+\item 
+void \mbox{\hyperlink{class_campaign_system_af38c35b210f681c7a47e09b07e286180}{start\+Campaign}} ()
+\item 
+void \mbox{\hyperlink{class_campaign_system_a3b7e9232d87a2983202cd2ed7566dcce}{initialize\+Campaign}} ()
+\item 
+void \mbox{\hyperlink{class_campaign_system_ad03199676423abbb95295f9e3fe6665b}{create\+Player\+Party}} ()
+\item 
+void \mbox{\hyperlink{class_campaign_system_a72c134975d37fe783c609ff6566d5a32}{create\+Player\+Party\+From\+Preset}} (int preset\+Index)
+\item 
+void \mbox{\hyperlink{class_campaign_system_a5a24497e8665d990f469c8d2b3dc8038}{run\+Campaign\+Loop}} ()
+\item 
+bool \mbox{\hyperlink{class_campaign_system_a76e8708c47d5c02e2391865a452872ae}{is\+Game\+Completed}} () const
+\item 
+void \mbox{\hyperlink{class_campaign_system_a07bb4f3dbfab31ac8a5484c42a38014c}{set\+Game\+Completed}} (bool completed)
+\item 
+const std\+::vector$<$ \mbox{\hyperlink{class_player}{Player}} \texorpdfstring{$\ast$}{*} $>$ \& \mbox{\hyperlink{class_campaign_system_a8ccd14eba0bd969edf77a2fa659fe03c}{get\+Player\+Party}} () const
+\item 
+const std\+::vector$<$ \mbox{\hyperlink{class_item}{Item}} $>$ \& \mbox{\hyperlink{class_campaign_system_aa45e45e1880a3875c808d74411b484b2}{get\+Party\+Inventory}} () const
+\item 
+const \mbox{\hyperlink{struct_location}{Location}} \& \mbox{\hyperlink{class_campaign_system_a3a4a4df0a8237abcf5c8a21bf8cf56b2}{get\+Current\+Location}} () const
+\item 
+const \mbox{\hyperlink{struct_location}{Location}} \& \mbox{\hyperlink{class_campaign_system_a26ef87e9b1a3fa4c534eb1072b245707}{get\+Location}} (\mbox{\hyperlink{entity_8h_af2e75a10adf1443b5204c7856bbf630d}{Location\+Type}} type) const
+\item 
+int \mbox{\hyperlink{class_campaign_system_ae5ba025cf9ed6f0035f2832e027781f5}{get\+Current\+Difficulty}} () const
+\item 
+const \mbox{\hyperlink{class_map}{Map}} \& \mbox{\hyperlink{class_campaign_system_ac95a6ba0a3ec32a8c2df700ab63997c6}{get\+Game\+Map}} () const
+\item 
+\mbox{\hyperlink{class_map}{Map}} \& \mbox{\hyperlink{class_campaign_system_a070ba39d2b8ba2b7b4126ea9e0143dd9}{get\+Game\+Map\+Mutable}} ()
+\item 
+const std\+::map$<$ \mbox{\hyperlink{struct_position}{Position}}, bool $>$ \& \mbox{\hyperlink{class_campaign_system_ab43c3f6857b44b7dcb9a50ead3761377}{get\+Visited\+Nodes}} () const
+\item 
+void \mbox{\hyperlink{class_campaign_system_a4533f7877e37c17f27cf43e9e91bd3e4}{mark\+Node\+Visited}} (const \mbox{\hyperlink{struct_position}{Position}} \&pos)
+\item 
+void \mbox{\hyperlink{class_campaign_system_a566c2b9a47acae24824d677efed87327}{handle\+Node\+Event\+Public}} (\mbox{\hyperlink{_map_8h_acac9cbaeea226ed297804c012dc12b16}{Node\+Type}} node\+Type)
+\item 
+bool \mbox{\hyperlink{class_campaign_system_af4bbf2effefd211dbc2090b15c83c02f}{has\+Pending\+Treasure}} () const
+\item 
+bool \mbox{\hyperlink{class_campaign_system_a6473f593b7c9017a9cff840d6b859f82}{has\+Pending\+Event}} () const
+\item 
+bool \mbox{\hyperlink{class_campaign_system_ad195919cb59bbf4e7db4b2bdbf52c2c9}{has\+Pending\+Exit}} () const
+\item 
+bool \mbox{\hyperlink{class_campaign_system_a919c683372c32a75f59561a9c63631ff}{has\+Pending\+Battle}} () const
+\item 
+\mbox{\hyperlink{class_item}{Item}} \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{class_campaign_system_a560c83580dd2d7f07c5fe10df9cb2ea3}{get\+Pending\+Treasure}} ()
+\item 
+const \mbox{\hyperlink{struct_campaign_event}{Campaign\+Event}} \& \mbox{\hyperlink{class_campaign_system_ac8774a8d4401e9b4e78008db4118439f}{get\+Pending\+Event}} () const
+\item 
+const \mbox{\hyperlink{struct_campaign_event}{Campaign\+Event}} \& \mbox{\hyperlink{class_campaign_system_a9e89427952ffbcfbdcc834f80c69b20b}{get\+Pending\+Exit}} () const
+\item 
+void \mbox{\hyperlink{class_campaign_system_a3926dd1a55d044d1784ff4cf33af4983}{clear\+Pending\+Treasure}} ()
+\item 
+void \mbox{\hyperlink{class_campaign_system_a93a4e9413c7b63e5d5d9a9d58d8941e1}{take\+Pending\+Treasure}} ()
+\item 
+void \mbox{\hyperlink{class_campaign_system_a38a5614c52c95bbfaee0841bf02c31dc}{clear\+Pending\+Event}} ()
+\item 
+void \mbox{\hyperlink{class_campaign_system_a36b0f8e285c7f081cebcf73e09c6c15d}{clear\+Pending\+Exit}} ()
+\item 
+void \mbox{\hyperlink{class_campaign_system_ac0a9ebb4ad0d87fb309f1eb9985a8da6}{clear\+Pending\+Battle}} ()
+\item 
+void \mbox{\hyperlink{class_campaign_system_acc78018fbcd86888cb200c6a99106ab9}{handle\+Event\+Choice}} (int choice\+Index)
+\item 
+void \mbox{\hyperlink{class_campaign_system_a7c4e0397a23483251bd6de8bd32ba689}{handle\+Exit\+Choice}} (int choice\+Index)
+\item 
+\mbox{\hyperlink{class_battle_system}{Battle\+System}} \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{class_campaign_system_a8eab21661f0d54f825e8c352734bff80}{get\+Current\+Battle}} ()
+\end{DoxyCompactItemize}
+
+
+\label{doc-constructors}
+\Hypertarget{class_campaign_system_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_campaign_system_a55b40b01565f0604e898e27c194972f1}\index{CampaignSystem@{CampaignSystem}!CampaignSystem@{CampaignSystem}}
+\index{CampaignSystem@{CampaignSystem}!CampaignSystem@{CampaignSystem}}
+\doxysubsubsection{\texorpdfstring{CampaignSystem()}{CampaignSystem()}}
+{\footnotesize\ttfamily \label{class_campaign_system_a55b40b01565f0604e898e27c194972f1} 
+Campaign\+System\+::\+Campaign\+System (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_campaign_system_ad82ef2724d483a123e24fc8a7bd75048}\index{CampaignSystem@{CampaignSystem}!````~CampaignSystem@{\texorpdfstring{$\sim$}{\string~}CampaignSystem}}
+\index{````~CampaignSystem@{\texorpdfstring{$\sim$}{\string~}CampaignSystem}!CampaignSystem@{CampaignSystem}}
+\doxysubsubsection{\texorpdfstring{\texorpdfstring{$\sim$}{\string~}CampaignSystem()}{\string~CampaignSystem()}}
+{\footnotesize\ttfamily \label{class_campaign_system_ad82ef2724d483a123e24fc8a7bd75048} 
+Campaign\+System\+::\texorpdfstring{$\sim$}{\string~}\+Campaign\+System (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+\label{doc-func-members}
+\Hypertarget{class_campaign_system_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_campaign_system_ac0a9ebb4ad0d87fb309f1eb9985a8da6}\index{CampaignSystem@{CampaignSystem}!clearPendingBattle@{clearPendingBattle}}
+\index{clearPendingBattle@{clearPendingBattle}!CampaignSystem@{CampaignSystem}}
+\doxysubsubsection{\texorpdfstring{clearPendingBattle()}{clearPendingBattle()}}
+{\footnotesize\ttfamily \label{class_campaign_system_ac0a9ebb4ad0d87fb309f1eb9985a8da6} 
+void Campaign\+System\+::clear\+Pending\+Battle (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_campaign_system_a38a5614c52c95bbfaee0841bf02c31dc}\index{CampaignSystem@{CampaignSystem}!clearPendingEvent@{clearPendingEvent}}
+\index{clearPendingEvent@{clearPendingEvent}!CampaignSystem@{CampaignSystem}}
+\doxysubsubsection{\texorpdfstring{clearPendingEvent()}{clearPendingEvent()}}
+{\footnotesize\ttfamily \label{class_campaign_system_a38a5614c52c95bbfaee0841bf02c31dc} 
+void Campaign\+System\+::clear\+Pending\+Event (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_campaign_system_a36b0f8e285c7f081cebcf73e09c6c15d}\index{CampaignSystem@{CampaignSystem}!clearPendingExit@{clearPendingExit}}
+\index{clearPendingExit@{clearPendingExit}!CampaignSystem@{CampaignSystem}}
+\doxysubsubsection{\texorpdfstring{clearPendingExit()}{clearPendingExit()}}
+{\footnotesize\ttfamily \label{class_campaign_system_a36b0f8e285c7f081cebcf73e09c6c15d} 
+void Campaign\+System\+::clear\+Pending\+Exit (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_campaign_system_a3926dd1a55d044d1784ff4cf33af4983}\index{CampaignSystem@{CampaignSystem}!clearPendingTreasure@{clearPendingTreasure}}
+\index{clearPendingTreasure@{clearPendingTreasure}!CampaignSystem@{CampaignSystem}}
+\doxysubsubsection{\texorpdfstring{clearPendingTreasure()}{clearPendingTreasure()}}
+{\footnotesize\ttfamily \label{class_campaign_system_a3926dd1a55d044d1784ff4cf33af4983} 
+void Campaign\+System\+::clear\+Pending\+Treasure (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_campaign_system_ad03199676423abbb95295f9e3fe6665b}\index{CampaignSystem@{CampaignSystem}!createPlayerParty@{createPlayerParty}}
+\index{createPlayerParty@{createPlayerParty}!CampaignSystem@{CampaignSystem}}
+\doxysubsubsection{\texorpdfstring{createPlayerParty()}{createPlayerParty()}}
+{\footnotesize\ttfamily \label{class_campaign_system_ad03199676423abbb95295f9e3fe6665b} 
+void Campaign\+System\+::create\+Player\+Party (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_campaign_system_a72c134975d37fe783c609ff6566d5a32}\index{CampaignSystem@{CampaignSystem}!createPlayerPartyFromPreset@{createPlayerPartyFromPreset}}
+\index{createPlayerPartyFromPreset@{createPlayerPartyFromPreset}!CampaignSystem@{CampaignSystem}}
+\doxysubsubsection{\texorpdfstring{createPlayerPartyFromPreset()}{createPlayerPartyFromPreset()}}
+{\footnotesize\ttfamily \label{class_campaign_system_a72c134975d37fe783c609ff6566d5a32} 
+void Campaign\+System\+::create\+Player\+Party\+From\+Preset (\begin{DoxyParamCaption}\item[{int}]{preset\+Index}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_campaign_system_a8eab21661f0d54f825e8c352734bff80}\index{CampaignSystem@{CampaignSystem}!getCurrentBattle@{getCurrentBattle}}
+\index{getCurrentBattle@{getCurrentBattle}!CampaignSystem@{CampaignSystem}}
+\doxysubsubsection{\texorpdfstring{getCurrentBattle()}{getCurrentBattle()}}
+{\footnotesize\ttfamily \label{class_campaign_system_a8eab21661f0d54f825e8c352734bff80} 
+\mbox{\hyperlink{class_battle_system}{Battle\+System}} \texorpdfstring{$\ast$}{*} Campaign\+System\+::get\+Current\+Battle (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_campaign_system_ae5ba025cf9ed6f0035f2832e027781f5}\index{CampaignSystem@{CampaignSystem}!getCurrentDifficulty@{getCurrentDifficulty}}
+\index{getCurrentDifficulty@{getCurrentDifficulty}!CampaignSystem@{CampaignSystem}}
+\doxysubsubsection{\texorpdfstring{getCurrentDifficulty()}{getCurrentDifficulty()}}
+{\footnotesize\ttfamily \label{class_campaign_system_ae5ba025cf9ed6f0035f2832e027781f5} 
+int Campaign\+System\+::get\+Current\+Difficulty (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_campaign_system_a3a4a4df0a8237abcf5c8a21bf8cf56b2}\index{CampaignSystem@{CampaignSystem}!getCurrentLocation@{getCurrentLocation}}
+\index{getCurrentLocation@{getCurrentLocation}!CampaignSystem@{CampaignSystem}}
+\doxysubsubsection{\texorpdfstring{getCurrentLocation()}{getCurrentLocation()}}
+{\footnotesize\ttfamily \label{class_campaign_system_a3a4a4df0a8237abcf5c8a21bf8cf56b2} 
+const \mbox{\hyperlink{struct_location}{Location}} \& Campaign\+System\+::get\+Current\+Location (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_campaign_system_ac95a6ba0a3ec32a8c2df700ab63997c6}\index{CampaignSystem@{CampaignSystem}!getGameMap@{getGameMap}}
+\index{getGameMap@{getGameMap}!CampaignSystem@{CampaignSystem}}
+\doxysubsubsection{\texorpdfstring{getGameMap()}{getGameMap()}}
+{\footnotesize\ttfamily \label{class_campaign_system_ac95a6ba0a3ec32a8c2df700ab63997c6} 
+const \mbox{\hyperlink{class_map}{Map}} \& Campaign\+System\+::get\+Game\+Map (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_campaign_system_a070ba39d2b8ba2b7b4126ea9e0143dd9}\index{CampaignSystem@{CampaignSystem}!getGameMapMutable@{getGameMapMutable}}
+\index{getGameMapMutable@{getGameMapMutable}!CampaignSystem@{CampaignSystem}}
+\doxysubsubsection{\texorpdfstring{getGameMapMutable()}{getGameMapMutable()}}
+{\footnotesize\ttfamily \label{class_campaign_system_a070ba39d2b8ba2b7b4126ea9e0143dd9} 
+\mbox{\hyperlink{class_map}{Map}} \& Campaign\+System\+::get\+Game\+Map\+Mutable (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_campaign_system_a26ef87e9b1a3fa4c534eb1072b245707}\index{CampaignSystem@{CampaignSystem}!getLocation@{getLocation}}
+\index{getLocation@{getLocation}!CampaignSystem@{CampaignSystem}}
+\doxysubsubsection{\texorpdfstring{getLocation()}{getLocation()}}
+{\footnotesize\ttfamily \label{class_campaign_system_a26ef87e9b1a3fa4c534eb1072b245707} 
+const \mbox{\hyperlink{struct_location}{Location}} \& Campaign\+System\+::get\+Location (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{entity_8h_af2e75a10adf1443b5204c7856bbf630d}{Location\+Type}}}]{type}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_campaign_system_aa45e45e1880a3875c808d74411b484b2}\index{CampaignSystem@{CampaignSystem}!getPartyInventory@{getPartyInventory}}
+\index{getPartyInventory@{getPartyInventory}!CampaignSystem@{CampaignSystem}}
+\doxysubsubsection{\texorpdfstring{getPartyInventory()}{getPartyInventory()}}
+{\footnotesize\ttfamily \label{class_campaign_system_aa45e45e1880a3875c808d74411b484b2} 
+const std\+::vector$<$ \mbox{\hyperlink{class_item}{Item}} $>$ \& Campaign\+System\+::get\+Party\+Inventory (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_campaign_system_ac8774a8d4401e9b4e78008db4118439f}\index{CampaignSystem@{CampaignSystem}!getPendingEvent@{getPendingEvent}}
+\index{getPendingEvent@{getPendingEvent}!CampaignSystem@{CampaignSystem}}
+\doxysubsubsection{\texorpdfstring{getPendingEvent()}{getPendingEvent()}}
+{\footnotesize\ttfamily \label{class_campaign_system_ac8774a8d4401e9b4e78008db4118439f} 
+const \mbox{\hyperlink{struct_campaign_event}{Campaign\+Event}} \& Campaign\+System\+::get\+Pending\+Event (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_campaign_system_a9e89427952ffbcfbdcc834f80c69b20b}\index{CampaignSystem@{CampaignSystem}!getPendingExit@{getPendingExit}}
+\index{getPendingExit@{getPendingExit}!CampaignSystem@{CampaignSystem}}
+\doxysubsubsection{\texorpdfstring{getPendingExit()}{getPendingExit()}}
+{\footnotesize\ttfamily \label{class_campaign_system_a9e89427952ffbcfbdcc834f80c69b20b} 
+const \mbox{\hyperlink{struct_campaign_event}{Campaign\+Event}} \& Campaign\+System\+::get\+Pending\+Exit (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_campaign_system_a560c83580dd2d7f07c5fe10df9cb2ea3}\index{CampaignSystem@{CampaignSystem}!getPendingTreasure@{getPendingTreasure}}
+\index{getPendingTreasure@{getPendingTreasure}!CampaignSystem@{CampaignSystem}}
+\doxysubsubsection{\texorpdfstring{getPendingTreasure()}{getPendingTreasure()}}
+{\footnotesize\ttfamily \label{class_campaign_system_a560c83580dd2d7f07c5fe10df9cb2ea3} 
+\mbox{\hyperlink{class_item}{Item}} \texorpdfstring{$\ast$}{*} Campaign\+System\+::get\+Pending\+Treasure (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_campaign_system_a8ccd14eba0bd969edf77a2fa659fe03c}\index{CampaignSystem@{CampaignSystem}!getPlayerParty@{getPlayerParty}}
+\index{getPlayerParty@{getPlayerParty}!CampaignSystem@{CampaignSystem}}
+\doxysubsubsection{\texorpdfstring{getPlayerParty()}{getPlayerParty()}}
+{\footnotesize\ttfamily \label{class_campaign_system_a8ccd14eba0bd969edf77a2fa659fe03c} 
+const std\+::vector$<$ \mbox{\hyperlink{class_player}{Player}} \texorpdfstring{$\ast$}{*} $>$ \& Campaign\+System\+::get\+Player\+Party (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_campaign_system_ab43c3f6857b44b7dcb9a50ead3761377}\index{CampaignSystem@{CampaignSystem}!getVisitedNodes@{getVisitedNodes}}
+\index{getVisitedNodes@{getVisitedNodes}!CampaignSystem@{CampaignSystem}}
+\doxysubsubsection{\texorpdfstring{getVisitedNodes()}{getVisitedNodes()}}
+{\footnotesize\ttfamily \label{class_campaign_system_ab43c3f6857b44b7dcb9a50ead3761377} 
+const std\+::map$<$ \mbox{\hyperlink{struct_position}{Position}}, bool $>$ \& Campaign\+System\+::get\+Visited\+Nodes (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_campaign_system_acc78018fbcd86888cb200c6a99106ab9}\index{CampaignSystem@{CampaignSystem}!handleEventChoice@{handleEventChoice}}
+\index{handleEventChoice@{handleEventChoice}!CampaignSystem@{CampaignSystem}}
+\doxysubsubsection{\texorpdfstring{handleEventChoice()}{handleEventChoice()}}
+{\footnotesize\ttfamily \label{class_campaign_system_acc78018fbcd86888cb200c6a99106ab9} 
+void Campaign\+System\+::handle\+Event\+Choice (\begin{DoxyParamCaption}\item[{int}]{choice\+Index}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_campaign_system_a7c4e0397a23483251bd6de8bd32ba689}\index{CampaignSystem@{CampaignSystem}!handleExitChoice@{handleExitChoice}}
+\index{handleExitChoice@{handleExitChoice}!CampaignSystem@{CampaignSystem}}
+\doxysubsubsection{\texorpdfstring{handleExitChoice()}{handleExitChoice()}}
+{\footnotesize\ttfamily \label{class_campaign_system_a7c4e0397a23483251bd6de8bd32ba689} 
+void Campaign\+System\+::handle\+Exit\+Choice (\begin{DoxyParamCaption}\item[{int}]{choice\+Index}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_campaign_system_a566c2b9a47acae24824d677efed87327}\index{CampaignSystem@{CampaignSystem}!handleNodeEventPublic@{handleNodeEventPublic}}
+\index{handleNodeEventPublic@{handleNodeEventPublic}!CampaignSystem@{CampaignSystem}}
+\doxysubsubsection{\texorpdfstring{handleNodeEventPublic()}{handleNodeEventPublic()}}
+{\footnotesize\ttfamily \label{class_campaign_system_a566c2b9a47acae24824d677efed87327} 
+void Campaign\+System\+::handle\+Node\+Event\+Public (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{_map_8h_acac9cbaeea226ed297804c012dc12b16}{Node\+Type}}}]{node\+Type}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_campaign_system_a919c683372c32a75f59561a9c63631ff}\index{CampaignSystem@{CampaignSystem}!hasPendingBattle@{hasPendingBattle}}
+\index{hasPendingBattle@{hasPendingBattle}!CampaignSystem@{CampaignSystem}}
+\doxysubsubsection{\texorpdfstring{hasPendingBattle()}{hasPendingBattle()}}
+{\footnotesize\ttfamily \label{class_campaign_system_a919c683372c32a75f59561a9c63631ff} 
+bool Campaign\+System\+::has\+Pending\+Battle (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_campaign_system_a6473f593b7c9017a9cff840d6b859f82}\index{CampaignSystem@{CampaignSystem}!hasPendingEvent@{hasPendingEvent}}
+\index{hasPendingEvent@{hasPendingEvent}!CampaignSystem@{CampaignSystem}}
+\doxysubsubsection{\texorpdfstring{hasPendingEvent()}{hasPendingEvent()}}
+{\footnotesize\ttfamily \label{class_campaign_system_a6473f593b7c9017a9cff840d6b859f82} 
+bool Campaign\+System\+::has\+Pending\+Event (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_campaign_system_ad195919cb59bbf4e7db4b2bdbf52c2c9}\index{CampaignSystem@{CampaignSystem}!hasPendingExit@{hasPendingExit}}
+\index{hasPendingExit@{hasPendingExit}!CampaignSystem@{CampaignSystem}}
+\doxysubsubsection{\texorpdfstring{hasPendingExit()}{hasPendingExit()}}
+{\footnotesize\ttfamily \label{class_campaign_system_ad195919cb59bbf4e7db4b2bdbf52c2c9} 
+bool Campaign\+System\+::has\+Pending\+Exit (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_campaign_system_af4bbf2effefd211dbc2090b15c83c02f}\index{CampaignSystem@{CampaignSystem}!hasPendingTreasure@{hasPendingTreasure}}
+\index{hasPendingTreasure@{hasPendingTreasure}!CampaignSystem@{CampaignSystem}}
+\doxysubsubsection{\texorpdfstring{hasPendingTreasure()}{hasPendingTreasure()}}
+{\footnotesize\ttfamily \label{class_campaign_system_af4bbf2effefd211dbc2090b15c83c02f} 
+bool Campaign\+System\+::has\+Pending\+Treasure (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_campaign_system_a3b7e9232d87a2983202cd2ed7566dcce}\index{CampaignSystem@{CampaignSystem}!initializeCampaign@{initializeCampaign}}
+\index{initializeCampaign@{initializeCampaign}!CampaignSystem@{CampaignSystem}}
+\doxysubsubsection{\texorpdfstring{initializeCampaign()}{initializeCampaign()}}
+{\footnotesize\ttfamily \label{class_campaign_system_a3b7e9232d87a2983202cd2ed7566dcce} 
+void Campaign\+System\+::initialize\+Campaign (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_campaign_system_a76e8708c47d5c02e2391865a452872ae}\index{CampaignSystem@{CampaignSystem}!isGameCompleted@{isGameCompleted}}
+\index{isGameCompleted@{isGameCompleted}!CampaignSystem@{CampaignSystem}}
+\doxysubsubsection{\texorpdfstring{isGameCompleted()}{isGameCompleted()}}
+{\footnotesize\ttfamily \label{class_campaign_system_a76e8708c47d5c02e2391865a452872ae} 
+bool Campaign\+System\+::is\+Game\+Completed (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_campaign_system_a4533f7877e37c17f27cf43e9e91bd3e4}\index{CampaignSystem@{CampaignSystem}!markNodeVisited@{markNodeVisited}}
+\index{markNodeVisited@{markNodeVisited}!CampaignSystem@{CampaignSystem}}
+\doxysubsubsection{\texorpdfstring{markNodeVisited()}{markNodeVisited()}}
+{\footnotesize\ttfamily \label{class_campaign_system_a4533f7877e37c17f27cf43e9e91bd3e4} 
+void Campaign\+System\+::mark\+Node\+Visited (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{struct_position}{Position}} \&}]{pos}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_campaign_system_a5a24497e8665d990f469c8d2b3dc8038}\index{CampaignSystem@{CampaignSystem}!runCampaignLoop@{runCampaignLoop}}
+\index{runCampaignLoop@{runCampaignLoop}!CampaignSystem@{CampaignSystem}}
+\doxysubsubsection{\texorpdfstring{runCampaignLoop()}{runCampaignLoop()}}
+{\footnotesize\ttfamily \label{class_campaign_system_a5a24497e8665d990f469c8d2b3dc8038} 
+void Campaign\+System\+::run\+Campaign\+Loop (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_campaign_system_a07bb4f3dbfab31ac8a5484c42a38014c}\index{CampaignSystem@{CampaignSystem}!setGameCompleted@{setGameCompleted}}
+\index{setGameCompleted@{setGameCompleted}!CampaignSystem@{CampaignSystem}}
+\doxysubsubsection{\texorpdfstring{setGameCompleted()}{setGameCompleted()}}
+{\footnotesize\ttfamily \label{class_campaign_system_a07bb4f3dbfab31ac8a5484c42a38014c} 
+void Campaign\+System\+::set\+Game\+Completed (\begin{DoxyParamCaption}\item[{bool}]{completed}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_campaign_system_af38c35b210f681c7a47e09b07e286180}\index{CampaignSystem@{CampaignSystem}!startCampaign@{startCampaign}}
+\index{startCampaign@{startCampaign}!CampaignSystem@{CampaignSystem}}
+\doxysubsubsection{\texorpdfstring{startCampaign()}{startCampaign()}}
+{\footnotesize\ttfamily \label{class_campaign_system_af38c35b210f681c7a47e09b07e286180} 
+void Campaign\+System\+::start\+Campaign (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_campaign_system_a93a4e9413c7b63e5d5d9a9d58d8941e1}\index{CampaignSystem@{CampaignSystem}!takePendingTreasure@{takePendingTreasure}}
+\index{takePendingTreasure@{takePendingTreasure}!CampaignSystem@{CampaignSystem}}
+\doxysubsubsection{\texorpdfstring{takePendingTreasure()}{takePendingTreasure()}}
+{\footnotesize\ttfamily \label{class_campaign_system_a93a4e9413c7b63e5d5d9a9d58d8941e1} 
+void Campaign\+System\+::take\+Pending\+Treasure (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{_campaign_system_8h}{Campaign\+System.\+h}}\item 
+\mbox{\hyperlink{_campaign_system_8cpp}{Campaign\+System.\+cpp}}\end{DoxyCompactItemize}

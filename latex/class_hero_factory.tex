@@ -1,0 +1,76 @@
+\doxysection{Hero\+Factory Class Reference}
+\hypertarget{class_hero_factory}{}\label{class_hero_factory}\index{HeroFactory@{HeroFactory}}
+
+
+{\ttfamily \#include $<$Hero\+Templates.\+h$>$}
+
+\doxysubsubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static std\+::vector$<$ \mbox{\hyperlink{entity_8h_a51e5001d3dcb5c0a820135aff6ac8594}{Hero\+Class}} $>$ \mbox{\hyperlink{class_hero_factory_aa17ff90df1d8d4f74d1cd1ead263d631}{get\+Available\+Classes}} ()
+\item 
+static const \mbox{\hyperlink{struct_hero_template}{Hero\+Template}} \& \mbox{\hyperlink{class_hero_factory_ab7b4d24c9a4bb9686b417c78a83382e5}{get\+Hero\+Template}} (\mbox{\hyperlink{entity_8h_a51e5001d3dcb5c0a820135aff6ac8594}{Hero\+Class}} hero\+Class)
+\item 
+static \mbox{\hyperlink{class_player}{Player}} \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{class_hero_factory_ad76c8644249652b21dca1bb0dc5e9282}{create\+Hero}} (\mbox{\hyperlink{entity_8h_a51e5001d3dcb5c0a820135aff6ac8594}{Hero\+Class}} hero\+Class, const std\+::string \&custom\+Name="{}"{})
+\item 
+static const \mbox{\hyperlink{struct_ability_info}{Ability\+Info}} \& \mbox{\hyperlink{class_hero_factory_a117bfadf546129fdbb7cee57a4b103a4}{get\+Ability\+Info}} (\mbox{\hyperlink{entity_8h_a44b675d687acff3d739404c1227b4259}{Ability\+Type}} ability)
+\item 
+static std\+::vector$<$ \mbox{\hyperlink{entity_8h_a44b675d687acff3d739404c1227b4259}{Ability\+Type}} $>$ \mbox{\hyperlink{class_hero_factory_a5c2bd4272948f69eb0c19935480dc3f0}{get\+Class\+Abilities}} (\mbox{\hyperlink{entity_8h_a51e5001d3dcb5c0a820135aff6ac8594}{Hero\+Class}} hero\+Class)
+\item 
+static const std\+::vector$<$ \mbox{\hyperlink{struct_party_preset}{Party\+Preset}} $>$ \& \mbox{\hyperlink{class_hero_factory_a4141ae6a75752e8f8035101ddda675a2}{get\+Party\+Presets}} ()
+\item 
+static std\+::vector$<$ \mbox{\hyperlink{class_player}{Player}} \texorpdfstring{$\ast$}{*} $>$ \mbox{\hyperlink{class_hero_factory_a7b659041bf1bc30ae27c7c0ec46d6a85}{create\+Party\+From\+Preset}} (int preset\+Index)
+\end{DoxyCompactItemize}
+
+
+\label{doc-func-members}
+\Hypertarget{class_hero_factory_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_hero_factory_ad76c8644249652b21dca1bb0dc5e9282}\index{HeroFactory@{HeroFactory}!createHero@{createHero}}
+\index{createHero@{createHero}!HeroFactory@{HeroFactory}}
+\doxysubsubsection{\texorpdfstring{createHero()}{createHero()}}
+{\footnotesize\ttfamily \label{class_hero_factory_ad76c8644249652b21dca1bb0dc5e9282} 
+\mbox{\hyperlink{class_player}{Player}} \texorpdfstring{$\ast$}{*} Hero\+Factory\+::create\+Hero (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{entity_8h_a51e5001d3dcb5c0a820135aff6ac8594}{Hero\+Class}}}]{hero\+Class}{, }\item[{const std\+::string \&}]{custom\+Name}{ = {\ttfamily "{}"{}}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{class_hero_factory_a7b659041bf1bc30ae27c7c0ec46d6a85}\index{HeroFactory@{HeroFactory}!createPartyFromPreset@{createPartyFromPreset}}
+\index{createPartyFromPreset@{createPartyFromPreset}!HeroFactory@{HeroFactory}}
+\doxysubsubsection{\texorpdfstring{createPartyFromPreset()}{createPartyFromPreset()}}
+{\footnotesize\ttfamily \label{class_hero_factory_a7b659041bf1bc30ae27c7c0ec46d6a85} 
+std\+::vector$<$ \mbox{\hyperlink{class_player}{Player}} \texorpdfstring{$\ast$}{*} $>$ Hero\+Factory\+::create\+Party\+From\+Preset (\begin{DoxyParamCaption}\item[{int}]{preset\+Index}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{class_hero_factory_a117bfadf546129fdbb7cee57a4b103a4}\index{HeroFactory@{HeroFactory}!getAbilityInfo@{getAbilityInfo}}
+\index{getAbilityInfo@{getAbilityInfo}!HeroFactory@{HeroFactory}}
+\doxysubsubsection{\texorpdfstring{getAbilityInfo()}{getAbilityInfo()}}
+{\footnotesize\ttfamily \label{class_hero_factory_a117bfadf546129fdbb7cee57a4b103a4} 
+const \mbox{\hyperlink{struct_ability_info}{Ability\+Info}} \& Hero\+Factory\+::get\+Ability\+Info (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{entity_8h_a44b675d687acff3d739404c1227b4259}{Ability\+Type}}}]{ability}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{class_hero_factory_aa17ff90df1d8d4f74d1cd1ead263d631}\index{HeroFactory@{HeroFactory}!getAvailableClasses@{getAvailableClasses}}
+\index{getAvailableClasses@{getAvailableClasses}!HeroFactory@{HeroFactory}}
+\doxysubsubsection{\texorpdfstring{getAvailableClasses()}{getAvailableClasses()}}
+{\footnotesize\ttfamily \label{class_hero_factory_aa17ff90df1d8d4f74d1cd1ead263d631} 
+std\+::vector$<$ \mbox{\hyperlink{entity_8h_a51e5001d3dcb5c0a820135aff6ac8594}{Hero\+Class}} $>$ Hero\+Factory\+::get\+Available\+Classes (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{class_hero_factory_a5c2bd4272948f69eb0c19935480dc3f0}\index{HeroFactory@{HeroFactory}!getClassAbilities@{getClassAbilities}}
+\index{getClassAbilities@{getClassAbilities}!HeroFactory@{HeroFactory}}
+\doxysubsubsection{\texorpdfstring{getClassAbilities()}{getClassAbilities()}}
+{\footnotesize\ttfamily \label{class_hero_factory_a5c2bd4272948f69eb0c19935480dc3f0} 
+std\+::vector$<$ \mbox{\hyperlink{entity_8h_a44b675d687acff3d739404c1227b4259}{Ability\+Type}} $>$ Hero\+Factory\+::get\+Class\+Abilities (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{entity_8h_a51e5001d3dcb5c0a820135aff6ac8594}{Hero\+Class}}}]{hero\+Class}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{class_hero_factory_ab7b4d24c9a4bb9686b417c78a83382e5}\index{HeroFactory@{HeroFactory}!getHeroTemplate@{getHeroTemplate}}
+\index{getHeroTemplate@{getHeroTemplate}!HeroFactory@{HeroFactory}}
+\doxysubsubsection{\texorpdfstring{getHeroTemplate()}{getHeroTemplate()}}
+{\footnotesize\ttfamily \label{class_hero_factory_ab7b4d24c9a4bb9686b417c78a83382e5} 
+const \mbox{\hyperlink{struct_hero_template}{Hero\+Template}} \& Hero\+Factory\+::get\+Hero\+Template (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{entity_8h_a51e5001d3dcb5c0a820135aff6ac8594}{Hero\+Class}}}]{hero\+Class}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{class_hero_factory_a4141ae6a75752e8f8035101ddda675a2}\index{HeroFactory@{HeroFactory}!getPartyPresets@{getPartyPresets}}
+\index{getPartyPresets@{getPartyPresets}!HeroFactory@{HeroFactory}}
+\doxysubsubsection{\texorpdfstring{getPartyPresets()}{getPartyPresets()}}
+{\footnotesize\ttfamily \label{class_hero_factory_a4141ae6a75752e8f8035101ddda675a2} 
+const std\+::vector$<$ \mbox{\hyperlink{struct_party_preset}{Party\+Preset}} $>$ \& Hero\+Factory\+::get\+Party\+Presets (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{_hero_templates_8h}{Hero\+Templates.\+h}}\item 
+\mbox{\hyperlink{_hero_factory_8cpp}{Hero\+Factory.\+cpp}}\end{DoxyCompactItemize}

@@ -271,9 +271,16 @@ int main()
             const PartyPreset &preset = presets[selectedPresetIndex];
 
             // Добавить описание пресета
-            characterConfirmationMenu.addText(preset.description, static_cast<unsigned int>(20 * (windowSize.y / 768.0f)), sf::Vector2f(windowSize.x * 0.05f, windowSize.y * 0.08f), sf::Color::White);
+            characterConfirmationMenu.addText(sf::String(preset.description), static_cast<unsigned int>(20 * (windowSize.y / 768.0f)), sf::Vector2f(windowSize.x * 0.05f, windowSize.y * 0.08f), sf::Color::White);
+            size_t presetLineCount = 1;
+            for (char c : preset.description)
+            {
+                if (c == '\n')
+                    presetLineCount++;
+            }
+            float presetYPos = windowSize.y * 0.08f + presetLineCount * windowSize.y * 0.025f;
 
-            float yPos = windowSize.y * 0.12f;
+            float yPos = presetYPos + windowSize.y * 0.06f;
             float xOffset = windowSize.x * 0.07f;
             float statXOffset = windowSize.x * 0.09f;
             float abilityXOffset = windowSize.x * 0.11f;
@@ -283,44 +290,50 @@ int main()
                 const HeroTemplate &tmpl = HeroFactory::getHeroTemplate(heroPair.first);
 
                 // Имя героя
-                characterConfirmationMenu.addText(heroPair.second + " (" + tmpl.name + ")", static_cast<unsigned int>(20 * (windowSize.y / 768.0f)), sf::Vector2f(windowSize.x * 0.05f, yPos), sf::Color::Yellow);
-                yPos += windowSize.y * 0.028f;
+                characterConfirmationMenu.addText(sf::String(heroPair.second + " (" + tmpl.name + ")"), static_cast<unsigned int>(20 * (windowSize.y / 768.0f)), sf::Vector2f(windowSize.x * 0.05f, yPos), sf::Color::Yellow);
+                yPos += windowSize.y * 0.035f;
 
                 // Описание класса
-                characterConfirmationMenu.addText(tmpl.description, static_cast<unsigned int>(18 * (windowSize.y / 768.0f)), sf::Vector2f(xOffset, yPos), sf::Color::White);
-                yPos += windowSize.y * 0.023f;
+                characterConfirmationMenu.addText(sf::String(tmpl.description), static_cast<unsigned int>(18 * (windowSize.y / 768.0f)), sf::Vector2f(xOffset, yPos), sf::Color::White);
+                yPos += windowSize.y * 0.03f;
 
-                // Характеристики
-                characterConfirmationMenu.addText("Характеристики:", static_cast<unsigned int>(18 * (windowSize.y / 768.0f)), sf::Vector2f(xOffset, yPos), sf::Color::Magenta);
-                yPos += windowSize.y * 0.021f;
-                characterConfirmationMenu.addText("Здоровье (HP): " + std::to_string(tmpl.baseMaxHP) + " - максимальное здоровье героя", static_cast<unsigned int>(14 * (windowSize.y / 768.0f)), sf::Vector2f(statXOffset, yPos), sf::Color::White);
-                yPos += windowSize.y * 0.017f;
-                characterConfirmationMenu.addText("Урон (Damage): " + std::to_string(tmpl.baseDamage) + " - базовый урон в атаке", static_cast<unsigned int>(14 * (windowSize.y / 768.0f)), sf::Vector2f(statXOffset, yPos), sf::Color::White);
-                yPos += windowSize.y * 0.017f;
-                characterConfirmationMenu.addText("Защита (Defense): " + std::to_string(tmpl.baseDefense) + " - снижает входящий урон", static_cast<unsigned int>(14 * (windowSize.y / 768.0f)), sf::Vector2f(statXOffset, yPos), sf::Color::White);
-                yPos += windowSize.y * 0.017f;
-                characterConfirmationMenu.addText("Атака (Attack): " + std::to_string(tmpl.baseAttack) + " - точность атаки", static_cast<unsigned int>(14 * (windowSize.y / 768.0f)), sf::Vector2f(statXOffset, yPos), sf::Color::White);
-                yPos += windowSize.y * 0.017f;
-                characterConfirmationMenu.addText("Выносливость (Stamina): " + std::to_string(tmpl.baseMaxStamina) + " - очки для действий", static_cast<unsigned int>(14 * (windowSize.y / 768.0f)), sf::Vector2f(statXOffset, yPos), sf::Color::White);
-                yPos += windowSize.y * 0.017f;
-                characterConfirmationMenu.addText("Инициатива (Initiative): " + std::to_string(tmpl.baseInitiative) + " - определяет порядок хода", static_cast<unsigned int>(14 * (windowSize.y / 768.0f)), sf::Vector2f(statXOffset, yPos), sf::Color::White);
-                yPos += windowSize.y * 0.017f;
-                characterConfirmationMenu.addText("Дальность (Range): " + std::to_string(tmpl.baseAttackRange) + " - тип боя (0 - ближний)", static_cast<unsigned int>(14 * (windowSize.y / 768.0f)), sf::Vector2f(statXOffset, yPos), sf::Color::White);
-                yPos += windowSize.y * 0.021f;
+                // Characteristics
+                characterConfirmationMenu.addText(sf::String("Characteristics:"), static_cast<unsigned int>(18 * (windowSize.y / 768.0f)), sf::Vector2f(xOffset, yPos), sf::Color::Magenta);
+                yPos += windowSize.y * 0.03f;
+                characterConfirmationMenu.addText(sf::String("Health (HP): " + std::to_string(tmpl.baseMaxHP) + " - maximum hero health"), static_cast<unsigned int>(14 * (windowSize.y / 768.0f)), sf::Vector2f(statXOffset, yPos), sf::Color::White);
+                yPos += windowSize.y * 0.025f;
+                characterConfirmationMenu.addText(sf::String("Damage: " + std::to_string(tmpl.baseDamage) + " - base damage in attack"), static_cast<unsigned int>(14 * (windowSize.y / 768.0f)), sf::Vector2f(statXOffset, yPos), sf::Color::White);
+                yPos += windowSize.y * 0.025f;
+                characterConfirmationMenu.addText(sf::String("Defense: " + std::to_string(tmpl.baseDefense) + " - reduces incoming damage"), static_cast<unsigned int>(14 * (windowSize.y / 768.0f)), sf::Vector2f(statXOffset, yPos), sf::Color::White);
+                yPos += windowSize.y * 0.025f;
+                characterConfirmationMenu.addText(sf::String("Attack: " + std::to_string(tmpl.baseAttack) + " - attack accuracy"), static_cast<unsigned int>(14 * (windowSize.y / 768.0f)), sf::Vector2f(statXOffset, yPos), sf::Color::White);
+                yPos += windowSize.y * 0.025f;
+                characterConfirmationMenu.addText(sf::String("Stamina: " + std::to_string(tmpl.baseMaxStamina) + " - points for actions"), static_cast<unsigned int>(14 * (windowSize.y / 768.0f)), sf::Vector2f(statXOffset, yPos), sf::Color::White);
+                yPos += windowSize.y * 0.025f;
+                characterConfirmationMenu.addText(sf::String("Initiative: " + std::to_string(tmpl.baseInitiative) + " - determines turn order"), static_cast<unsigned int>(14 * (windowSize.y / 768.0f)), sf::Vector2f(statXOffset, yPos), sf::Color::White);
+                yPos += windowSize.y * 0.025f;
+                characterConfirmationMenu.addText(sf::String("Range: " + std::to_string(tmpl.baseAttackRange) + " - combat type (0 - melee)"), static_cast<unsigned int>(14 * (windowSize.y / 768.0f)), sf::Vector2f(statXOffset, yPos), sf::Color::White);
+                yPos += windowSize.y * 0.03f;
 
-                // Способности
-                characterConfirmationMenu.addText("Способности:", static_cast<unsigned int>(18 * (windowSize.y / 768.0f)), sf::Vector2f(xOffset, yPos), sf::Color::Cyan);
-                yPos += windowSize.y * 0.021f;
+                // Abilities
+                characterConfirmationMenu.addText(sf::String("Abilities:"), static_cast<unsigned int>(18 * (windowSize.y / 768.0f)), sf::Vector2f(xOffset, yPos), sf::Color::Cyan);
+                yPos += windowSize.y * 0.03f;
                 for (AbilityType abilityType : tmpl.availableAbilities)
                 {
                     const AbilityInfo &ability = HeroFactory::getAbilityInfo(abilityType);
-                    characterConfirmationMenu.addText(ability.name + ":", static_cast<unsigned int>(16 * (windowSize.y / 768.0f)), sf::Vector2f(statXOffset, yPos), sf::Color::Yellow);
-                    yPos += windowSize.y * 0.019f;
-                    characterConfirmationMenu.addText(ability.effect, static_cast<unsigned int>(12 * (windowSize.y / 768.0f)), sf::Vector2f(abilityXOffset, yPos), sf::Color::Green);
-                    yPos += windowSize.y * 0.017f;
+                    characterConfirmationMenu.addText(sf::String(ability.name + ":"), static_cast<unsigned int>(16 * (windowSize.y / 768.0f)), sf::Vector2f(statXOffset, yPos), sf::Color::Yellow);
+                    yPos += windowSize.y * 0.025f;
+                    characterConfirmationMenu.addText(sf::String(ability.effect), static_cast<unsigned int>(12 * (windowSize.y / 768.0f)), sf::Vector2f(abilityXOffset, yPos), sf::Color::Green);
+                    size_t lineCount = 1;
+                    for (char c : ability.effect)
+                    {
+                        if (c == '\n')
+                            lineCount++;
+                    }
+                    yPos += windowSize.y * 0.025f * lineCount;
                 }
 
-                yPos += windowSize.y * 0.01f; // Отступ между героями
+                yPos += windowSize.y * 0.02f; // Отступ между героями
             }
 
             // Кнопки
@@ -330,7 +343,7 @@ int main()
                                                     currentState = GameState::CAMPAIGN; });
             characterConfirmationMenu.addButton("Back", sf::Vector2f(windowSize.x * 0.4f, yPos), sf::Vector2f(windowSize.x * 0.15f, windowSize.y * 0.05f), [&]()
                                                 { currentState = GameState::CHARACTER_SELECTION; });
-            characterConfirmationMenu.setScrollable(true, windowSize.y * 0.5f);
+            characterConfirmationMenu.setScrollable(true, windowSize.y * 0.9f);
         }
 
         // Update treasure menu
@@ -570,7 +583,7 @@ int main()
                                 yPos += windowSize.y * 0.035f;
                                 battleTexts.emplace_back("Description: " + info.description, font, static_cast<unsigned int>(18 * (windowSize.y / 768.0f)), sf::Vector2f(windowSize.x * 0.05f, yPos), sf::Color::White);
                                 yPos += windowSize.y * 0.025f;
-                                battleTexts.emplace_back("Effect: " + info.effect, font, static_cast<unsigned int>(18 * (windowSize.y / 768.0f)), sf::Vector2f(windowSize.x * 0.05f, yPos), sf::Color::White);
+                                battleTexts.emplace_back(sf::String("Effect: " + info.effect), font, static_cast<unsigned int>(18 * (windowSize.y / 768.0f)), sf::Vector2f(windowSize.x * 0.05f, yPos), sf::Color::White);
                                 yPos += windowSize.y * 0.035f;
                                 battleMenu.addButton("Confirm", sf::Vector2f(windowSize.x * 0.05f, yPos), sf::Vector2f(windowSize.x * 0.12f, windowSize.y * 0.05f), [&]()
                                                      { battleState = BattleState::SELECT_TARGET_ABILITY; });

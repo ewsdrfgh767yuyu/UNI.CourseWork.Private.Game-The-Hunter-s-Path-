@@ -1,0 +1,61 @@
+\doxysection{SFML-\/2.6.1/include/\+SFML/\+Graphics/\+Glsl.hpp File Reference}
+\hypertarget{_glsl_8hpp}{}\label{_glsl_8hpp}\index{SFML-\/2.6.1/include/SFML/Graphics/Glsl.hpp@{SFML-\/2.6.1/include/SFML/Graphics/Glsl.hpp}}
+{\ttfamily \#include $<$SFML/\+Graphics/\+Transform.\+hpp$>$}\newline
+{\ttfamily \#include $<$SFML/\+Graphics/\+Color.\+hpp$>$}\newline
+{\ttfamily \#include $<$SFML/\+System/\+Vector2.\+hpp$>$}\newline
+{\ttfamily \#include $<$SFML/\+System/\+Vector3.\+hpp$>$}\newline
+{\ttfamily \#include $<$SFML/\+Graphics/\+Glsl.\+inl$>$}\newline
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structsf_1_1priv_1_1_matrix}{sf\+::priv\+::\+Matrix$<$ Columns, Rows $>$}}
+\begin{DoxyCompactList}\small\item\em \doxylink{structsf_1_1priv_1_1_matrix}{Matrix} type, used to set uniforms in GLSL. \end{DoxyCompactList}\item 
+struct \mbox{\hyperlink{structsf_1_1priv_1_1_vector4}{sf\+::priv\+::\+Vector4$<$ T $>$}}
+\begin{DoxyCompactList}\small\item\em 4D vector type, used to set uniforms in GLSL \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+namespace \mbox{\hyperlink{namespacesf}{sf}}
+\item 
+namespace \mbox{\hyperlink{namespacesf_1_1priv}{sf\+::priv}}
+\item 
+namespace \mbox{\hyperlink{namespacesf_1_1_glsl}{sf\+::\+Glsl}}
+\begin{DoxyCompactList}\small\item\em Namespace with GLSL types. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef \mbox{\hyperlink{classsf_1_1_vector2}{Vector2}}$<$ float $>$ \mbox{\hyperlink{namespacesf_1_1_glsl_adeed356d346d87634b4c197a530e4edf}{sf\+::\+Glsl\+::\+Vec2}}
+\begin{DoxyCompactList}\small\item\em 2D float vector ({\ttfamily vec2} in GLSL) \end{DoxyCompactList}\item 
+typedef \mbox{\hyperlink{classsf_1_1_vector2}{Vector2}}$<$ int $>$ \mbox{\hyperlink{namespacesf_1_1_glsl_aab803ee70c4b7bfcd63ec09e10408fd3}{sf\+::\+Glsl\+::\+Ivec2}}
+\begin{DoxyCompactList}\small\item\em 2D int vector ({\ttfamily ivec2} in GLSL) \end{DoxyCompactList}\item 
+typedef \mbox{\hyperlink{classsf_1_1_vector2}{Vector2}}$<$ bool $>$ \mbox{\hyperlink{namespacesf_1_1_glsl_a59d8cf909c3d71ebf3db057480b464da}{sf\+::\+Glsl\+::\+Bvec2}}
+\begin{DoxyCompactList}\small\item\em 2D bool vector ({\ttfamily bvec2} in GLSL) \end{DoxyCompactList}\item 
+typedef \mbox{\hyperlink{classsf_1_1_vector3}{Vector3}}$<$ float $>$ \mbox{\hyperlink{namespacesf_1_1_glsl_a9bdd0463b7cb5316244a082007bd50f0}{sf\+::\+Glsl\+::\+Vec3}}
+\begin{DoxyCompactList}\small\item\em 3D float vector ({\ttfamily vec3} in GLSL) \end{DoxyCompactList}\item 
+typedef \mbox{\hyperlink{classsf_1_1_vector3}{Vector3}}$<$ int $>$ \mbox{\hyperlink{namespacesf_1_1_glsl_a64f403dd0219e7f128ffddca641394df}{sf\+::\+Glsl\+::\+Ivec3}}
+\begin{DoxyCompactList}\small\item\em 3D int vector ({\ttfamily ivec3} in GLSL) \end{DoxyCompactList}\item 
+typedef \mbox{\hyperlink{classsf_1_1_vector3}{Vector3}}$<$ bool $>$ \mbox{\hyperlink{namespacesf_1_1_glsl_a4166ffc506619b4912d576e6eba2c957}{sf\+::\+Glsl\+::\+Bvec3}}
+\begin{DoxyCompactList}\small\item\em 3D bool vector ({\ttfamily bvec3} in GLSL) \end{DoxyCompactList}\item 
+typedef \mbox{\hyperlink{structsf_1_1priv_1_1_vector4}{priv\+::\+Vector4}}$<$ float $>$ \mbox{\hyperlink{namespacesf_1_1_glsl_a862f8df4771d2403de28653328fac5d0}{sf\+::\+Glsl\+::\+Vec4}}
+\item 
+typedef \mbox{\hyperlink{structsf_1_1priv_1_1_vector4}{priv\+::\+Vector4}}$<$ int $>$ \mbox{\hyperlink{namespacesf_1_1_glsl_abcba8791f75382199ea03f6932a91d9b}{sf\+::\+Glsl\+::\+Ivec4}}
+\item 
+typedef \mbox{\hyperlink{structsf_1_1priv_1_1_vector4}{priv\+::\+Vector4}}$<$ bool $>$ \mbox{\hyperlink{namespacesf_1_1_glsl_a5f4f38e06558ae1baa610b119e45ea0b}{sf\+::\+Glsl\+::\+Bvec4}}
+\item 
+typedef \mbox{\hyperlink{structsf_1_1priv_1_1_matrix}{priv\+::\+Matrix}}$<$ 3, 3 $>$ \mbox{\hyperlink{namespacesf_1_1_glsl_a1bf4595b60b08c79473a882e2c1dbff8}{sf\+::\+Glsl\+::\+Mat3}}
+\item 
+typedef \mbox{\hyperlink{structsf_1_1priv_1_1_matrix}{priv\+::\+Matrix}}$<$ 4, 4 $>$ \mbox{\hyperlink{namespacesf_1_1_glsl_aab545f0a373a3ea8ad145811b747f3e4}{sf\+::\+Glsl\+::\+Mat4}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{_graphics_2_export_8hpp_ab84c9f1035e146917de3bc0f98d72b35}{SFML\+\_\+\+GRAPHICS\+\_\+\+API}} \mbox{\hyperlink{namespacesf_1_1priv_a3c7e6834ed03deedda500a6cec51dcef}{sf\+::priv\+::copy\+Matrix}} (const \mbox{\hyperlink{classsf_1_1_transform}{Transform}} \&source, \mbox{\hyperlink{struct_matrix}{Matrix}}$<$ 3, 3 $>$ \&dest)
+\begin{DoxyCompactList}\small\item\em Helper functions to copy \doxylink{classsf_1_1_transform}{sf\+::\+Transform} to \doxylink{namespacesf_1_1_glsl_a1bf4595b60b08c79473a882e2c1dbff8}{sf\+::\+Glsl\+::\+Mat3}/4. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{_graphics_2_export_8hpp_ab84c9f1035e146917de3bc0f98d72b35}{SFML\+\_\+\+GRAPHICS\+\_\+\+API}} \mbox{\hyperlink{namespacesf_1_1priv_a992d80679d72efde30657731aeb5cda1}{sf\+::priv\+::copy\+Matrix}} (const \mbox{\hyperlink{classsf_1_1_transform}{Transform}} \&source, \mbox{\hyperlink{struct_matrix}{Matrix}}$<$ 4, 4 $>$ \&dest)
+\item 
+void \mbox{\hyperlink{_graphics_2_export_8hpp_ab84c9f1035e146917de3bc0f98d72b35}{SFML\+\_\+\+GRAPHICS\+\_\+\+API}} \mbox{\hyperlink{namespacesf_1_1priv_a51e06ca5d5913a0e0b5b82ac68f13f44}{sf\+::priv\+::copy\+Matrix}} (const float \texorpdfstring{$\ast$}{*}source, std\+::size\+\_\+t elements, float \texorpdfstring{$\ast$}{*}dest)
+\begin{DoxyCompactList}\small\item\em Copy array-\/based matrix with given number of elements. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{_graphics_2_export_8hpp_ab84c9f1035e146917de3bc0f98d72b35}{SFML\+\_\+\+GRAPHICS\+\_\+\+API}} \mbox{\hyperlink{namespacesf_1_1priv_aaecc035c437fb1195cd79b97a9c3b6a1}{sf\+::priv\+::copy\+Vector}} (const \mbox{\hyperlink{classsf_1_1_color}{Color}} \&source, \mbox{\hyperlink{struct_vector4}{Vector4}}$<$ float $>$ \&dest)
+\begin{DoxyCompactList}\small\item\em Helper functions to copy \doxylink{classsf_1_1_color}{sf\+::\+Color} to \doxylink{namespacesf_1_1_glsl_a862f8df4771d2403de28653328fac5d0}{sf\+::\+Glsl\+::\+Vec4}/\+Ivec4. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{_graphics_2_export_8hpp_ab84c9f1035e146917de3bc0f98d72b35}{SFML\+\_\+\+GRAPHICS\+\_\+\+API}} \mbox{\hyperlink{namespacesf_1_1priv_a515917f9ffa312bbca98651e642ea198}{sf\+::priv\+::copy\+Vector}} (const \mbox{\hyperlink{classsf_1_1_color}{Color}} \&source, \mbox{\hyperlink{struct_vector4}{Vector4}}$<$ int $>$ \&dest)
+\end{DoxyCompactItemize}

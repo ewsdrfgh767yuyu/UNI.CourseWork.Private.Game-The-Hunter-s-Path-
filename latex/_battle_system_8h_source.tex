@@ -1,0 +1,101 @@
+\doxysection{Battle\+System.\+h}
+\hypertarget{_battle_system_8h_source}{}\label{_battle_system_8h_source}\mbox{\hyperlink{_battle_system_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{entity_8h}{entity.h}}"{}}}
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <queue>}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ <algorithm>}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ <random>}}
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#include\ <iostream>}}
+\DoxyCodeLine{00008\ }
+\DoxyCodeLine{00009\ \textcolor{keyword}{using\ namespace\ }std;}
+\DoxyCodeLine{00010\ }
+\DoxyCodeLine{00011\ \textcolor{comment}{//\ Структура\ для\ хранения\ информации\ о\ позиции\ сущности\ в\ бою}}
+\DoxyCodeLine{00012\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{struct_battle_position_ab91931ba67f474b84a24212f519753a6}{BattlePosition}}}
+\DoxyCodeLine{00013\ \{}
+\DoxyCodeLine{00014\ \ \ \ \ \mbox{\hyperlink{class_entity}{Entity}}\ *\mbox{\hyperlink{struct_battle_position_a045a80859fffeb7c1261fac89145d863}{entity}};}
+\DoxyCodeLine{00015\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{struct_battle_position_a7d7b69dd8d0fec288b44a9e17288f7bb}{position}};\ \textcolor{comment}{//\ 0-\/3\ (0\ первая\ линия,\ 1\ вторая,\ 2\ третья)}}
+\DoxyCodeLine{00016\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{struct_battle_position_aaf53ba1cd15599fcfe03e7e874ee2728}{corpseHP}};\ \textcolor{comment}{//\ HP\ трупа,\ если\ entity\ ==\ nullptr}}
+\DoxyCodeLine{00017\ }
+\DoxyCodeLine{00018\ \ \ \ \ \mbox{\hyperlink{struct_battle_position_ab91931ba67f474b84a24212f519753a6}{BattlePosition}}(\mbox{\hyperlink{class_entity}{Entity}}\ *e\ =\ \textcolor{keyword}{nullptr},\ \textcolor{keywordtype}{int}\ pos\ =\ 0,\ \textcolor{keywordtype}{int}\ cHP\ =\ 0)}
+\DoxyCodeLine{00019\ \ \ \ \ \ \ \ \ :\ \mbox{\hyperlink{struct_battle_position_a045a80859fffeb7c1261fac89145d863}{entity}}(e),\ \mbox{\hyperlink{struct_battle_position_a7d7b69dd8d0fec288b44a9e17288f7bb}{position}}(pos),\ \mbox{\hyperlink{struct_battle_position_aaf53ba1cd15599fcfe03e7e874ee2728}{corpseHP}}(cHP)\ \{\}}
+\DoxyCodeLine{00020\ \};}
+\DoxyCodeLine{00021\ }
+\DoxyCodeLine{00022\ \textcolor{comment}{//\ Структура\ для\ хранения\ информации\ о\ ходе}}
+\DoxyCodeLine{00023\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{struct_turn_info_acc1973ae53bae91c3d2840ec2ef20783}{TurnInfo}}}
+\DoxyCodeLine{00024\ \{}
+\DoxyCodeLine{00025\ \ \ \ \ \mbox{\hyperlink{class_entity}{Entity}}\ *\mbox{\hyperlink{struct_turn_info_a4d0aad633ca4ea1656ba6b608bdbf91d}{entity}};}
+\DoxyCodeLine{00026\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{struct_turn_info_ab260185d99cb62f942e2a8664a46cfd5}{priority}};\ \textcolor{comment}{//\ Приоритет\ для\ сортировки\ очереди}}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \ \ \ \ \mbox{\hyperlink{struct_turn_info_acc1973ae53bae91c3d2840ec2ef20783}{TurnInfo}}(\mbox{\hyperlink{class_entity}{Entity}}\ *e\ =\ \textcolor{keyword}{nullptr},\ \textcolor{keywordtype}{int}\ p\ =\ 0)\ :\ \mbox{\hyperlink{struct_turn_info_a4d0aad633ca4ea1656ba6b608bdbf91d}{entity}}(e),\ \mbox{\hyperlink{struct_turn_info_ab260185d99cb62f942e2a8664a46cfd5}{priority}}(p)\ \{\}}
+\DoxyCodeLine{00029\ \};}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \textcolor{keyword}{class\ }\mbox{\hyperlink{class_battle_system_aa3b151e60cc7c7227d5d402da45566ac}{BattleSystem}}}
+\DoxyCodeLine{00032\ \{}
+\DoxyCodeLine{00033\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00034\ \ \ \ \ vector<BattlePosition>\ playerPositions;\ \textcolor{comment}{//\ Позиции\ игроков\ (до\ 4)}}
+\DoxyCodeLine{00035\ \ \ \ \ vector<BattlePosition>\ enemyPositions;\ \ \textcolor{comment}{//\ Позиции\ врагов\ (до\ 4)}}
+\DoxyCodeLine{00036\ \ \ \ \ vector<Entity\ *>\ turnOrder;\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Текущая\ очередь\ ходов}}
+\DoxyCodeLine{00037\ \ \ \ \ \textcolor{keywordtype}{int}\ currentTurnIndex;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Индекс\ текущего\ хода}}
+\DoxyCodeLine{00038\ \ \ \ \ \textcolor{keywordtype}{bool}\ battleActive;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Флаг\ активного\ боя}}
+\DoxyCodeLine{00039\ }
+\DoxyCodeLine{00040\ \ \ \ \ \textcolor{comment}{//\ Генератор\ случайных\ чисел}}
+\DoxyCodeLine{00041\ \ \ \ \ mt19937\ randomGenerator;}
+\DoxyCodeLine{00042\ }
+\DoxyCodeLine{00043\ \ \ \ \ \textcolor{comment}{//\ Вспомогательные\ методы}}
+\DoxyCodeLine{00044\ \ \ \ \ \textcolor{keywordtype}{bool}\ canAttackTarget(\mbox{\hyperlink{class_entity}{Entity}}\ *attacker,\ \mbox{\hyperlink{class_entity}{Entity}}\ *target)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00045\ \ \ \ \ \textcolor{keywordtype}{bool}\ canAttackCorpse(\mbox{\hyperlink{class_entity}{Entity}}\ *attacker,\ \textcolor{keywordtype}{int}\ targetPosition)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00046\ \ \ \ \ \textcolor{keywordtype}{int}\ getEntityPosition(\mbox{\hyperlink{class_entity}{Entity}}\ *entity)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00047\ \ \ \ \ \textcolor{keywordtype}{bool}\ isPositionBlocked(\textcolor{keywordtype}{int}\ position,\ \textcolor{keyword}{const}\ vector<BattlePosition>\ \&positions)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00048\ \ \ \ \ \textcolor{keywordtype}{bool}\ hasEmptyPositions(\textcolor{keyword}{const}\ vector<BattlePosition>\ \&positions)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00049\ \ \ \ \ vector<pair<Entity\ *,\ int>>\ getAvailableTargets(\mbox{\hyperlink{class_entity}{Entity}}\ *attacker,\ \textcolor{keywordtype}{bool}\ isPlayerAttacker)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00050\ \ \ \ \ \textcolor{keywordtype}{void}\ regenerateStaminaForTurn();}
+\DoxyCodeLine{00051\ \ \ \ \ \textcolor{keywordtype}{void}\ applyAbilityEffect(\mbox{\hyperlink{class_entity}{Entity}}\ *attacker,\ \mbox{\hyperlink{class_entity}{Entity}}\ *target,\ \textcolor{keywordtype}{int}\ damage);}
+\DoxyCodeLine{00052\ \ \ \ \ \textcolor{keywordtype}{void}\ shiftPositionsAfterDeath(vector<BattlePosition>\ \&positions,\ \textcolor{keywordtype}{int}\ deadPosition);}
+\DoxyCodeLine{00053\ }
+\DoxyCodeLine{00054\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00055\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_battle_system_adf6b41c8d11ac802cfa0a8454597260d}{removeDeadEntities}}();\ \textcolor{comment}{//\ Made\ public\ for\ testing}}
+\DoxyCodeLine{00056\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_battle_system_a19cade12e8948e9c94ee7b5d905c69a0}{calculateTurnOrder}}();\ \textcolor{comment}{//\ Made\ public\ for\ testing}}
+\DoxyCodeLine{00057\ }
+\DoxyCodeLine{00058\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00059\ \ \ \ \ \mbox{\hyperlink{class_battle_system_aa3b151e60cc7c7227d5d402da45566ac}{BattleSystem}}();}
+\DoxyCodeLine{00060\ }
+\DoxyCodeLine{00061\ \ \ \ \ \textcolor{comment}{//\ Основные\ методы\ управления\ боем}}
+\DoxyCodeLine{00062\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_battle_system_abb74e8347e0be0bb4eb1038520638eb9}{startBattle}}(\textcolor{keyword}{const}\ vector<Entity\ *>\ \&players,\ \textcolor{keyword}{const}\ vector<Entity\ *>\ \&enemies);}
+\DoxyCodeLine{00063\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_battle_system_a2b18e69b467196531ad2a8b4e9f66e6c}{endBattle}}();}
+\DoxyCodeLine{00064\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_battle_system_aeed08f2baf012c43263360d1928d99dd}{isBattleActive}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ battleActive;\ \}}
+\DoxyCodeLine{00065\ }
+\DoxyCodeLine{00066\ \ \ \ \ \textcolor{comment}{//\ Методы\ для\ выполнения\ действий}}
+\DoxyCodeLine{00067\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_battle_system_a85b1225c9eeaca0d13036e67cc4d2d5d}{attack}}(\mbox{\hyperlink{class_entity}{Entity}}\ *attacker,\ \mbox{\hyperlink{class_entity}{Entity}}\ *target);}
+\DoxyCodeLine{00068\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_battle_system_ac1afc0803a5e973ff801d1cef4dc9e2d}{movePosition}}(\mbox{\hyperlink{class_entity}{Entity}}\ *entity,\ \textcolor{keywordtype}{int}\ newPosition);}
+\DoxyCodeLine{00069\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_battle_system_adb353adb65fd9eb630bbc1ff2b1c56bb}{useItem}}(\mbox{\hyperlink{class_entity}{Entity}}\ *user,\ \textcolor{keywordtype}{int}\ itemIndex);}
+\DoxyCodeLine{00070\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_battle_system_a0d55bb656a9569d6e9b9aad1e785c0a1}{useAbility}}(\mbox{\hyperlink{class_entity}{Entity}}\ *user,\ \mbox{\hyperlink{entity_8h_a44b675d687acff3d739404c1227b4259}{AbilityType}}\ ability);}
+\DoxyCodeLine{00071\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_battle_system_af8464864e5e92bd5fba00a5e9cd1ce44}{skipHalfTurn}}(\mbox{\hyperlink{class_entity}{Entity}}\ *entity);}
+\DoxyCodeLine{00072\ }
+\DoxyCodeLine{00073\ \ \ \ \ \textcolor{comment}{//\ Методы\ для\ получения\ информации}}
+\DoxyCodeLine{00074\ \ \ \ \ \mbox{\hyperlink{class_entity}{Entity}}\ *\mbox{\hyperlink{class_battle_system_ab6020e40e8a4690bcc286b69eeab1067}{getCurrentTurnEntity}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00075\ \ \ \ \ vector<pair<Entity\ *,\ int>>\ \mbox{\hyperlink{class_battle_system_a9ed13515bdaaae409b62366331b08cb7}{getAvailableTargetsForCurrent}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00076\ \ \ \ \ vector<pair<Entity\ *,\ string>>\ \mbox{\hyperlink{class_battle_system_a3a600474ebf86b2f2b19323b07af5558}{getAllEntitiesWithStatus}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00077\ \ \ \ \ \textcolor{keywordtype}{string}\ \mbox{\hyperlink{class_battle_system_abdb19cc3eca6098cb61f9d4938154941}{getBattleStatus}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00078\ \ \ \ \ \textcolor{keywordtype}{string}\ \mbox{\hyperlink{class_battle_system_a8a9e6bd384c944681582233596ea67f4}{getTurnOrderString}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00079\ \ \ \ \ \textcolor{keyword}{const}\ vector<BattlePosition>\ \&\mbox{\hyperlink{class_battle_system_af51565f7f437cb72026cab9579fc21f8}{getPlayerPositions}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ playerPositions;\ \}}
+\DoxyCodeLine{00080\ \ \ \ \ \textcolor{keyword}{const}\ vector<BattlePosition>\ \&\mbox{\hyperlink{class_battle_system_aa60dbcb4981d475f688d7db3335f680a}{getEnemyPositions}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ enemyPositions;\ \}}
+\DoxyCodeLine{00081\ \ \ \ \ \textcolor{keyword}{const}\ vector<Entity\ *>\ \&\mbox{\hyperlink{class_battle_system_a4130d06608a2fe35c7f1741498e07b10}{getTurnOrder}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ turnOrder;\ \}}
+\DoxyCodeLine{00082\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_battle_system_a3fa6ce334ec2d400e88d9b0afe51b814}{displayEntityDetails}}(\mbox{\hyperlink{class_entity}{Entity}}\ *entity)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00083\ \ \ \ \ \textcolor{keywordtype}{string}\ \mbox{\hyperlink{class_battle_system_a06cfc5865e42c27d80f839fc3e970507}{getAttackDescription}}(\mbox{\hyperlink{class_entity}{Entity}}\ *attacker,\ \mbox{\hyperlink{class_entity}{Entity}}\ *target)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00084\ }
+\DoxyCodeLine{00085\ \ \ \ \ \textcolor{comment}{//\ Методы\ для\ проверки\ условий}}
+\DoxyCodeLine{00086\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_battle_system_a3aebeaf2c47a5118e30628d00729e5ee}{isPlayerVictory}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00087\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_battle_system_a6e1127445d06d198e0d72184fd6f0c51}{isPlayerDefeat}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00088\ }
+\DoxyCodeLine{00089\ \ \ \ \ \textcolor{comment}{//\ Методы\ управления\ очередью\ ходов}}
+\DoxyCodeLine{00090\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_battle_system_aa453d3542c1c91d58421e835d3f36517}{nextTurn}}();}
+\DoxyCodeLine{00091\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_battle_system_a68d385302cf7f9964f32905484984c68}{skipTurn}}(\mbox{\hyperlink{class_entity}{Entity}}\ *entity);}
+\DoxyCodeLine{00092\ }
+\DoxyCodeLine{00093\ \ \ \ \ \textcolor{comment}{//\ Отладочные\ методы}}
+\DoxyCodeLine{00094\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_battle_system_a55b14df98add609e187fead35fe6bfae}{printBattlefield}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00095\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_battle_system_a4e3f45c9f689e3c73d754c259a1a2447}{printTurnOrder}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00096\ \};}
+
+\end{DoxyCode}

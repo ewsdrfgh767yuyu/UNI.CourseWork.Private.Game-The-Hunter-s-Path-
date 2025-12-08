@@ -1,0 +1,145 @@
+\doxysection{Map Class Reference}
+\hypertarget{class_map}{}\label{class_map}\index{Map@{Map}}
+
+
+{\ttfamily \#include $<$Map.\+h$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_map_a0f5ad0fd4563497b4214038cbca8b582}{Map}} ()
+\item 
+void \mbox{\hyperlink{class_map_aeba547488265ea0a47be09ba26bc6e13}{generate}} ()
+\item 
+void \mbox{\hyperlink{class_map_a5bba4894a4951b341b219fb9c8ba62f3}{generate\+Fixed\+Map}} ()
+\item 
+void \mbox{\hyperlink{class_map_a69177a8ac30734c6d2f9bba3bc8b3e70}{reset\+Visited}} ()
+\item 
+bool \mbox{\hyperlink{class_map_ae66f3de4c5969944141628ccc2623edd}{move\+Player}} (char direction)
+\item 
+\mbox{\hyperlink{struct_position}{Position}} \mbox{\hyperlink{class_map_a367e8ce9b4662ef8ffa01ec0393124a3}{get\+Player\+Position}} () const
+\item 
+\mbox{\hyperlink{_map_8h_acac9cbaeea226ed297804c012dc12b16}{Node\+Type}} \mbox{\hyperlink{class_map_abad199d072dca72d2272f16f5b3fbe06}{get\+Node\+At}} (const \mbox{\hyperlink{struct_position}{Position}} \&pos) const
+\item 
+\mbox{\hyperlink{_map_8h_acac9cbaeea226ed297804c012dc12b16}{Node\+Type}} \mbox{\hyperlink{class_map_aad517680b7f6087995d843b7c184fddb}{get\+Current\+Node}} () const
+\item 
+bool \mbox{\hyperlink{class_map_a4f0ed1aef55a041f5e259e12bbcf16e1}{is\+Visible}} (const \mbox{\hyperlink{struct_position}{Position}} \&pos) const
+\item 
+\mbox{\hyperlink{_map_8h_acac9cbaeea226ed297804c012dc12b16}{Node\+Type}} \mbox{\hyperlink{class_map_aa2d4a23fe62622e7a849eafffbd61459}{get\+Visible\+Node\+At}} (const \mbox{\hyperlink{struct_position}{Position}} \&pos) const
+\item 
+void \mbox{\hyperlink{class_map_a8b950ecfaa315713953c872af433e59f}{print\+Map}} () const
+\item 
+std\+::string \mbox{\hyperlink{class_map_a298b8849a8522cf3222bd06dfa5dda4d}{get\+Map\+String}} () const
+\item 
+bool \mbox{\hyperlink{class_map_afd5f7b3ee14d9555951997319d3a5b14}{is\+Valid\+Move}} (char direction) const
+\item 
+std\+::vector$<$ char $>$ \mbox{\hyperlink{class_map_a7ce7dbf7edb11730d97cb110c74a6b2a}{get\+Valid\+Moves}} () const
+\item 
+bool \mbox{\hyperlink{class_map_a7d50c9b5f056a9adf7490d71d2c381ab}{check\+And\+Fix\+Map\+Integrity}} ()
+\end{DoxyCompactItemize}
+
+
+\label{doc-constructors}
+\Hypertarget{class_map_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_map_a0f5ad0fd4563497b4214038cbca8b582}\index{Map@{Map}!Map@{Map}}
+\index{Map@{Map}!Map@{Map}}
+\doxysubsubsection{\texorpdfstring{Map()}{Map()}}
+{\footnotesize\ttfamily \label{class_map_a0f5ad0fd4563497b4214038cbca8b582} 
+Map\+::\+Map (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+\label{doc-func-members}
+\Hypertarget{class_map_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_map_a7d50c9b5f056a9adf7490d71d2c381ab}\index{Map@{Map}!checkAndFixMapIntegrity@{checkAndFixMapIntegrity}}
+\index{checkAndFixMapIntegrity@{checkAndFixMapIntegrity}!Map@{Map}}
+\doxysubsubsection{\texorpdfstring{checkAndFixMapIntegrity()}{checkAndFixMapIntegrity()}}
+{\footnotesize\ttfamily \label{class_map_a7d50c9b5f056a9adf7490d71d2c381ab} 
+bool Map\+::check\+And\+Fix\+Map\+Integrity (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_map_aeba547488265ea0a47be09ba26bc6e13}\index{Map@{Map}!generate@{generate}}
+\index{generate@{generate}!Map@{Map}}
+\doxysubsubsection{\texorpdfstring{generate()}{generate()}}
+{\footnotesize\ttfamily \label{class_map_aeba547488265ea0a47be09ba26bc6e13} 
+void Map\+::generate (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_map_a5bba4894a4951b341b219fb9c8ba62f3}\index{Map@{Map}!generateFixedMap@{generateFixedMap}}
+\index{generateFixedMap@{generateFixedMap}!Map@{Map}}
+\doxysubsubsection{\texorpdfstring{generateFixedMap()}{generateFixedMap()}}
+{\footnotesize\ttfamily \label{class_map_a5bba4894a4951b341b219fb9c8ba62f3} 
+void Map\+::generate\+Fixed\+Map (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_map_aad517680b7f6087995d843b7c184fddb}\index{Map@{Map}!getCurrentNode@{getCurrentNode}}
+\index{getCurrentNode@{getCurrentNode}!Map@{Map}}
+\doxysubsubsection{\texorpdfstring{getCurrentNode()}{getCurrentNode()}}
+{\footnotesize\ttfamily \label{class_map_aad517680b7f6087995d843b7c184fddb} 
+\mbox{\hyperlink{_map_8h_acac9cbaeea226ed297804c012dc12b16}{Node\+Type}} Map\+::get\+Current\+Node (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_map_a298b8849a8522cf3222bd06dfa5dda4d}\index{Map@{Map}!getMapString@{getMapString}}
+\index{getMapString@{getMapString}!Map@{Map}}
+\doxysubsubsection{\texorpdfstring{getMapString()}{getMapString()}}
+{\footnotesize\ttfamily \label{class_map_a298b8849a8522cf3222bd06dfa5dda4d} 
+std\+::string Map\+::get\+Map\+String (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_map_abad199d072dca72d2272f16f5b3fbe06}\index{Map@{Map}!getNodeAt@{getNodeAt}}
+\index{getNodeAt@{getNodeAt}!Map@{Map}}
+\doxysubsubsection{\texorpdfstring{getNodeAt()}{getNodeAt()}}
+{\footnotesize\ttfamily \label{class_map_abad199d072dca72d2272f16f5b3fbe06} 
+\mbox{\hyperlink{_map_8h_acac9cbaeea226ed297804c012dc12b16}{Node\+Type}} Map\+::get\+Node\+At (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{struct_position}{Position}} \&}]{pos}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_map_a367e8ce9b4662ef8ffa01ec0393124a3}\index{Map@{Map}!getPlayerPosition@{getPlayerPosition}}
+\index{getPlayerPosition@{getPlayerPosition}!Map@{Map}}
+\doxysubsubsection{\texorpdfstring{getPlayerPosition()}{getPlayerPosition()}}
+{\footnotesize\ttfamily \label{class_map_a367e8ce9b4662ef8ffa01ec0393124a3} 
+\mbox{\hyperlink{struct_position}{Position}} Map\+::get\+Player\+Position (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_map_a7ce7dbf7edb11730d97cb110c74a6b2a}\index{Map@{Map}!getValidMoves@{getValidMoves}}
+\index{getValidMoves@{getValidMoves}!Map@{Map}}
+\doxysubsubsection{\texorpdfstring{getValidMoves()}{getValidMoves()}}
+{\footnotesize\ttfamily \label{class_map_a7ce7dbf7edb11730d97cb110c74a6b2a} 
+std\+::vector$<$ char $>$ Map\+::get\+Valid\+Moves (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_map_aa2d4a23fe62622e7a849eafffbd61459}\index{Map@{Map}!getVisibleNodeAt@{getVisibleNodeAt}}
+\index{getVisibleNodeAt@{getVisibleNodeAt}!Map@{Map}}
+\doxysubsubsection{\texorpdfstring{getVisibleNodeAt()}{getVisibleNodeAt()}}
+{\footnotesize\ttfamily \label{class_map_aa2d4a23fe62622e7a849eafffbd61459} 
+\mbox{\hyperlink{_map_8h_acac9cbaeea226ed297804c012dc12b16}{Node\+Type}} Map\+::get\+Visible\+Node\+At (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{struct_position}{Position}} \&}]{pos}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_map_afd5f7b3ee14d9555951997319d3a5b14}\index{Map@{Map}!isValidMove@{isValidMove}}
+\index{isValidMove@{isValidMove}!Map@{Map}}
+\doxysubsubsection{\texorpdfstring{isValidMove()}{isValidMove()}}
+{\footnotesize\ttfamily \label{class_map_afd5f7b3ee14d9555951997319d3a5b14} 
+bool Map\+::is\+Valid\+Move (\begin{DoxyParamCaption}\item[{char}]{direction}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_map_a4f0ed1aef55a041f5e259e12bbcf16e1}\index{Map@{Map}!isVisible@{isVisible}}
+\index{isVisible@{isVisible}!Map@{Map}}
+\doxysubsubsection{\texorpdfstring{isVisible()}{isVisible()}}
+{\footnotesize\ttfamily \label{class_map_a4f0ed1aef55a041f5e259e12bbcf16e1} 
+bool Map\+::is\+Visible (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{struct_position}{Position}} \&}]{pos}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_map_ae66f3de4c5969944141628ccc2623edd}\index{Map@{Map}!movePlayer@{movePlayer}}
+\index{movePlayer@{movePlayer}!Map@{Map}}
+\doxysubsubsection{\texorpdfstring{movePlayer()}{movePlayer()}}
+{\footnotesize\ttfamily \label{class_map_ae66f3de4c5969944141628ccc2623edd} 
+bool Map\+::move\+Player (\begin{DoxyParamCaption}\item[{char}]{direction}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_map_a8b950ecfaa315713953c872af433e59f}\index{Map@{Map}!printMap@{printMap}}
+\index{printMap@{printMap}!Map@{Map}}
+\doxysubsubsection{\texorpdfstring{printMap()}{printMap()}}
+{\footnotesize\ttfamily \label{class_map_a8b950ecfaa315713953c872af433e59f} 
+void Map\+::print\+Map (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_map_a69177a8ac30734c6d2f9bba3bc8b3e70}\index{Map@{Map}!resetVisited@{resetVisited}}
+\index{resetVisited@{resetVisited}!Map@{Map}}
+\doxysubsubsection{\texorpdfstring{resetVisited()}{resetVisited()}}
+{\footnotesize\ttfamily \label{class_map_a69177a8ac30734c6d2f9bba3bc8b3e70} 
+void Map\+::reset\+Visited (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{_map_8h}{Map.\+h}}\item 
+\mbox{\hyperlink{_map_8cpp}{Map.\+cpp}}\end{DoxyCompactItemize}

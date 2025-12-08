@@ -1,0 +1,92 @@
+\doxysection{Map.\+h}
+\hypertarget{_map_8h_source}{}\label{_map_8h_source}\mbox{\hyperlink{_map_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <utility>}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ <random>}}
+\DoxyCodeLine{00006\ }
+\DoxyCodeLine{00007\ \textcolor{keyword}{enum\ class}\ \mbox{\hyperlink{_map_8h_acac9cbaeea226ed297804c012dc12b16}{NodeType}}}
+\DoxyCodeLine{00008\ \{}
+\DoxyCodeLine{00009\ \ \ \ \ \mbox{\hyperlink{_map_8h_acac9cbaeea226ed297804c012dc12b16ab078ffd28db767c502ac367053f6e0ac}{START}}\ =\ \textcolor{charliteral}{'I'},}
+\DoxyCodeLine{00010\ \ \ \ \ \mbox{\hyperlink{_map_8h_acac9cbaeea226ed297804c012dc12b16a14d0b0e872355d0bf01b18cc2d4eb670}{BATTLE}}\ =\ \textcolor{charliteral}{'B'},}
+\DoxyCodeLine{00011\ \ \ \ \ \mbox{\hyperlink{_map_8h_acac9cbaeea226ed297804c012dc12b16a030d962d0faa148f02848881a3b4fdb6}{EVENT}}\ =\ \textcolor{charliteral}{'S'},}
+\DoxyCodeLine{00012\ \ \ \ \ \mbox{\hyperlink{_map_8h_acac9cbaeea226ed297804c012dc12b16af2de7bf382e8eaf7b82632f3c91002f5}{TREASURE}}\ =\ \textcolor{charliteral}{'P'},}
+\DoxyCodeLine{00013\ \ \ \ \ \mbox{\hyperlink{_map_8h_acac9cbaeea226ed297804c012dc12b16aa42b2fb0e720a080e79a92f4ca97d927}{EXIT}}\ =\ \textcolor{charliteral}{'V'},}
+\DoxyCodeLine{00014\ \ \ \ \ \mbox{\hyperlink{_map_8h_acac9cbaeea226ed297804c012dc12b16aba2b45bdc11e2a4a6e86aab2ac693cbb}{EMPTY}}\ =\ \textcolor{charliteral}{'.'},}
+\DoxyCodeLine{00015\ \ \ \ \ \mbox{\hyperlink{_map_8h_acac9cbaeea226ed297804c012dc12b16a696b031073e74bf2cb98e5ef201d4aa3}{UNKNOWN}}\ =\ \textcolor{charliteral}{'?'},}
+\DoxyCodeLine{00016\ \ \ \ \ \mbox{\hyperlink{_map_8h_acac9cbaeea226ed297804c012dc12b16a1868c2177fdc84d496f7784a23729d3b}{FOREST}}\ =\ \textcolor{charliteral}{'F'},}
+\DoxyCodeLine{00017\ \ \ \ \ \mbox{\hyperlink{_map_8h_acac9cbaeea226ed297804c012dc12b16a14db90e75f1308d303d0bceb0be66ac1}{CAVE}}\ =\ \textcolor{charliteral}{'C'},}
+\DoxyCodeLine{00018\ \ \ \ \ \mbox{\hyperlink{_map_8h_acac9cbaeea226ed297804c012dc12b16a6f45cab6ffe3e1faf27259cbeec3a9cf}{DEAD\_CITY}}\ =\ \textcolor{charliteral}{'D'},}
+\DoxyCodeLine{00019\ \ \ \ \ \mbox{\hyperlink{_map_8h_acac9cbaeea226ed297804c012dc12b16a42bfd70b24ee63ec7f92264e3e79da94}{CASTLE}}\ =\ \textcolor{charliteral}{'Z'}}
+\DoxyCodeLine{00020\ \};}
+\DoxyCodeLine{00021\ }
+\DoxyCodeLine{00022\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{struct_position_aefa590074d28918732e477cf447d16b8}{Position}}}
+\DoxyCodeLine{00023\ \{}
+\DoxyCodeLine{00024\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{struct_position_aeda152ffeee17ae5be9c02327b2408d8}{x}},\ \mbox{\hyperlink{struct_position_a3c08e9213d4726b21caba3073192c4a3}{y}};}
+\DoxyCodeLine{00025\ \ \ \ \ \mbox{\hyperlink{struct_position_aefa590074d28918732e477cf447d16b8}{Position}}(\textcolor{keywordtype}{int}\ \mbox{\hyperlink{struct_position_aeda152ffeee17ae5be9c02327b2408d8}{x}}\ =\ 0,\ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{struct_position_a3c08e9213d4726b21caba3073192c4a3}{y}}\ =\ 0)\ :\ \mbox{\hyperlink{struct_position_aeda152ffeee17ae5be9c02327b2408d8}{x}}(\mbox{\hyperlink{struct_position_aeda152ffeee17ae5be9c02327b2408d8}{x}}),\ \mbox{\hyperlink{struct_position_a3c08e9213d4726b21caba3073192c4a3}{y}}(\mbox{\hyperlink{struct_position_a3c08e9213d4726b21caba3073192c4a3}{y}})\ \{\}}
+\DoxyCodeLine{00026\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{struct_position_acf13e7e45c7c07a67c2adf2f7e1dcc5f}{operator==}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{struct_position_aefa590074d28918732e477cf447d16b8}{Position}}\ \&other)\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{struct_position_aeda152ffeee17ae5be9c02327b2408d8}{x}}\ ==\ other.\mbox{\hyperlink{struct_position_aeda152ffeee17ae5be9c02327b2408d8}{x}}\ \&\&\ \mbox{\hyperlink{struct_position_a3c08e9213d4726b21caba3073192c4a3}{y}}\ ==\ other.\mbox{\hyperlink{struct_position_a3c08e9213d4726b21caba3073192c4a3}{y}};\ \}}
+\DoxyCodeLine{00027\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{struct_position_ae4d491be71bc11896f864835187e860d}{operator!=}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{struct_position_aefa590074d28918732e477cf447d16b8}{Position}}\ \&other)\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ !(*\textcolor{keyword}{this}\ ==\ other);\ \}}
+\DoxyCodeLine{00028\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{struct_position_a9ec6b49c2f17c87eaf17c0b57e5bbb1a}{operator<}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{struct_position_aefa590074d28918732e477cf447d16b8}{Position}}\ \&other)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00029\ \textcolor{keyword}{\ \ \ \ }\{}
+\DoxyCodeLine{00030\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{struct_position_aeda152ffeee17ae5be9c02327b2408d8}{x}}\ !=\ other.\mbox{\hyperlink{struct_position_aeda152ffeee17ae5be9c02327b2408d8}{x}})}
+\DoxyCodeLine{00031\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{struct_position_aeda152ffeee17ae5be9c02327b2408d8}{x}}\ <\ other.\mbox{\hyperlink{struct_position_aeda152ffeee17ae5be9c02327b2408d8}{x}};}
+\DoxyCodeLine{00032\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{struct_position_a3c08e9213d4726b21caba3073192c4a3}{y}}\ <\ other.\mbox{\hyperlink{struct_position_a3c08e9213d4726b21caba3073192c4a3}{y}};}
+\DoxyCodeLine{00033\ \ \ \ \ \}}
+\DoxyCodeLine{00034\ \ \ \ \ \mbox{\hyperlink{struct_position_aefa590074d28918732e477cf447d16b8}{Position}}\ \mbox{\hyperlink{struct_position_afdcc8bb8d41a8e1e7a872ce8d4351f9e}{operator+}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{struct_position_aefa590074d28918732e477cf447d16b8}{Position}}\ \&other)\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{struct_position_aefa590074d28918732e477cf447d16b8}{Position}}(\mbox{\hyperlink{struct_position_aeda152ffeee17ae5be9c02327b2408d8}{x}}\ +\ other.\mbox{\hyperlink{struct_position_aeda152ffeee17ae5be9c02327b2408d8}{x}},\ \mbox{\hyperlink{struct_position_a3c08e9213d4726b21caba3073192c4a3}{y}}\ +\ other.\mbox{\hyperlink{struct_position_a3c08e9213d4726b21caba3073192c4a3}{y}});\ \}}
+\DoxyCodeLine{00035\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{struct_position_a2f46603605392b76fab21a65d831659e}{manhattanDistance}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{struct_position_aefa590074d28918732e477cf447d16b8}{Position}}\ \&other)\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ abs(\mbox{\hyperlink{struct_position_aeda152ffeee17ae5be9c02327b2408d8}{x}}\ -\/\ other.\mbox{\hyperlink{struct_position_aeda152ffeee17ae5be9c02327b2408d8}{x}})\ +\ abs(\mbox{\hyperlink{struct_position_a3c08e9213d4726b21caba3073192c4a3}{y}}\ -\/\ other.\mbox{\hyperlink{struct_position_a3c08e9213d4726b21caba3073192c4a3}{y}});\ \}}
+\DoxyCodeLine{00036\ \};}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00038\ \textcolor{keyword}{class\ }\mbox{\hyperlink{class_map_a0f5ad0fd4563497b4214038cbca8b582}{Map}}}
+\DoxyCodeLine{00039\ \{}
+\DoxyCodeLine{00040\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00041\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\ MAP\_SIZE\ =\ 15;}
+\DoxyCodeLine{00042\ \ \ \ \ std::vector<std::vector<NodeType>>\ grid;}
+\DoxyCodeLine{00043\ \ \ \ \ \mbox{\hyperlink{struct_position}{Position}}\ playerPos;}
+\DoxyCodeLine{00044\ \ \ \ \ std::vector<std::vector<char>>\ visited;}
+\DoxyCodeLine{00045\ \ \ \ \ std::mt19937\ rng;}
+\DoxyCodeLine{00046\ }
+\DoxyCodeLine{00047\ \ \ \ \ \textcolor{comment}{//\ Методы\ генерации}}
+\DoxyCodeLine{00048\ \ \ \ \ \textcolor{keywordtype}{void}\ initializeGrid();}
+\DoxyCodeLine{00049\ \ \ \ \ \textcolor{keywordtype}{void}\ generateCorridorMap();}
+\DoxyCodeLine{00050\ \ \ \ \ \textcolor{keywordtype}{void}\ createCorridorBranch(\mbox{\hyperlink{struct_position}{Position}}\ start,\ \textcolor{keywordtype}{int}\ length,\ \textcolor{keywordtype}{int}\ branchType);}
+\DoxyCodeLine{00051\ \ \ \ \ \textcolor{keywordtype}{void}\ placeSpecialNodes();}
+\DoxyCodeLine{00052\ \ \ \ \ \textcolor{keywordtype}{void}\ connectNodes();}
+\DoxyCodeLine{00053\ \ \ \ \ \textcolor{keywordtype}{void}\ ensureConnectivity();}
+\DoxyCodeLine{00054\ \ \ \ \ \textcolor{keywordtype}{void}\ parsePrototype(\textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *\textcolor{keyword}{const}\ *prototype);}
+\DoxyCodeLine{00055\ \ \ \ \ \textcolor{keywordtype}{bool}\ isValidPosition(\textcolor{keywordtype}{int}\ x,\ \textcolor{keywordtype}{int}\ y)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00056\ \ \ \ \ \textcolor{keywordtype}{bool}\ isSpecialNode(\mbox{\hyperlink{_map_8h_acac9cbaeea226ed297804c012dc12b16}{NodeType}}\ type)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00057\ \ \ \ \ std::vector<Position>\ getNeighbors(\textcolor{keyword}{const}\ \mbox{\hyperlink{struct_position}{Position}}\ \&pos)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00058\ \ \ \ \ \textcolor{keywordtype}{void}\ carvePath(\textcolor{keyword}{const}\ \mbox{\hyperlink{struct_position}{Position}}\ \&start,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{struct_position}{Position}}\ \&end);}
+\DoxyCodeLine{00059\ \ \ \ \ \textcolor{keywordtype}{bool}\ hasPathToExit(\textcolor{keyword}{const}\ \mbox{\hyperlink{struct_position}{Position}}\ \&start,\ \mbox{\hyperlink{_map_8h_acac9cbaeea226ed297804c012dc12b16}{NodeType}}\ exitType)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00060\ }
+\DoxyCodeLine{00061\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00062\ \ \ \ \ \mbox{\hyperlink{class_map_a0f5ad0fd4563497b4214038cbca8b582}{Map}}();}
+\DoxyCodeLine{00063\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_map_aeba547488265ea0a47be09ba26bc6e13}{generate}}();}
+\DoxyCodeLine{00064\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_map_a5bba4894a4951b341b219fb9c8ba62f3}{generateFixedMap}}();}
+\DoxyCodeLine{00065\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_map_a69177a8ac30734c6d2f9bba3bc8b3e70}{resetVisited}}();}
+\DoxyCodeLine{00066\ }
+\DoxyCodeLine{00067\ \ \ \ \ \textcolor{comment}{//\ Движение\ игрока}}
+\DoxyCodeLine{00068\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_map_ae66f3de4c5969944141628ccc2623edd}{movePlayer}}(\textcolor{keywordtype}{char}\ direction);\ \textcolor{comment}{//\ w/a/s/d}}
+\DoxyCodeLine{00069\ \ \ \ \ \mbox{\hyperlink{struct_position}{Position}}\ \mbox{\hyperlink{class_map_a367e8ce9b4662ef8ffa01ec0393124a3}{getPlayerPosition}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ playerPos;\ \}}
+\DoxyCodeLine{00070\ \ \ \ \ \mbox{\hyperlink{_map_8h_acac9cbaeea226ed297804c012dc12b16}{NodeType}}\ \mbox{\hyperlink{class_map_abad199d072dca72d2272f16f5b3fbe06}{getNodeAt}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{struct_position}{Position}}\ \&pos)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00071\ \ \ \ \ \mbox{\hyperlink{_map_8h_acac9cbaeea226ed297804c012dc12b16}{NodeType}}\ \mbox{\hyperlink{class_map_aad517680b7f6087995d843b7c184fddb}{getCurrentNode}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{class_map_abad199d072dca72d2272f16f5b3fbe06}{getNodeAt}}(playerPos);\ \}}
+\DoxyCodeLine{00072\ }
+\DoxyCodeLine{00073\ \ \ \ \ \textcolor{comment}{//\ Видимость}}
+\DoxyCodeLine{00074\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_map_a4f0ed1aef55a041f5e259e12bbcf16e1}{isVisible}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{struct_position}{Position}}\ \&pos)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00075\ \ \ \ \ \mbox{\hyperlink{_map_8h_acac9cbaeea226ed297804c012dc12b16}{NodeType}}\ \mbox{\hyperlink{class_map_aa2d4a23fe62622e7a849eafffbd61459}{getVisibleNodeAt}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{struct_position}{Position}}\ \&pos)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00076\ }
+\DoxyCodeLine{00077\ \ \ \ \ \textcolor{comment}{//\ Вывод}}
+\DoxyCodeLine{00078\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_map_a8b950ecfaa315713953c872af433e59f}{printMap}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00079\ \ \ \ \ std::string\ \mbox{\hyperlink{class_map_a298b8849a8522cf3222bd06dfa5dda4d}{getMapString}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00080\ }
+\DoxyCodeLine{00081\ \ \ \ \ \textcolor{comment}{//\ Проверка}}
+\DoxyCodeLine{00082\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_map_afd5f7b3ee14d9555951997319d3a5b14}{isValidMove}}(\textcolor{keywordtype}{char}\ direction)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00083\ \ \ \ \ std::vector<char>\ \mbox{\hyperlink{class_map_a7ce7dbf7edb11730d97cb110c74a6b2a}{getValidMoves}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00084\ }
+\DoxyCodeLine{00085\ \ \ \ \ \textcolor{comment}{//\ Проверка\ и\ починка\ целостности\ карты}}
+\DoxyCodeLine{00086\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_map_a7d50c9b5f056a9adf7490d71d2c381ab}{checkAndFixMapIntegrity}}();}
+\DoxyCodeLine{00087\ \};}
+
+\end{DoxyCode}

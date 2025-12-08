@@ -1,0 +1,88 @@
+\doxysection{sf\+::priv\+::Matrix\texorpdfstring{$<$}{<} Columns, Rows \texorpdfstring{$>$}{>} Struct Template Reference}
+\hypertarget{structsf_1_1priv_1_1_matrix}{}\label{structsf_1_1priv_1_1_matrix}\index{sf::priv::Matrix$<$ Columns, Rows $>$@{sf::priv::Matrix$<$ Columns, Rows $>$}}
+
+
+\doxylink{structsf_1_1priv_1_1_matrix}{Matrix} type, used to set uniforms in GLSL.  
+
+
+
+
+{\ttfamily \#include $<$Glsl.\+hpp$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{structsf_1_1priv_1_1_matrix_ad3734cf028bf079e7a682c52e1e42e6f}{Matrix}} (const float \texorpdfstring{$\ast$}{*}pointer)
+\begin{DoxyCompactList}\small\item\em Construct from raw data. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{structsf_1_1priv_1_1_matrix_a8511438f38364bc1907bbf0ce9f85c38}{Matrix}} (const \mbox{\hyperlink{classsf_1_1_transform}{Transform}} \&transform)
+\begin{DoxyCompactList}\small\item\em Construct implicitly from SFML transform. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+float \mbox{\hyperlink{structsf_1_1priv_1_1_matrix_afca785d791b2dba5e10dfda91cd2088a}{array}} \mbox{[}Columns \texorpdfstring{$\ast$}{*}Rows\mbox{]}
+\begin{DoxyCompactList}\small\item\em Array holding matrix data. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\subsubsection*{template$<$std\+::size\+\_\+t Columns, std\+::size\+\_\+t Rows$>$\newline
+struct sf\+::priv\+::\+Matrix$<$ Columns, Rows $>$}
+\doxylink{structsf_1_1priv_1_1_matrix}{Matrix} type, used to set uniforms in GLSL. 
+
+\label{doc-constructors}
+\Hypertarget{structsf_1_1priv_1_1_matrix_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{structsf_1_1priv_1_1_matrix_ad3734cf028bf079e7a682c52e1e42e6f}\index{sf::priv::Matrix$<$ Columns, Rows $>$@{sf::priv::Matrix$<$ Columns, Rows $>$}!Matrix@{Matrix}}
+\index{Matrix@{Matrix}!sf::priv::Matrix$<$ Columns, Rows $>$@{sf::priv::Matrix$<$ Columns, Rows $>$}}
+\doxysubsubsection{\texorpdfstring{Matrix()}{Matrix()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{structsf_1_1priv_1_1_matrix_ad3734cf028bf079e7a682c52e1e42e6f} 
+template$<$std\+::size\+\_\+t Columns, std\+::size\+\_\+t Rows$>$ \\
+\mbox{\hyperlink{structsf_1_1priv_1_1_matrix}{sf\+::priv\+::\+Matrix}}$<$ Columns, Rows $>$\+::\+Matrix (\begin{DoxyParamCaption}\item[{const float \texorpdfstring{$\ast$}{*}}]{pointer}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [explicit]}}
+
+
+
+Construct from raw data. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em pointer} & Points to the beginning of an array that has the size of the matrix. The elements are copied to the instance. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{structsf_1_1priv_1_1_matrix_a8511438f38364bc1907bbf0ce9f85c38}\index{sf::priv::Matrix$<$ Columns, Rows $>$@{sf::priv::Matrix$<$ Columns, Rows $>$}!Matrix@{Matrix}}
+\index{Matrix@{Matrix}!sf::priv::Matrix$<$ Columns, Rows $>$@{sf::priv::Matrix$<$ Columns, Rows $>$}}
+\doxysubsubsection{\texorpdfstring{Matrix()}{Matrix()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{structsf_1_1priv_1_1_matrix_a8511438f38364bc1907bbf0ce9f85c38} 
+template$<$std\+::size\+\_\+t Columns, std\+::size\+\_\+t Rows$>$ \\
+\mbox{\hyperlink{structsf_1_1priv_1_1_matrix}{sf\+::priv\+::\+Matrix}}$<$ Columns, Rows $>$\+::\+Matrix (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classsf_1_1_transform}{Transform}} \&}]{transform}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Construct implicitly from SFML transform. 
+
+This constructor is only supported for 3x3 and 4x4 matrices.
+
+
+\begin{DoxyParams}{Parameters}
+{\em transform} & Object containing a transform. \\
+\hline
+\end{DoxyParams}
+
+
+\label{doc-variable-members}
+\Hypertarget{structsf_1_1priv_1_1_matrix_doc-variable-members}
+\doxysubsection{Member Data Documentation}
+\Hypertarget{structsf_1_1priv_1_1_matrix_afca785d791b2dba5e10dfda91cd2088a}\index{sf::priv::Matrix$<$ Columns, Rows $>$@{sf::priv::Matrix$<$ Columns, Rows $>$}!array@{array}}
+\index{array@{array}!sf::priv::Matrix$<$ Columns, Rows $>$@{sf::priv::Matrix$<$ Columns, Rows $>$}}
+\doxysubsubsection{\texorpdfstring{array}{array}}
+{\footnotesize\ttfamily \label{structsf_1_1priv_1_1_matrix_afca785d791b2dba5e10dfda91cd2088a} 
+template$<$std\+::size\+\_\+t Columns, std\+::size\+\_\+t Rows$>$ \\
+float \mbox{\hyperlink{structsf_1_1priv_1_1_matrix}{sf\+::priv\+::\+Matrix}}$<$ Columns, Rows $>$\+::array\mbox{[}Columns \texorpdfstring{$\ast$}{*}Rows\mbox{]}}
+
+
+
+Array holding matrix data. 
+
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+SFML-\/2.\+6.\+1/include/\+SFML/\+Graphics/\mbox{\hyperlink{_glsl_8hpp}{Glsl.\+hpp}}\end{DoxyCompactItemize}

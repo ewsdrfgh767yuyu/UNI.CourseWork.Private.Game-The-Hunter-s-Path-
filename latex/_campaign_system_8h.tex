@@ -1,0 +1,68 @@
+\doxysection{Campaign\+System.\+h File Reference}
+\hypertarget{_campaign_system_8h}{}\label{_campaign_system_8h}\index{CampaignSystem.h@{CampaignSystem.h}}
+{\ttfamily \#include "{}entity.\+h"{}}\newline
+{\ttfamily \#include "{}Battle\+System.\+h"{}}\newline
+{\ttfamily \#include "{}Enemy\+Templates.\+h"{}}\newline
+{\ttfamily \#include "{}Hero\+Templates.\+h"{}}\newline
+{\ttfamily \#include "{}Map.\+h"{}}\newline
+{\ttfamily \#include "{}utils.\+h"{}}\newline
+{\ttfamily \#include $<$vector$>$}\newline
+{\ttfamily \#include $<$string$>$}\newline
+{\ttfamily \#include $<$map$>$}\newline
+{\ttfamily \#include $<$random$>$}\newline
+{\ttfamily \#include $<$iostream$>$}\newline
+{\ttfamily \#include $<$limits$>$}\newline
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{struct_campaign_event}{Campaign\+Event}}
+\item 
+struct \mbox{\hyperlink{struct_location}{Location}}
+\item 
+class \mbox{\hyperlink{class_campaign_system}{Campaign\+System}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum class \mbox{\hyperlink{_campaign_system_8h_a2628ea8d12e8b2563c32f05dc7fff6fa}{Event\+Type}} \{ \newline
+\mbox{\hyperlink{_campaign_system_8h_a2628ea8d12e8b2563c32f05dc7fff6faa14d0b0e872355d0bf01b18cc2d4eb670}{BATTLE}}
+, \mbox{\hyperlink{_campaign_system_8h_a2628ea8d12e8b2563c32f05dc7fff6faaf2de7bf382e8eaf7b82632f3c91002f5}{TREASURE}}
+, \mbox{\hyperlink{_campaign_system_8h_a2628ea8d12e8b2563c32f05dc7fff6faad9ca3ba57c472ea8987e8ab2005cc7e8}{TEXT\+\_\+\+EVENT}}
+, \mbox{\hyperlink{_campaign_system_8h_a2628ea8d12e8b2563c32f05dc7fff6faaa42b2fb0e720a080e79a92f4ca97d927}{EXIT}}
+, \newline
+\mbox{\hyperlink{_campaign_system_8h_a2628ea8d12e8b2563c32f05dc7fff6faaa21700010dded0a2a0288fef4dd0d3c3}{BOSS\+\_\+\+BATTLE}}
+ \}
+\end{DoxyCompactItemize}
+
+
+\label{doc-enum-members}
+\Hypertarget{_campaign_system_8h_doc-enum-members}
+\doxysubsection{Enumeration Type Documentation}
+\Hypertarget{_campaign_system_8h_a2628ea8d12e8b2563c32f05dc7fff6fa}\index{CampaignSystem.h@{CampaignSystem.h}!EventType@{EventType}}
+\index{EventType@{EventType}!CampaignSystem.h@{CampaignSystem.h}}
+\doxysubsubsection{\texorpdfstring{EventType}{EventType}}
+{\footnotesize\ttfamily \label{_campaign_system_8h_a2628ea8d12e8b2563c32f05dc7fff6fa} 
+enum class \mbox{\hyperlink{_campaign_system_8h_a2628ea8d12e8b2563c32f05dc7fff6fa}{Event\+Type}}\hspace{0.3cm}{\ttfamily [strong]}}
+
+\begin{DoxyEnumFields}[2]{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BATTLE@{BATTLE}!CampaignSystem.h@{CampaignSystem.h}}\index{CampaignSystem.h@{CampaignSystem.h}!BATTLE@{BATTLE}}}\Hypertarget{_campaign_system_8h_a2628ea8d12e8b2563c32f05dc7fff6faa14d0b0e872355d0bf01b18cc2d4eb670}\label{_campaign_system_8h_a2628ea8d12e8b2563c32f05dc7fff6faa14d0b0e872355d0bf01b18cc2d4eb670} 
+BATTLE&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{TREASURE@{TREASURE}!CampaignSystem.h@{CampaignSystem.h}}\index{CampaignSystem.h@{CampaignSystem.h}!TREASURE@{TREASURE}}}\Hypertarget{_campaign_system_8h_a2628ea8d12e8b2563c32f05dc7fff6faaf2de7bf382e8eaf7b82632f3c91002f5}\label{_campaign_system_8h_a2628ea8d12e8b2563c32f05dc7fff6faaf2de7bf382e8eaf7b82632f3c91002f5} 
+TREASURE&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{TEXT\_EVENT@{TEXT\_EVENT}!CampaignSystem.h@{CampaignSystem.h}}\index{CampaignSystem.h@{CampaignSystem.h}!TEXT\_EVENT@{TEXT\_EVENT}}}\Hypertarget{_campaign_system_8h_a2628ea8d12e8b2563c32f05dc7fff6faad9ca3ba57c472ea8987e8ab2005cc7e8}\label{_campaign_system_8h_a2628ea8d12e8b2563c32f05dc7fff6faad9ca3ba57c472ea8987e8ab2005cc7e8} 
+TEXT\+\_\+\+EVENT&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{EXIT@{EXIT}!CampaignSystem.h@{CampaignSystem.h}}\index{CampaignSystem.h@{CampaignSystem.h}!EXIT@{EXIT}}}\Hypertarget{_campaign_system_8h_a2628ea8d12e8b2563c32f05dc7fff6faaa42b2fb0e720a080e79a92f4ca97d927}\label{_campaign_system_8h_a2628ea8d12e8b2563c32f05dc7fff6faaa42b2fb0e720a080e79a92f4ca97d927} 
+EXIT&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BOSS\_BATTLE@{BOSS\_BATTLE}!CampaignSystem.h@{CampaignSystem.h}}\index{CampaignSystem.h@{CampaignSystem.h}!BOSS\_BATTLE@{BOSS\_BATTLE}}}\Hypertarget{_campaign_system_8h_a2628ea8d12e8b2563c32f05dc7fff6faaa21700010dded0a2a0288fef4dd0d3c3}\label{_campaign_system_8h_a2628ea8d12e8b2563c32f05dc7fff6faaa21700010dded0a2a0288fef4dd0d3c3} 
+BOSS\+\_\+\+BATTLE&\\
+\hline
+
+\end{DoxyEnumFields}

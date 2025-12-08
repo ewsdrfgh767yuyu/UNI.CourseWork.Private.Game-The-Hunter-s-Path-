@@ -1,0 +1,42 @@
+{
+  "configurations": [
+    {
+      "inheritEnvironments": [
+        "msvc_x86"
+      ],
+      "name": "x86-Release",
+      "includePath": [
+        "${env.INCLUDE}",
+        "${workspaceRoot}\\**"
+      ],
+      "defines": [
+        "WIN32",
+        "NDEBUG",
+        "UNICODE",
+        "_UNICODE"
+      ],
+      "intelliSenseMode": "windows-msvc-x86"
+    },
+    {
+      "name": "GCC",
+      "includePath": [
+        "${workspaceFolder}/**",
+        "${workspaceFolder}/SFML-2.6.1/include",
+        "C:/mingw64/include",
+        "C:/mingw64/include/c++/13.2.0",
+        "C:/mingw64/include/c++/13.2.0/x86_64-w64-mingw32",
+        "C:/mingw64/include/c++/13.2.0/backward",
+        "C:/mingw64/lib/gcc/x86_64-w64-mingw32/13.2.0/include",
+        "C:/mingw64/lib/gcc/x86_64-w64-mingw32/13.2.0/include-fixed",
+        "C:/mingw64/x86_64-w64-mingw32/include"
+      ],
+      "defines": [
+        "_DEBUG"
+      ],
+      "compilerPath": "C:/mingw64/bin/g++.exe",
+      "cStandard": "c17",
+      "cppStandard": "c++17",
+      "intelliSenseMode": "windows-gcc-x64"
+    }
+  ]
+}

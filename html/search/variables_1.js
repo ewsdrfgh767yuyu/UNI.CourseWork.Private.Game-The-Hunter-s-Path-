@@ -1,0 +1,25 @@
+var searchData=
+[
+  ['b_0',['b',['../classsf_1_1_color.html#a6707aedd0609c8920e12df5d7abc53cb',1,'sf::Color']]],
+  ['baseability_1',['baseAbility',['../struct_hero_template.html#a363f681f797f9c4cb0568c13b161b194',1,'HeroTemplate']]],
+  ['baseattack_2',['baseAttack',['../struct_hero_template.html#ab693e7416b15b77016b545066d661896',1,'HeroTemplate']]],
+  ['baseattackrange_3',['baseAttackRange',['../struct_hero_template.html#aa86c9dbc856dd0c389b5a8d94c4051d8',1,'HeroTemplate']]],
+  ['basedamage_4',['baseDamage',['../struct_hero_template.html#a761cdeb136ba3443d7410004846dce2c',1,'HeroTemplate']]],
+  ['basedefense_5',['baseDefense',['../struct_hero_template.html#a34dd6b125adc38c07f4989ea8a0bc276',1,'HeroTemplate']]],
+  ['baseinitiative_6',['baseInitiative',['../struct_hero_template.html#a7aa1e63662d4386f4c33dcca41f5425d',1,'HeroTemplate']]],
+  ['basemaxhp_7',['baseMaxHP',['../struct_hero_template.html#a79cd4736ff254529210a7b784a081f64',1,'HeroTemplate']]],
+  ['basemaxstamina_8',['baseMaxStamina',['../struct_hero_template.html#a000ab22695ec47f38f59ab561c0d91ed',1,'HeroTemplate']]],
+  ['bitsperpixel_9',['bitsPerPixel',['../classsf_1_1_video_mode.html#aa080f1ef96a1008d58b1920eceb189df',1,'sf::VideoMode']]],
+  ['black_10',['Black',['../classsf_1_1_color.html#a77c688197b981338f0b19dc58bd2facd',1,'sf::Color']]],
+  ['blendadd_11',['BlendAdd',['../namespacesf.html#a1be8c314242e6ed161af2aea08be543c',1,'sf']]],
+  ['blendalpha_12',['BlendAlpha',['../namespacesf.html#a7747d95d2e1f108142ea7c760c0b266c',1,'sf']]],
+  ['blendmax_13',['BlendMax',['../namespacesf.html#ae03fecc80fa2cf3e4edd6e120683ee97',1,'sf']]],
+  ['blendmin_14',['BlendMin',['../namespacesf.html#ad3ca76d24b9dd296e74dfcd7a3e7d04c',1,'sf']]],
+  ['blendmode_15',['blendMode',['../classsf_1_1_render_states.html#ad6ac87f1b5006dae7ebfee4b5d40f5a8',1,'sf::RenderStates']]],
+  ['blendmultiply_16',['BlendMultiply',['../namespacesf.html#ad8622674d06322d447de6ea0c95c83b4',1,'sf']]],
+  ['blendnone_17',['BlendNone',['../namespacesf.html#aaa5511bd6fcf3573d61945b6d70a20ab',1,'sf']]],
+  ['blue_18',['Blue',['../classsf_1_1_color.html#ab03770d4817426b2614cfc33cf0e245c',1,'sf::Color']]],
+  ['bounds_19',['bounds',['../classsf_1_1_glyph.html#a6f3c892093167914adc31e52e5923f4b',1,'sf::Glyph']]],
+  ['broadcast_20',['Broadcast',['../classsf_1_1_ip_address.html#aa93d1d57b65d243f2baf804b6035465c',1,'sf::IpAddress']]],
+  ['button_21',['button',['../structsf_1_1_event_1_1_mouse_button_event.html#a5f53725aa7b647705486eeb95f723024',1,'sf::Event::MouseButtonEvent::button'],['../structsf_1_1_event_1_1_joystick_button_event.html#a6412e698a2f7904c5aa875a0d1b34da4',1,'sf::Event::JoystickButtonEvent::button'],['../_win32_8cpp.html#a92decbf8642d08b3993016451fdad8df',1,'button:&#160;Win32.cpp']]]
+];

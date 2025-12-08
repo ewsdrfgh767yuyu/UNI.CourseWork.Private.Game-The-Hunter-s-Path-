@@ -1,0 +1,95 @@
+\doxysection{sf\+::priv Namespace Reference}
+\hypertarget{namespacesf_1_1priv}{}\label{namespacesf_1_1priv}\index{sf::priv@{sf::priv}}
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structsf_1_1priv_1_1_matrix}{Matrix}}
+\begin{DoxyCompactList}\small\item\em \doxylink{structsf_1_1priv_1_1_matrix}{Matrix} type, used to set uniforms in GLSL. \end{DoxyCompactList}\item 
+struct \mbox{\hyperlink{structsf_1_1priv_1_1_vector4}{Vector4}}
+\begin{DoxyCompactList}\small\item\em 4D vector type, used to set uniforms in GLSL \end{DoxyCompactList}\item 
+struct \mbox{\hyperlink{structsf_1_1priv_1_1_thread_func}{Thread\+Func}}
+\item 
+struct \mbox{\hyperlink{structsf_1_1priv_1_1_thread_functor}{Thread\+Functor}}
+\item 
+struct \mbox{\hyperlink{structsf_1_1priv_1_1_thread_functor_with_arg}{Thread\+Functor\+With\+Arg}}
+\item 
+struct \mbox{\hyperlink{structsf_1_1priv_1_1_thread_member_func}{Thread\+Member\+Func}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+{\footnotesize template$<$typename T$>$ }\\\mbox{\hyperlink{classsf_1_1_sound_file_reader}{Sound\+File\+Reader}} \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{namespacesf_1_1priv_aca30ad5e6ee22353d72145af1af53b78}{create\+Reader}} ()
+\item 
+{\footnotesize template$<$typename T$>$ }\\\mbox{\hyperlink{classsf_1_1_sound_file_writer}{Sound\+File\+Writer}} \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{namespacesf_1_1priv_aaa8b548de29fc4570064f372b4df8df0}{create\+Writer}} ()
+\item 
+void \mbox{\hyperlink{_graphics_2_export_8hpp_ab84c9f1035e146917de3bc0f98d72b35}{SFML\+\_\+\+GRAPHICS\+\_\+\+API}} \mbox{\hyperlink{namespacesf_1_1priv_a3c7e6834ed03deedda500a6cec51dcef}{copy\+Matrix}} (const \mbox{\hyperlink{classsf_1_1_transform}{Transform}} \&source, \mbox{\hyperlink{struct_matrix}{Matrix}}$<$ 3, 3 $>$ \&dest)
+\begin{DoxyCompactList}\small\item\em Helper functions to copy \doxylink{classsf_1_1_transform}{sf\+::\+Transform} to \doxylink{namespacesf_1_1_glsl_a1bf4595b60b08c79473a882e2c1dbff8}{sf\+::\+Glsl\+::\+Mat3}/4. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{_graphics_2_export_8hpp_ab84c9f1035e146917de3bc0f98d72b35}{SFML\+\_\+\+GRAPHICS\+\_\+\+API}} \mbox{\hyperlink{namespacesf_1_1priv_a992d80679d72efde30657731aeb5cda1}{copy\+Matrix}} (const \mbox{\hyperlink{classsf_1_1_transform}{Transform}} \&source, \mbox{\hyperlink{struct_matrix}{Matrix}}$<$ 4, 4 $>$ \&dest)
+\item 
+void \mbox{\hyperlink{_graphics_2_export_8hpp_ab84c9f1035e146917de3bc0f98d72b35}{SFML\+\_\+\+GRAPHICS\+\_\+\+API}} \mbox{\hyperlink{namespacesf_1_1priv_a51e06ca5d5913a0e0b5b82ac68f13f44}{copy\+Matrix}} (const float \texorpdfstring{$\ast$}{*}source, std\+::size\+\_\+t elements, float \texorpdfstring{$\ast$}{*}dest)
+\begin{DoxyCompactList}\small\item\em Copy array-\/based matrix with given number of elements. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{_graphics_2_export_8hpp_ab84c9f1035e146917de3bc0f98d72b35}{SFML\+\_\+\+GRAPHICS\+\_\+\+API}} \mbox{\hyperlink{namespacesf_1_1priv_aaecc035c437fb1195cd79b97a9c3b6a1}{copy\+Vector}} (const \mbox{\hyperlink{classsf_1_1_color}{Color}} \&source, \mbox{\hyperlink{struct_vector4}{Vector4}}$<$ float $>$ \&dest)
+\begin{DoxyCompactList}\small\item\em Helper functions to copy \doxylink{classsf_1_1_color}{sf\+::\+Color} to \doxylink{namespacesf_1_1_glsl_a862f8df4771d2403de28653328fac5d0}{sf\+::\+Glsl\+::\+Vec4}/\+Ivec4. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{_graphics_2_export_8hpp_ab84c9f1035e146917de3bc0f98d72b35}{SFML\+\_\+\+GRAPHICS\+\_\+\+API}} \mbox{\hyperlink{namespacesf_1_1priv_a515917f9ffa312bbca98651e642ea198}{copy\+Vector}} (const \mbox{\hyperlink{classsf_1_1_color}{Color}} \&source, \mbox{\hyperlink{struct_vector4}{Vector4}}$<$ int $>$ \&dest)
+\end{DoxyCompactItemize}
+
+
+\label{doc-func-members}
+\Hypertarget{namespacesf_1_1priv_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{namespacesf_1_1priv_a51e06ca5d5913a0e0b5b82ac68f13f44}\index{sf::priv@{sf::priv}!copyMatrix@{copyMatrix}}
+\index{copyMatrix@{copyMatrix}!sf::priv@{sf::priv}}
+\doxysubsubsection{\texorpdfstring{copyMatrix()}{copyMatrix()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily \label{namespacesf_1_1priv_a51e06ca5d5913a0e0b5b82ac68f13f44} 
+void \mbox{\hyperlink{_graphics_2_export_8hpp_ab84c9f1035e146917de3bc0f98d72b35}{SFML\+\_\+\+GRAPHICS\+\_\+\+API}} sf\+::priv\+::copy\+Matrix (\begin{DoxyParamCaption}\item[{const float \texorpdfstring{$\ast$}{*}}]{source}{, }\item[{std\+::size\+\_\+t}]{elements}{, }\item[{float \texorpdfstring{$\ast$}{*}}]{dest}{}\end{DoxyParamCaption})}
+
+
+
+Copy array-\/based matrix with given number of elements. 
+
+Indirection to std\+::copy() to avoid inclusion of $<$algorithm$>$ and MSVC\textquotesingle{}s annoying 4996 warning in header \Hypertarget{namespacesf_1_1priv_a3c7e6834ed03deedda500a6cec51dcef}\index{sf::priv@{sf::priv}!copyMatrix@{copyMatrix}}
+\index{copyMatrix@{copyMatrix}!sf::priv@{sf::priv}}
+\doxysubsubsection{\texorpdfstring{copyMatrix()}{copyMatrix()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily \label{namespacesf_1_1priv_a3c7e6834ed03deedda500a6cec51dcef} 
+void \mbox{\hyperlink{_graphics_2_export_8hpp_ab84c9f1035e146917de3bc0f98d72b35}{SFML\+\_\+\+GRAPHICS\+\_\+\+API}} sf\+::priv\+::copy\+Matrix (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classsf_1_1_transform}{Transform}} \&}]{source}{, }\item[{\mbox{\hyperlink{struct_matrix}{Matrix}}$<$ 3, 3 $>$ \&}]{dest}{}\end{DoxyParamCaption})}
+
+
+
+Helper functions to copy \doxylink{classsf_1_1_transform}{sf\+::\+Transform} to \doxylink{namespacesf_1_1_glsl_a1bf4595b60b08c79473a882e2c1dbff8}{sf\+::\+Glsl\+::\+Mat3}/4. 
+
+\Hypertarget{namespacesf_1_1priv_a992d80679d72efde30657731aeb5cda1}\index{sf::priv@{sf::priv}!copyMatrix@{copyMatrix}}
+\index{copyMatrix@{copyMatrix}!sf::priv@{sf::priv}}
+\doxysubsubsection{\texorpdfstring{copyMatrix()}{copyMatrix()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily \label{namespacesf_1_1priv_a992d80679d72efde30657731aeb5cda1} 
+void \mbox{\hyperlink{_graphics_2_export_8hpp_ab84c9f1035e146917de3bc0f98d72b35}{SFML\+\_\+\+GRAPHICS\+\_\+\+API}} sf\+::priv\+::copy\+Matrix (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classsf_1_1_transform}{Transform}} \&}]{source}{, }\item[{\mbox{\hyperlink{struct_matrix}{Matrix}}$<$ 4, 4 $>$ \&}]{dest}{}\end{DoxyParamCaption})}
+
+\Hypertarget{namespacesf_1_1priv_aaecc035c437fb1195cd79b97a9c3b6a1}\index{sf::priv@{sf::priv}!copyVector@{copyVector}}
+\index{copyVector@{copyVector}!sf::priv@{sf::priv}}
+\doxysubsubsection{\texorpdfstring{copyVector()}{copyVector()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{namespacesf_1_1priv_aaecc035c437fb1195cd79b97a9c3b6a1} 
+void \mbox{\hyperlink{_graphics_2_export_8hpp_ab84c9f1035e146917de3bc0f98d72b35}{SFML\+\_\+\+GRAPHICS\+\_\+\+API}} sf\+::priv\+::copy\+Vector (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classsf_1_1_color}{Color}} \&}]{source}{, }\item[{\mbox{\hyperlink{struct_vector4}{Vector4}}$<$ float $>$ \&}]{dest}{}\end{DoxyParamCaption})}
+
+
+
+Helper functions to copy \doxylink{classsf_1_1_color}{sf\+::\+Color} to \doxylink{namespacesf_1_1_glsl_a862f8df4771d2403de28653328fac5d0}{sf\+::\+Glsl\+::\+Vec4}/\+Ivec4. 
+
+\Hypertarget{namespacesf_1_1priv_a515917f9ffa312bbca98651e642ea198}\index{sf::priv@{sf::priv}!copyVector@{copyVector}}
+\index{copyVector@{copyVector}!sf::priv@{sf::priv}}
+\doxysubsubsection{\texorpdfstring{copyVector()}{copyVector()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{namespacesf_1_1priv_a515917f9ffa312bbca98651e642ea198} 
+void \mbox{\hyperlink{_graphics_2_export_8hpp_ab84c9f1035e146917de3bc0f98d72b35}{SFML\+\_\+\+GRAPHICS\+\_\+\+API}} sf\+::priv\+::copy\+Vector (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classsf_1_1_color}{Color}} \&}]{source}{, }\item[{\mbox{\hyperlink{struct_vector4}{Vector4}}$<$ int $>$ \&}]{dest}{}\end{DoxyParamCaption})}
+
+\Hypertarget{namespacesf_1_1priv_aca30ad5e6ee22353d72145af1af53b78}\index{sf::priv@{sf::priv}!createReader@{createReader}}
+\index{createReader@{createReader}!sf::priv@{sf::priv}}
+\doxysubsubsection{\texorpdfstring{createReader()}{createReader()}}
+{\footnotesize\ttfamily \label{namespacesf_1_1priv_aca30ad5e6ee22353d72145af1af53b78} 
+template$<$typename T$>$ \\
+\mbox{\hyperlink{classsf_1_1_sound_file_reader}{Sound\+File\+Reader}} \texorpdfstring{$\ast$}{*} sf\+::priv\+::create\+Reader (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{namespacesf_1_1priv_aaa8b548de29fc4570064f372b4df8df0}\index{sf::priv@{sf::priv}!createWriter@{createWriter}}
+\index{createWriter@{createWriter}!sf::priv@{sf::priv}}
+\doxysubsubsection{\texorpdfstring{createWriter()}{createWriter()}}
+{\footnotesize\ttfamily \label{namespacesf_1_1priv_aaa8b548de29fc4570064f372b4df8df0} 
+template$<$typename T$>$ \\
+\mbox{\hyperlink{classsf_1_1_sound_file_writer}{Sound\+File\+Writer}} \texorpdfstring{$\ast$}{*} sf\+::priv\+::create\+Writer (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+

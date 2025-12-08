@@ -1,0 +1,44 @@
+\chapter{TODO -\/ Map Random Prototype Selection and Event Randomization }
+\hypertarget{md__t_o_d_o}{}\label{md__t_o_d_o}\index{TODO -\/ Map Random Prototype Selection and Event Randomization@{TODO -\/ Map Random Prototype Selection and Event Randomization}}
+\label{md__t_o_d_o_autotoc_md55}%
+\Hypertarget{md__t_o_d_o_autotoc_md55}%
+\hypertarget{md__t_o_d_o_autotoc_md56}{}\doxysection{\texorpdfstring{Objective}{Objective}}\label{md__t_o_d_o_autotoc_md56}
+Implement multiple map prototypes for each map type (forest, city, castle, cave) and randomize map selection and event types on \textquotesingle{}R\textquotesingle{} positions.\hypertarget{md__t_o_d_o_autotoc_md57}{}\doxysection{\texorpdfstring{Tasks}{Tasks}}\label{md__t_o_d_o_autotoc_md57}
+
+\begin{DoxyEnumerate}
+\item Add user-\/provided map prototypes (4 variants per map type) as static const 15x15 char arrays in \doxylink{_map_8cpp}{Map.\+cpp}.
+\item Add enum or constants for map types (FOREST, CITY, CASTLE, CAVE) if not present.
+\item Update \doxylink{class_map_aeba547488265ea0a47be09ba26bc6e13}{Map\+::generate()} to\+:
+\begin{DoxyItemize}
+\item randomly select a map type
+\item randomly select one of the 4 prototypes of that type
+\item load prototype with new helper function
+\end{DoxyItemize}
+\item Implement helper function\+:
+\begin{DoxyItemize}
+\item parse\+Prototype(const char\mbox{[}15\mbox{]}\mbox{[}15\mbox{]})
+\item convert prototype chars to \doxylink{_map_8h_acac9cbaeea226ed297804c012dc12b16}{Node\+Type} grid
+\item For \textquotesingle{}R\textquotesingle{} cells, randomly assign \doxylink{_map_8h_acac9cbaeea226ed297804c012dc12b16a14d0b0e872355d0bf01b18cc2d4eb670}{Node\+Type\+::\+BATTLE}, \doxylink{_map_8h_acac9cbaeea226ed297804c012dc12b16af2de7bf382e8eaf7b82632f3c91002f5}{Node\+Type\+::\+TREASURE}, or \doxylink{_map_8h_acac9cbaeea226ed297804c012dc12b16a030d962d0faa148f02848881a3b4fdb6}{Node\+Type\+::\+EVENT}
+\end{DoxyItemize}
+\item Enforce castle rules\+:
+\begin{DoxyItemize}
+\item exactly one boss (D)
+\item at least one battle (B) node leading to boss
+\item no exits (V)
+\end{DoxyItemize}
+\item Retain player start (I) location from prototype.
+\item Adjust connect\+Nodes or ensure\+Connectivity if needed after loading prototype
+\item Test map generation randomization and event assignment.
+\end{DoxyEnumerate}\hypertarget{md__t_o_d_o_autotoc_md58}{}\doxysection{\texorpdfstring{Files to edit}{Files to edit}}\label{md__t_o_d_o_autotoc_md58}
+
+\begin{DoxyItemize}
+\item \doxylink{_map_8cpp}{Map.\+cpp}
+\item \doxylink{_map_8h}{Map.\+h}
+\end{DoxyItemize}\hypertarget{md__t_o_d_o_autotoc_md59}{}\doxysection{\texorpdfstring{Next steps}{Next steps}}\label{md__t_o_d_o_autotoc_md59}
+
+\begin{DoxyItemize}
+\item Implement prototypes data arrays and parsing
+\item Modify generate() logic
+\item Add random event assignment on \textquotesingle{}R\textquotesingle{}
+\item Handle castle-\/specific rules 
+\end{DoxyItemize}

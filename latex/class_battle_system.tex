@@ -1,0 +1,241 @@
+\doxysection{Battle\+System Class Reference}
+\hypertarget{class_battle_system}{}\label{class_battle_system}\index{BattleSystem@{BattleSystem}}
+
+
+{\ttfamily \#include $<$Battle\+System.\+h$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{class_battle_system_adf6b41c8d11ac802cfa0a8454597260d}{remove\+Dead\+Entities}} ()
+\item 
+void \mbox{\hyperlink{class_battle_system_a19cade12e8948e9c94ee7b5d905c69a0}{calculate\+Turn\+Order}} ()
+\item 
+\mbox{\hyperlink{class_battle_system_aa3b151e60cc7c7227d5d402da45566ac}{Battle\+System}} ()
+\item 
+void \mbox{\hyperlink{class_battle_system_abb74e8347e0be0bb4eb1038520638eb9}{start\+Battle}} (const vector$<$ \mbox{\hyperlink{class_entity}{Entity}} \texorpdfstring{$\ast$}{*} $>$ \&players, const vector$<$ \mbox{\hyperlink{class_entity}{Entity}} \texorpdfstring{$\ast$}{*} $>$ \&enemies)
+\item 
+void \mbox{\hyperlink{class_battle_system_a2b18e69b467196531ad2a8b4e9f66e6c}{end\+Battle}} ()
+\item 
+bool \mbox{\hyperlink{class_battle_system_aeed08f2baf012c43263360d1928d99dd}{is\+Battle\+Active}} () const
+\item 
+bool \mbox{\hyperlink{class_battle_system_a85b1225c9eeaca0d13036e67cc4d2d5d}{attack}} (\mbox{\hyperlink{class_entity}{Entity}} \texorpdfstring{$\ast$}{*}attacker, \mbox{\hyperlink{class_entity}{Entity}} \texorpdfstring{$\ast$}{*}target)
+\item 
+bool \mbox{\hyperlink{class_battle_system_ac1afc0803a5e973ff801d1cef4dc9e2d}{move\+Position}} (\mbox{\hyperlink{class_entity}{Entity}} \texorpdfstring{$\ast$}{*}entity, int new\+Position)
+\item 
+bool \mbox{\hyperlink{class_battle_system_adb353adb65fd9eb630bbc1ff2b1c56bb}{use\+Item}} (\mbox{\hyperlink{class_entity}{Entity}} \texorpdfstring{$\ast$}{*}user, int item\+Index)
+\item 
+bool \mbox{\hyperlink{class_battle_system_a0d55bb656a9569d6e9b9aad1e785c0a1}{use\+Ability}} (\mbox{\hyperlink{class_entity}{Entity}} \texorpdfstring{$\ast$}{*}user, \mbox{\hyperlink{entity_8h_a44b675d687acff3d739404c1227b4259}{Ability\+Type}} ability)
+\item 
+bool \mbox{\hyperlink{class_battle_system_af8464864e5e92bd5fba00a5e9cd1ce44}{skip\+Half\+Turn}} (\mbox{\hyperlink{class_entity}{Entity}} \texorpdfstring{$\ast$}{*}entity)
+\item 
+\mbox{\hyperlink{class_entity}{Entity}} \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{class_battle_system_ab6020e40e8a4690bcc286b69eeab1067}{get\+Current\+Turn\+Entity}} () const
+\item 
+vector$<$ pair$<$ \mbox{\hyperlink{class_entity}{Entity}} \texorpdfstring{$\ast$}{*}, int $>$ $>$ \mbox{\hyperlink{class_battle_system_a9ed13515bdaaae409b62366331b08cb7}{get\+Available\+Targets\+For\+Current}} () const
+\item 
+vector$<$ pair$<$ \mbox{\hyperlink{class_entity}{Entity}} \texorpdfstring{$\ast$}{*}, string $>$ $>$ \mbox{\hyperlink{class_battle_system_a3a600474ebf86b2f2b19323b07af5558}{get\+All\+Entities\+With\+Status}} () const
+\item 
+string \mbox{\hyperlink{class_battle_system_abdb19cc3eca6098cb61f9d4938154941}{get\+Battle\+Status}} () const
+\item 
+string \mbox{\hyperlink{class_battle_system_a8a9e6bd384c944681582233596ea67f4}{get\+Turn\+Order\+String}} () const
+\item 
+const vector$<$ \mbox{\hyperlink{struct_battle_position}{Battle\+Position}} $>$ \& \mbox{\hyperlink{class_battle_system_af51565f7f437cb72026cab9579fc21f8}{get\+Player\+Positions}} () const
+\item 
+const vector$<$ \mbox{\hyperlink{struct_battle_position}{Battle\+Position}} $>$ \& \mbox{\hyperlink{class_battle_system_aa60dbcb4981d475f688d7db3335f680a}{get\+Enemy\+Positions}} () const
+\item 
+const vector$<$ \mbox{\hyperlink{class_entity}{Entity}} \texorpdfstring{$\ast$}{*} $>$ \& \mbox{\hyperlink{class_battle_system_a4130d06608a2fe35c7f1741498e07b10}{get\+Turn\+Order}} () const
+\item 
+void \mbox{\hyperlink{class_battle_system_a3fa6ce334ec2d400e88d9b0afe51b814}{display\+Entity\+Details}} (\mbox{\hyperlink{class_entity}{Entity}} \texorpdfstring{$\ast$}{*}entity) const
+\item 
+string \mbox{\hyperlink{class_battle_system_a06cfc5865e42c27d80f839fc3e970507}{get\+Attack\+Description}} (\mbox{\hyperlink{class_entity}{Entity}} \texorpdfstring{$\ast$}{*}attacker, \mbox{\hyperlink{class_entity}{Entity}} \texorpdfstring{$\ast$}{*}target) const
+\item 
+bool \mbox{\hyperlink{class_battle_system_a3aebeaf2c47a5118e30628d00729e5ee}{is\+Player\+Victory}} () const
+\item 
+bool \mbox{\hyperlink{class_battle_system_a6e1127445d06d198e0d72184fd6f0c51}{is\+Player\+Defeat}} () const
+\item 
+void \mbox{\hyperlink{class_battle_system_aa453d3542c1c91d58421e835d3f36517}{next\+Turn}} ()
+\item 
+bool \mbox{\hyperlink{class_battle_system_a68d385302cf7f9964f32905484984c68}{skip\+Turn}} (\mbox{\hyperlink{class_entity}{Entity}} \texorpdfstring{$\ast$}{*}entity)
+\item 
+void \mbox{\hyperlink{class_battle_system_a55b14df98add609e187fead35fe6bfae}{print\+Battlefield}} () const
+\item 
+void \mbox{\hyperlink{class_battle_system_a4e3f45c9f689e3c73d754c259a1a2447}{print\+Turn\+Order}} () const
+\end{DoxyCompactItemize}
+
+
+\label{doc-constructors}
+\Hypertarget{class_battle_system_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_battle_system_aa3b151e60cc7c7227d5d402da45566ac}\index{BattleSystem@{BattleSystem}!BattleSystem@{BattleSystem}}
+\index{BattleSystem@{BattleSystem}!BattleSystem@{BattleSystem}}
+\doxysubsubsection{\texorpdfstring{BattleSystem()}{BattleSystem()}}
+{\footnotesize\ttfamily \label{class_battle_system_aa3b151e60cc7c7227d5d402da45566ac} 
+Battle\+System\+::\+Battle\+System (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+\label{doc-func-members}
+\Hypertarget{class_battle_system_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_battle_system_a85b1225c9eeaca0d13036e67cc4d2d5d}\index{BattleSystem@{BattleSystem}!attack@{attack}}
+\index{attack@{attack}!BattleSystem@{BattleSystem}}
+\doxysubsubsection{\texorpdfstring{attack()}{attack()}}
+{\footnotesize\ttfamily \label{class_battle_system_a85b1225c9eeaca0d13036e67cc4d2d5d} 
+bool Battle\+System\+::attack (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_entity}{Entity}} \texorpdfstring{$\ast$}{*}}]{attacker}{, }\item[{\mbox{\hyperlink{class_entity}{Entity}} \texorpdfstring{$\ast$}{*}}]{target}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_battle_system_a19cade12e8948e9c94ee7b5d905c69a0}\index{BattleSystem@{BattleSystem}!calculateTurnOrder@{calculateTurnOrder}}
+\index{calculateTurnOrder@{calculateTurnOrder}!BattleSystem@{BattleSystem}}
+\doxysubsubsection{\texorpdfstring{calculateTurnOrder()}{calculateTurnOrder()}}
+{\footnotesize\ttfamily \label{class_battle_system_a19cade12e8948e9c94ee7b5d905c69a0} 
+void Battle\+System\+::calculate\+Turn\+Order (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_battle_system_a3fa6ce334ec2d400e88d9b0afe51b814}\index{BattleSystem@{BattleSystem}!displayEntityDetails@{displayEntityDetails}}
+\index{displayEntityDetails@{displayEntityDetails}!BattleSystem@{BattleSystem}}
+\doxysubsubsection{\texorpdfstring{displayEntityDetails()}{displayEntityDetails()}}
+{\footnotesize\ttfamily \label{class_battle_system_a3fa6ce334ec2d400e88d9b0afe51b814} 
+void Battle\+System\+::display\+Entity\+Details (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_entity}{Entity}} \texorpdfstring{$\ast$}{*}}]{entity}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_battle_system_a2b18e69b467196531ad2a8b4e9f66e6c}\index{BattleSystem@{BattleSystem}!endBattle@{endBattle}}
+\index{endBattle@{endBattle}!BattleSystem@{BattleSystem}}
+\doxysubsubsection{\texorpdfstring{endBattle()}{endBattle()}}
+{\footnotesize\ttfamily \label{class_battle_system_a2b18e69b467196531ad2a8b4e9f66e6c} 
+void Battle\+System\+::end\+Battle (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_battle_system_a3a600474ebf86b2f2b19323b07af5558}\index{BattleSystem@{BattleSystem}!getAllEntitiesWithStatus@{getAllEntitiesWithStatus}}
+\index{getAllEntitiesWithStatus@{getAllEntitiesWithStatus}!BattleSystem@{BattleSystem}}
+\doxysubsubsection{\texorpdfstring{getAllEntitiesWithStatus()}{getAllEntitiesWithStatus()}}
+{\footnotesize\ttfamily \label{class_battle_system_a3a600474ebf86b2f2b19323b07af5558} 
+vector$<$ pair$<$ \mbox{\hyperlink{class_entity}{Entity}} \texorpdfstring{$\ast$}{*}, string $>$ $>$ Battle\+System\+::get\+All\+Entities\+With\+Status (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_battle_system_a06cfc5865e42c27d80f839fc3e970507}\index{BattleSystem@{BattleSystem}!getAttackDescription@{getAttackDescription}}
+\index{getAttackDescription@{getAttackDescription}!BattleSystem@{BattleSystem}}
+\doxysubsubsection{\texorpdfstring{getAttackDescription()}{getAttackDescription()}}
+{\footnotesize\ttfamily \label{class_battle_system_a06cfc5865e42c27d80f839fc3e970507} 
+string Battle\+System\+::get\+Attack\+Description (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_entity}{Entity}} \texorpdfstring{$\ast$}{*}}]{attacker}{, }\item[{\mbox{\hyperlink{class_entity}{Entity}} \texorpdfstring{$\ast$}{*}}]{target}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_battle_system_a9ed13515bdaaae409b62366331b08cb7}\index{BattleSystem@{BattleSystem}!getAvailableTargetsForCurrent@{getAvailableTargetsForCurrent}}
+\index{getAvailableTargetsForCurrent@{getAvailableTargetsForCurrent}!BattleSystem@{BattleSystem}}
+\doxysubsubsection{\texorpdfstring{getAvailableTargetsForCurrent()}{getAvailableTargetsForCurrent()}}
+{\footnotesize\ttfamily \label{class_battle_system_a9ed13515bdaaae409b62366331b08cb7} 
+vector$<$ pair$<$ \mbox{\hyperlink{class_entity}{Entity}} \texorpdfstring{$\ast$}{*}, int $>$ $>$ Battle\+System\+::get\+Available\+Targets\+For\+Current (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_battle_system_abdb19cc3eca6098cb61f9d4938154941}\index{BattleSystem@{BattleSystem}!getBattleStatus@{getBattleStatus}}
+\index{getBattleStatus@{getBattleStatus}!BattleSystem@{BattleSystem}}
+\doxysubsubsection{\texorpdfstring{getBattleStatus()}{getBattleStatus()}}
+{\footnotesize\ttfamily \label{class_battle_system_abdb19cc3eca6098cb61f9d4938154941} 
+string Battle\+System\+::get\+Battle\+Status (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_battle_system_ab6020e40e8a4690bcc286b69eeab1067}\index{BattleSystem@{BattleSystem}!getCurrentTurnEntity@{getCurrentTurnEntity}}
+\index{getCurrentTurnEntity@{getCurrentTurnEntity}!BattleSystem@{BattleSystem}}
+\doxysubsubsection{\texorpdfstring{getCurrentTurnEntity()}{getCurrentTurnEntity()}}
+{\footnotesize\ttfamily \label{class_battle_system_ab6020e40e8a4690bcc286b69eeab1067} 
+\mbox{\hyperlink{class_entity}{Entity}} \texorpdfstring{$\ast$}{*} Battle\+System\+::get\+Current\+Turn\+Entity (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_battle_system_aa60dbcb4981d475f688d7db3335f680a}\index{BattleSystem@{BattleSystem}!getEnemyPositions@{getEnemyPositions}}
+\index{getEnemyPositions@{getEnemyPositions}!BattleSystem@{BattleSystem}}
+\doxysubsubsection{\texorpdfstring{getEnemyPositions()}{getEnemyPositions()}}
+{\footnotesize\ttfamily \label{class_battle_system_aa60dbcb4981d475f688d7db3335f680a} 
+const vector$<$ \mbox{\hyperlink{struct_battle_position}{Battle\+Position}} $>$ \& Battle\+System\+::get\+Enemy\+Positions (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_battle_system_af51565f7f437cb72026cab9579fc21f8}\index{BattleSystem@{BattleSystem}!getPlayerPositions@{getPlayerPositions}}
+\index{getPlayerPositions@{getPlayerPositions}!BattleSystem@{BattleSystem}}
+\doxysubsubsection{\texorpdfstring{getPlayerPositions()}{getPlayerPositions()}}
+{\footnotesize\ttfamily \label{class_battle_system_af51565f7f437cb72026cab9579fc21f8} 
+const vector$<$ \mbox{\hyperlink{struct_battle_position}{Battle\+Position}} $>$ \& Battle\+System\+::get\+Player\+Positions (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_battle_system_a4130d06608a2fe35c7f1741498e07b10}\index{BattleSystem@{BattleSystem}!getTurnOrder@{getTurnOrder}}
+\index{getTurnOrder@{getTurnOrder}!BattleSystem@{BattleSystem}}
+\doxysubsubsection{\texorpdfstring{getTurnOrder()}{getTurnOrder()}}
+{\footnotesize\ttfamily \label{class_battle_system_a4130d06608a2fe35c7f1741498e07b10} 
+const vector$<$ \mbox{\hyperlink{class_entity}{Entity}} \texorpdfstring{$\ast$}{*} $>$ \& Battle\+System\+::get\+Turn\+Order (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_battle_system_a8a9e6bd384c944681582233596ea67f4}\index{BattleSystem@{BattleSystem}!getTurnOrderString@{getTurnOrderString}}
+\index{getTurnOrderString@{getTurnOrderString}!BattleSystem@{BattleSystem}}
+\doxysubsubsection{\texorpdfstring{getTurnOrderString()}{getTurnOrderString()}}
+{\footnotesize\ttfamily \label{class_battle_system_a8a9e6bd384c944681582233596ea67f4} 
+string Battle\+System\+::get\+Turn\+Order\+String (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_battle_system_aeed08f2baf012c43263360d1928d99dd}\index{BattleSystem@{BattleSystem}!isBattleActive@{isBattleActive}}
+\index{isBattleActive@{isBattleActive}!BattleSystem@{BattleSystem}}
+\doxysubsubsection{\texorpdfstring{isBattleActive()}{isBattleActive()}}
+{\footnotesize\ttfamily \label{class_battle_system_aeed08f2baf012c43263360d1928d99dd} 
+bool Battle\+System\+::is\+Battle\+Active (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_battle_system_a6e1127445d06d198e0d72184fd6f0c51}\index{BattleSystem@{BattleSystem}!isPlayerDefeat@{isPlayerDefeat}}
+\index{isPlayerDefeat@{isPlayerDefeat}!BattleSystem@{BattleSystem}}
+\doxysubsubsection{\texorpdfstring{isPlayerDefeat()}{isPlayerDefeat()}}
+{\footnotesize\ttfamily \label{class_battle_system_a6e1127445d06d198e0d72184fd6f0c51} 
+bool Battle\+System\+::is\+Player\+Defeat (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_battle_system_a3aebeaf2c47a5118e30628d00729e5ee}\index{BattleSystem@{BattleSystem}!isPlayerVictory@{isPlayerVictory}}
+\index{isPlayerVictory@{isPlayerVictory}!BattleSystem@{BattleSystem}}
+\doxysubsubsection{\texorpdfstring{isPlayerVictory()}{isPlayerVictory()}}
+{\footnotesize\ttfamily \label{class_battle_system_a3aebeaf2c47a5118e30628d00729e5ee} 
+bool Battle\+System\+::is\+Player\+Victory (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_battle_system_ac1afc0803a5e973ff801d1cef4dc9e2d}\index{BattleSystem@{BattleSystem}!movePosition@{movePosition}}
+\index{movePosition@{movePosition}!BattleSystem@{BattleSystem}}
+\doxysubsubsection{\texorpdfstring{movePosition()}{movePosition()}}
+{\footnotesize\ttfamily \label{class_battle_system_ac1afc0803a5e973ff801d1cef4dc9e2d} 
+bool Battle\+System\+::move\+Position (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_entity}{Entity}} \texorpdfstring{$\ast$}{*}}]{entity}{, }\item[{int}]{new\+Position}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_battle_system_aa453d3542c1c91d58421e835d3f36517}\index{BattleSystem@{BattleSystem}!nextTurn@{nextTurn}}
+\index{nextTurn@{nextTurn}!BattleSystem@{BattleSystem}}
+\doxysubsubsection{\texorpdfstring{nextTurn()}{nextTurn()}}
+{\footnotesize\ttfamily \label{class_battle_system_aa453d3542c1c91d58421e835d3f36517} 
+void Battle\+System\+::next\+Turn (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_battle_system_a55b14df98add609e187fead35fe6bfae}\index{BattleSystem@{BattleSystem}!printBattlefield@{printBattlefield}}
+\index{printBattlefield@{printBattlefield}!BattleSystem@{BattleSystem}}
+\doxysubsubsection{\texorpdfstring{printBattlefield()}{printBattlefield()}}
+{\footnotesize\ttfamily \label{class_battle_system_a55b14df98add609e187fead35fe6bfae} 
+void Battle\+System\+::print\+Battlefield (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_battle_system_a4e3f45c9f689e3c73d754c259a1a2447}\index{BattleSystem@{BattleSystem}!printTurnOrder@{printTurnOrder}}
+\index{printTurnOrder@{printTurnOrder}!BattleSystem@{BattleSystem}}
+\doxysubsubsection{\texorpdfstring{printTurnOrder()}{printTurnOrder()}}
+{\footnotesize\ttfamily \label{class_battle_system_a4e3f45c9f689e3c73d754c259a1a2447} 
+void Battle\+System\+::print\+Turn\+Order (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_battle_system_adf6b41c8d11ac802cfa0a8454597260d}\index{BattleSystem@{BattleSystem}!removeDeadEntities@{removeDeadEntities}}
+\index{removeDeadEntities@{removeDeadEntities}!BattleSystem@{BattleSystem}}
+\doxysubsubsection{\texorpdfstring{removeDeadEntities()}{removeDeadEntities()}}
+{\footnotesize\ttfamily \label{class_battle_system_adf6b41c8d11ac802cfa0a8454597260d} 
+void Battle\+System\+::remove\+Dead\+Entities (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_battle_system_af8464864e5e92bd5fba00a5e9cd1ce44}\index{BattleSystem@{BattleSystem}!skipHalfTurn@{skipHalfTurn}}
+\index{skipHalfTurn@{skipHalfTurn}!BattleSystem@{BattleSystem}}
+\doxysubsubsection{\texorpdfstring{skipHalfTurn()}{skipHalfTurn()}}
+{\footnotesize\ttfamily \label{class_battle_system_af8464864e5e92bd5fba00a5e9cd1ce44} 
+bool Battle\+System\+::skip\+Half\+Turn (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_entity}{Entity}} \texorpdfstring{$\ast$}{*}}]{entity}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_battle_system_a68d385302cf7f9964f32905484984c68}\index{BattleSystem@{BattleSystem}!skipTurn@{skipTurn}}
+\index{skipTurn@{skipTurn}!BattleSystem@{BattleSystem}}
+\doxysubsubsection{\texorpdfstring{skipTurn()}{skipTurn()}}
+{\footnotesize\ttfamily \label{class_battle_system_a68d385302cf7f9964f32905484984c68} 
+bool Battle\+System\+::skip\+Turn (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_entity}{Entity}} \texorpdfstring{$\ast$}{*}}]{entity}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_battle_system_abb74e8347e0be0bb4eb1038520638eb9}\index{BattleSystem@{BattleSystem}!startBattle@{startBattle}}
+\index{startBattle@{startBattle}!BattleSystem@{BattleSystem}}
+\doxysubsubsection{\texorpdfstring{startBattle()}{startBattle()}}
+{\footnotesize\ttfamily \label{class_battle_system_abb74e8347e0be0bb4eb1038520638eb9} 
+void Battle\+System\+::start\+Battle (\begin{DoxyParamCaption}\item[{const vector$<$ \mbox{\hyperlink{class_entity}{Entity}} \texorpdfstring{$\ast$}{*} $>$ \&}]{players}{, }\item[{const vector$<$ \mbox{\hyperlink{class_entity}{Entity}} \texorpdfstring{$\ast$}{*} $>$ \&}]{enemies}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_battle_system_a0d55bb656a9569d6e9b9aad1e785c0a1}\index{BattleSystem@{BattleSystem}!useAbility@{useAbility}}
+\index{useAbility@{useAbility}!BattleSystem@{BattleSystem}}
+\doxysubsubsection{\texorpdfstring{useAbility()}{useAbility()}}
+{\footnotesize\ttfamily \label{class_battle_system_a0d55bb656a9569d6e9b9aad1e785c0a1} 
+bool Battle\+System\+::use\+Ability (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_entity}{Entity}} \texorpdfstring{$\ast$}{*}}]{user}{, }\item[{\mbox{\hyperlink{entity_8h_a44b675d687acff3d739404c1227b4259}{Ability\+Type}}}]{ability}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_battle_system_adb353adb65fd9eb630bbc1ff2b1c56bb}\index{BattleSystem@{BattleSystem}!useItem@{useItem}}
+\index{useItem@{useItem}!BattleSystem@{BattleSystem}}
+\doxysubsubsection{\texorpdfstring{useItem()}{useItem()}}
+{\footnotesize\ttfamily \label{class_battle_system_adb353adb65fd9eb630bbc1ff2b1c56bb} 
+bool Battle\+System\+::use\+Item (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_entity}{Entity}} \texorpdfstring{$\ast$}{*}}]{user}{, }\item[{int}]{item\+Index}{}\end{DoxyParamCaption})}
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{_battle_system_8h}{Battle\+System.\+h}}\item 
+\mbox{\hyperlink{_battle_system_8cpp}{Battle\+System.\+cpp}}\end{DoxyCompactItemize}
