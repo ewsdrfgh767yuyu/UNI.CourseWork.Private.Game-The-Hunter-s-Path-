@@ -4,12 +4,13 @@
 #include <functional>
 #include <vector>
 
-class Button {
+class Button
+{
 public:
-    Button(const std::string& text, const sf::Font& font, unsigned int characterSize, const sf::Vector2f& position, const sf::Vector2f& size);
-    void draw(sf::RenderWindow& window);
-    void drawWithOffset(sf::RenderWindow& window, float offsetY);
-    bool isClicked(const sf::Vector2i& mousePos);
+    Button(const std::string &text, const sf::Font &font, unsigned int characterSize, const sf::Vector2f &position, const sf::Vector2f &size);
+    void draw(sf::RenderWindow &window);
+    void drawWithOffset(sf::RenderWindow &window, float offsetY);
+    bool isClicked(const sf::Vector2i &mousePos);
     void setCallback(std::function<void()> callback);
     void executeCallback();
     sf::FloatRect getBounds() const;
@@ -20,30 +21,32 @@ private:
     std::function<void()> callback;
 };
 
-class TextDisplay {
+class TextDisplay
+{
 public:
-    TextDisplay(const std::string& text, const sf::Font& font, unsigned int characterSize, const sf::Vector2f& position, sf::Color color = sf::Color::White);
-    void draw(sf::RenderWindow& window);
-    void drawWithOffset(sf::RenderWindow& window, float offsetY);
-    void setText(const std::string& newText);
-    void setPosition(const sf::Vector2f& position);
+    TextDisplay(const std::string &text, const sf::Font &font, unsigned int characterSize, const sf::Vector2f &position, sf::Color color = sf::Color::White);
+    void draw(sf::RenderWindow &window);
+    void drawWithOffset(sf::RenderWindow &window, float offsetY);
+    void setText(const std::string &newText);
+    void setPosition(const sf::Vector2f &position);
 
 private:
     sf::Text text;
 };
 
-class Menu {
+class Menu
+{
 public:
-    Menu(sf::RenderWindow& window, const sf::Font& font);
-    void addButton(const std::string& text, const sf::Vector2f& position, const sf::Vector2f& size, std::function<void()> callback);
-    void addText(const std::string& text, unsigned int characterSize, const sf::Vector2f& position, sf::Color color = sf::Color::White);
-    void handleEvent(const sf::Event& event);
+    Menu(sf::RenderWindow &window, const sf::Font &font);
+    void addButton(const std::string &text, const sf::Vector2f &position, const sf::Vector2f &size, std::function<void()> callback);
+    void addText(const std::string &text, unsigned int characterSize, const sf::Vector2f &position, sf::Color color = sf::Color::White);
+    void handleEvent(const sf::Event &event);
     void draw();
     void clear();
     void setScrollable(bool scrollable, float maxHeight = 400.0f);
 
 private:
-    sf::RenderWindow& window;
+    sf::RenderWindow &window;
     sf::Font font;
     std::vector<Button> buttons;
     std::vector<TextDisplay> texts;

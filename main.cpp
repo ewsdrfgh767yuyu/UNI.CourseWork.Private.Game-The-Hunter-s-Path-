@@ -42,8 +42,9 @@ int main()
     // Initialize random number generator
     srand(static_cast<unsigned int>(time(nullptr)));
 
-    // Create window
-    sf::RenderWindow window(sf::VideoMode(800, 1000), "The Hunter's Path");
+    // Create full-screen window
+    sf::VideoMode desktop = sf::VideoMode::getDesktopMode();
+    sf::RenderWindow window(desktop, "The Hunter's Path", sf::Style::Fullscreen);
     window.setFramerateLimit(60);
 
     // Load font
@@ -69,17 +70,23 @@ int main()
 
     // Main menu
     Menu mainMenu(window, font);
-    mainMenu.addButton("Start Game", sf::Vector2f(250, 200), sf::Vector2f(300, 60), [&]()
+    sf::Vector2u windowSize = window.getSize();
+    float buttonWidth = windowSize.x * 0.3f;
+    float buttonHeight = windowSize.y * 0.08f;
+    float buttonX = windowSize.x * 0.3f;
+    float buttonYStart = windowSize.y * 0.3f;
+    float buttonSpacing = windowSize.y * 0.1f;
+    mainMenu.addButton("Start Game", sf::Vector2f(buttonX, buttonYStart), sf::Vector2f(buttonWidth, buttonHeight), [&]()
                        { currentState = GameState::CHARACTER_SELECTION; });
-    mainMenu.addButton("Credits", sf::Vector2f(250, 280), sf::Vector2f(300, 60), [&]()
+    mainMenu.addButton("Credits", sf::Vector2f(buttonX, buttonYStart + buttonSpacing), sf::Vector2f(buttonWidth, buttonHeight), [&]()
                        { currentState = GameState::CREDITS; });
-    mainMenu.addButton("Exit", sf::Vector2f(250, 360), sf::Vector2f(300, 60), [&]()
+    mainMenu.addButton("Exit", sf::Vector2f(buttonX, buttonYStart + 2 * buttonSpacing), sf::Vector2f(buttonWidth, buttonHeight), [&]()
                        { window.close(); });
 
     // Credits
-    TextDisplay creditsText("Mikulski Stanislau - BSUIR student", font, 24, sf::Vector2f(200, 250));
+    TextDisplay creditsText("Mikulski Stanislau - BSUIR student", font, 24, sf::Vector2f(windowSize.x * 0.25f, windowSize.y * 0.35f));
     Menu creditsMenu(window, font);
-    creditsMenu.addButton("Back", sf::Vector2f(350, 350), sf::Vector2f(100, 50), [&]()
+    creditsMenu.addButton("Back", sf::Vector2f(windowSize.x * 0.45f, windowSize.y * 0.5f), sf::Vector2f(windowSize.x * 0.12f, windowSize.y * 0.07f), [&]()
                           { currentState = GameState::MAIN_MENU; });
 
     // Campaign
@@ -88,18 +95,18 @@ int main()
     // Character selection
     Menu characterSelectionMenu(window, font);
     const auto &presets = HeroFactory::getPartyPresets();
-    float yPos = 150;
+    float yPos = windowSize.y * 0.15f;
     for (size_t i = 0; i < presets.size(); ++i)
     {
-        characterSelectionMenu.addButton(presets[i].name, sf::Vector2f(100, yPos), sf::Vector2f(600, 50), [&, i]()
+        characterSelectionMenu.addButton(presets[i].name, sf::Vector2f(windowSize.x * 0.1f, yPos), sf::Vector2f(buttonWidth, buttonHeight), [&, i]()
                                          {
-                                            selectedPresetIndex = i;
-                                            currentState = GameState::CHARACTER_CONFIRMATION; });
-        yPos += 60;
+                                             selectedPresetIndex = i;
+                                             currentState = GameState::CHARACTER_CONFIRMATION; });
+        yPos += buttonSpacing;
     }
-    characterSelectionMenu.addButton("Back", sf::Vector2f(350, yPos), sf::Vector2f(100, 50), [&]()
+    characterSelectionMenu.addButton("Back", sf::Vector2f(windowSize.x * 0.35f, yPos), sf::Vector2f(windowSize.x * 0.1f, buttonHeight), [&]()
                                      { currentState = GameState::MAIN_MENU; });
-    characterSelectionMenu.setScrollable(true, 400.0f);
+    characterSelectionMenu.setScrollable(true, windowSize.y * 0.5f);
 
     // Character confirmation
     Menu characterConfirmationMenu(window, font);
@@ -125,25 +132,25 @@ int main()
     std::vector<TextDisplay> inventoryTexts;
 
     // Declare text objects outside the loop to avoid initialization issues
-    sf::Text title("THE HUNTER'S PATH", font, 36);
-    title.setPosition(200, 100);
+    sf::Text title("THE HUNTER'S PATH", font, static_cast<unsigned int>(36 * (windowSize.y / 768.0f)));
+    title.setPosition(windowSize.x * 0.2f, windowSize.y * 0.1f);
     title.setFillColor(sf::Color::Yellow);
 
     sf::String subtitleText = "An Epic RPG with Turn-Based Battles";
-    sf::Text subtitle(subtitleText, font, 18);
-    subtitle.setPosition(250, 150);
+    sf::Text subtitle(subtitleText, font, static_cast<unsigned int>(18 * (windowSize.y / 768.0f)));
+    subtitle.setPosition(windowSize.x * 0.25f, windowSize.y * 0.15f);
     subtitle.setFillColor(sf::Color::Yellow);
 
-    sf::Text creditsTitle("CREDITS", font, 36);
-    creditsTitle.setPosition(300, 150);
+    sf::Text creditsTitle("CREDITS", font, static_cast<unsigned int>(36 * (windowSize.y / 768.0f)));
+    creditsTitle.setPosition(windowSize.x * 0.3f, windowSize.y * 0.15f);
     creditsTitle.setFillColor(sf::Color::Yellow);
 
-    sf::Text characterSelectionTitle("CHOOSE YOUR PARTY", font, 36);
-    characterSelectionTitle.setPosition(200, 30);
+    sf::Text characterSelectionTitle("CHOOSE YOUR PARTY", font, static_cast<unsigned int>(36 * (windowSize.y / 768.0f)));
+    characterSelectionTitle.setPosition(windowSize.x * 0.2f, windowSize.y * 0.03f);
     characterSelectionTitle.setFillColor(sf::Color::Yellow);
 
-    sf::Text characterConfirmationTitle("CONFIRM YOUR PARTY", font, 36);
-    characterConfirmationTitle.setPosition(200, 30);
+    sf::Text characterConfirmationTitle("CONFIRM YOUR PARTY", font, static_cast<unsigned int>(36 * (windowSize.y / 768.0f)));
+    characterConfirmationTitle.setPosition(windowSize.x * 0.2f, windowSize.y * 0.03f);
     characterConfirmationTitle.setFillColor(sf::Color::Yellow);
 
     while (window.isOpen())
@@ -225,7 +232,7 @@ int main()
                 else if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
                 {
                     sf::Vector2i mousePos = sf::Mouse::getPosition(window);
-                    sf::FloatRect invButtonRect(700, 10, 100, 40);
+                    sf::FloatRect invButtonRect(windowSize.x * 0.7f, windowSize.y * 0.01f, windowSize.x * 0.1f, windowSize.y * 0.04f);
                     if (invButtonRect.contains(static_cast<sf::Vector2f>(mousePos)))
                     {
                         currentState = GameState::INVENTORY;
@@ -261,63 +268,66 @@ int main()
             const PartyPreset &preset = presets[selectedPresetIndex];
 
             // Добавить описание пресета
-            characterConfirmationMenu.addText(preset.description, 20, sf::Vector2f(50, 80), sf::Color::White);
+            characterConfirmationMenu.addText(preset.description, static_cast<unsigned int>(20 * (windowSize.y / 768.0f)), sf::Vector2f(windowSize.x * 0.05f, windowSize.y * 0.08f), sf::Color::White);
 
-            float yPos = 120;
+            float yPos = windowSize.y * 0.12f;
+            float xOffset = windowSize.x * 0.07f;
+            float statXOffset = windowSize.x * 0.09f;
+            float abilityXOffset = windowSize.x * 0.11f;
             for (size_t i = 0; i < preset.heroes.size(); ++i)
             {
                 const auto &heroPair = preset.heroes[i];
                 const HeroTemplate &tmpl = HeroFactory::getHeroTemplate(heroPair.first);
 
                 // Имя героя
-                characterConfirmationMenu.addText(heroPair.second + " (" + tmpl.name + ")", 20, sf::Vector2f(50, yPos), sf::Color::Yellow);
-                yPos += 27;
+                characterConfirmationMenu.addText(heroPair.second + " (" + tmpl.name + ")", static_cast<unsigned int>(20 * (windowSize.y / 768.0f)), sf::Vector2f(windowSize.x * 0.05f, yPos), sf::Color::Yellow);
+                yPos += windowSize.y * 0.028f;
 
                 // Описание класса
-                characterConfirmationMenu.addText(tmpl.description, 18, sf::Vector2f(70, yPos), sf::Color::White);
-                yPos += 22;
+                characterConfirmationMenu.addText(tmpl.description, static_cast<unsigned int>(18 * (windowSize.y / 768.0f)), sf::Vector2f(xOffset, yPos), sf::Color::White);
+                yPos += windowSize.y * 0.023f;
 
                 // Характеристики
-                characterConfirmationMenu.addText("Характеристики:", 18, sf::Vector2f(70, yPos), sf::Color::Magenta);
-                yPos += 20;
-                characterConfirmationMenu.addText("Здоровье (HP): " + std::to_string(tmpl.baseMaxHP) + " - максимальное здоровье героя", 14, sf::Vector2f(90, yPos), sf::Color::White);
-                yPos += 16;
-                characterConfirmationMenu.addText("Урон (Damage): " + std::to_string(tmpl.baseDamage) + " - базовый урон в атаке", 14, sf::Vector2f(90, yPos), sf::Color::White);
-                yPos += 16;
-                characterConfirmationMenu.addText("Защита (Defense): " + std::to_string(tmpl.baseDefense) + " - снижает входящий урон", 14, sf::Vector2f(90, yPos), sf::Color::White);
-                yPos += 16;
-                characterConfirmationMenu.addText("Атака (Attack): " + std::to_string(tmpl.baseAttack) + " - точность атаки", 14, sf::Vector2f(90, yPos), sf::Color::White);
-                yPos += 16;
-                characterConfirmationMenu.addText("Выносливость (Stamina): " + std::to_string(tmpl.baseMaxStamina) + " - очки для действий", 14, sf::Vector2f(90, yPos), sf::Color::White);
-                yPos += 16;
-                characterConfirmationMenu.addText("Инициатива (Initiative): " + std::to_string(tmpl.baseInitiative) + " - определяет порядок хода", 14, sf::Vector2f(90, yPos), sf::Color::White);
-                yPos += 16;
-                characterConfirmationMenu.addText("Дальность (Range): " + std::to_string(tmpl.baseAttackRange) + " - тип боя (0 - ближний)", 14, sf::Vector2f(90, yPos), sf::Color::White);
-                yPos += 20;
+                characterConfirmationMenu.addText("Характеристики:", static_cast<unsigned int>(18 * (windowSize.y / 768.0f)), sf::Vector2f(xOffset, yPos), sf::Color::Magenta);
+                yPos += windowSize.y * 0.021f;
+                characterConfirmationMenu.addText("Здоровье (HP): " + std::to_string(tmpl.baseMaxHP) + " - максимальное здоровье героя", static_cast<unsigned int>(14 * (windowSize.y / 768.0f)), sf::Vector2f(statXOffset, yPos), sf::Color::White);
+                yPos += windowSize.y * 0.017f;
+                characterConfirmationMenu.addText("Урон (Damage): " + std::to_string(tmpl.baseDamage) + " - базовый урон в атаке", static_cast<unsigned int>(14 * (windowSize.y / 768.0f)), sf::Vector2f(statXOffset, yPos), sf::Color::White);
+                yPos += windowSize.y * 0.017f;
+                characterConfirmationMenu.addText("Защита (Defense): " + std::to_string(tmpl.baseDefense) + " - снижает входящий урон", static_cast<unsigned int>(14 * (windowSize.y / 768.0f)), sf::Vector2f(statXOffset, yPos), sf::Color::White);
+                yPos += windowSize.y * 0.017f;
+                characterConfirmationMenu.addText("Атака (Attack): " + std::to_string(tmpl.baseAttack) + " - точность атаки", static_cast<unsigned int>(14 * (windowSize.y / 768.0f)), sf::Vector2f(statXOffset, yPos), sf::Color::White);
+                yPos += windowSize.y * 0.017f;
+                characterConfirmationMenu.addText("Выносливость (Stamina): " + std::to_string(tmpl.baseMaxStamina) + " - очки для действий", static_cast<unsigned int>(14 * (windowSize.y / 768.0f)), sf::Vector2f(statXOffset, yPos), sf::Color::White);
+                yPos += windowSize.y * 0.017f;
+                characterConfirmationMenu.addText("Инициатива (Initiative): " + std::to_string(tmpl.baseInitiative) + " - определяет порядок хода", static_cast<unsigned int>(14 * (windowSize.y / 768.0f)), sf::Vector2f(statXOffset, yPos), sf::Color::White);
+                yPos += windowSize.y * 0.017f;
+                characterConfirmationMenu.addText("Дальность (Range): " + std::to_string(tmpl.baseAttackRange) + " - тип боя (0 - ближний)", static_cast<unsigned int>(14 * (windowSize.y / 768.0f)), sf::Vector2f(statXOffset, yPos), sf::Color::White);
+                yPos += windowSize.y * 0.021f;
 
                 // Способности
-                characterConfirmationMenu.addText("Способности:", 18, sf::Vector2f(70, yPos), sf::Color::Cyan);
-                yPos += 20;
+                characterConfirmationMenu.addText("Способности:", static_cast<unsigned int>(18 * (windowSize.y / 768.0f)), sf::Vector2f(xOffset, yPos), sf::Color::Cyan);
+                yPos += windowSize.y * 0.021f;
                 for (AbilityType abilityType : tmpl.availableAbilities)
                 {
                     const AbilityInfo &ability = HeroFactory::getAbilityInfo(abilityType);
-                    characterConfirmationMenu.addText(ability.name + ":", 16, sf::Vector2f(90, yPos), sf::Color::Yellow);
-                    yPos += 18;
-                    characterConfirmationMenu.addText(ability.effect, 12, sf::Vector2f(110, yPos), sf::Color::Green);
-                    yPos += 16;
+                    characterConfirmationMenu.addText(ability.name + ":", static_cast<unsigned int>(16 * (windowSize.y / 768.0f)), sf::Vector2f(statXOffset, yPos), sf::Color::Yellow);
+                    yPos += windowSize.y * 0.019f;
+                    characterConfirmationMenu.addText(ability.effect, static_cast<unsigned int>(12 * (windowSize.y / 768.0f)), sf::Vector2f(abilityXOffset, yPos), sf::Color::Green);
+                    yPos += windowSize.y * 0.017f;
                 }
 
-                yPos += 10; // Отступ между героями
+                yPos += windowSize.y * 0.01f; // Отступ между героями
             }
 
             // Кнопки
-            characterConfirmationMenu.addButton("Confirm", sf::Vector2f(200, yPos), sf::Vector2f(150, 50), [&]()
+            characterConfirmationMenu.addButton("Confirm", sf::Vector2f(windowSize.x * 0.2f, yPos), sf::Vector2f(windowSize.x * 0.15f, windowSize.y * 0.05f), [&]()
                                                 {
                                                     campaign.createPlayerPartyFromPreset(selectedPresetIndex);
                                                     currentState = GameState::CAMPAIGN; });
-            characterConfirmationMenu.addButton("Back", sf::Vector2f(400, yPos), sf::Vector2f(150, 50), [&]()
+            characterConfirmationMenu.addButton("Back", sf::Vector2f(windowSize.x * 0.4f, yPos), sf::Vector2f(windowSize.x * 0.15f, windowSize.y * 0.05f), [&]()
                                                 { currentState = GameState::CHARACTER_SELECTION; });
-            characterConfirmationMenu.setScrollable(true, 500.0f);
+            characterConfirmationMenu.setScrollable(true, windowSize.y * 0.5f);
         }
 
         // Update treasure menu
@@ -329,18 +339,18 @@ int main()
             Item *treasure = campaign.getPendingTreasure();
             if (treasure)
             {
-                treasureTexts.emplace_back("You found a treasure!", font, 30, sf::Vector2f(250, 100), sf::Color::Yellow);
-                treasureTexts.emplace_back(treasure->getName(), font, 24, sf::Vector2f(250, 140), sf::Color::White);
-                treasureTexts.emplace_back(treasure->getDescription(), font, 20, sf::Vector2f(250, 170), sf::Color::White);
+                treasureTexts.emplace_back("You found a treasure!", font, static_cast<unsigned int>(30 * (windowSize.y / 768.0f)), sf::Vector2f(windowSize.x * 0.25f, windowSize.y * 0.1f), sf::Color::Yellow);
+                treasureTexts.emplace_back(treasure->getName(), font, static_cast<unsigned int>(24 * (windowSize.y / 768.0f)), sf::Vector2f(windowSize.x * 0.25f, windowSize.y * 0.14f), sf::Color::White);
+                treasureTexts.emplace_back(treasure->getDescription(), font, static_cast<unsigned int>(20 * (windowSize.y / 768.0f)), sf::Vector2f(windowSize.x * 0.25f, windowSize.y * 0.17f), sf::Color::White);
 
                 // Take button
-                treasureMenu.addButton("Take", sf::Vector2f(250, 250), sf::Vector2f(100, 60), [&]()
+                treasureMenu.addButton("Take", sf::Vector2f(windowSize.x * 0.25f, windowSize.y * 0.25f), sf::Vector2f(windowSize.x * 0.1f, windowSize.y * 0.06f), [&]()
                                        {
                                            campaign.takePendingTreasure();
                                            currentState = GameState::MAP_MODE; });
 
                 // Decline button
-                treasureMenu.addButton("Decline", sf::Vector2f(400, 250), sf::Vector2f(100, 60), [&]()
+                treasureMenu.addButton("Decline", sf::Vector2f(windowSize.x * 0.4f, windowSize.y * 0.25f), sf::Vector2f(windowSize.x * 0.1f, windowSize.y * 0.06f), [&]()
                                        {
                                            campaign.clearPendingTreasure();
                                            currentState = GameState::MAP_MODE; });
@@ -354,17 +364,17 @@ int main()
             eventTexts.clear();
 
             const CampaignEvent &evt = campaign.getPendingEvent();
-            eventTexts.emplace_back(evt.description, font, 24, sf::Vector2f(50, 100), sf::Color::White);
+            eventTexts.emplace_back(evt.description, font, static_cast<unsigned int>(24 * (windowSize.y / 768.0f)), sf::Vector2f(windowSize.x * 0.05f, windowSize.y * 0.1f), sf::Color::White);
 
-            float yPos = 150;
+            float yPos = windowSize.y * 0.15f;
             for (size_t i = 0; i < evt.choices.size(); ++i)
             {
-                eventMenu.addButton(evt.choices[i], sf::Vector2f(100, yPos), sf::Vector2f(400, 50), [&, i]()
+                eventMenu.addButton(evt.choices[i], sf::Vector2f(windowSize.x * 0.1f, yPos), sf::Vector2f(windowSize.x * 0.4f, windowSize.y * 0.05f), [&, i]()
                                     {
-                                        campaign.handleEventChoice(i);
-                                        campaign.clearPendingEvent();
-                                        currentState = GameState::MAP_MODE; });
-                yPos += 60;
+                                         campaign.handleEventChoice(i);
+                                         campaign.clearPendingEvent();
+                                         currentState = GameState::MAP_MODE; });
+                yPos += windowSize.y * 0.06f;
             }
         }
 
@@ -375,22 +385,22 @@ int main()
             exitTexts.clear();
 
             const CampaignEvent &evt = campaign.getPendingExit();
-            exitTexts.emplace_back(evt.description, font, 24, sf::Vector2f(50, 100), sf::Color::White);
-            exitTexts.emplace_back("Choose a location to transition to:", font, 20, sf::Vector2f(50, 140), sf::Color::White);
+            exitTexts.emplace_back(evt.description, font, static_cast<unsigned int>(24 * (windowSize.y / 768.0f)), sf::Vector2f(windowSize.x * 0.05f, windowSize.y * 0.1f), sf::Color::White);
+            exitTexts.emplace_back("Choose a location to transition to:", font, static_cast<unsigned int>(20 * (windowSize.y / 768.0f)), sf::Vector2f(windowSize.x * 0.05f, windowSize.y * 0.14f), sf::Color::White);
 
-            float yPos = 180;
+            float yPos = windowSize.y * 0.18f;
             const auto &connections = campaign.getCurrentLocation().connections;
             for (size_t i = 0; i < connections.size(); ++i)
             {
                 LocationType locType = connections[i];
                 const Location &loc = campaign.getLocation(locType);
                 std::string buttonText = std::to_string(i + 1) + ". " + loc.name + " - " + loc.description;
-                exitMenu.addButton(buttonText, sf::Vector2f(50, yPos), sf::Vector2f(600, 50), [&, i]()
+                exitMenu.addButton(buttonText, sf::Vector2f(windowSize.x * 0.05f, yPos), sf::Vector2f(windowSize.x * 0.6f, windowSize.y * 0.05f), [&, i]()
                                    {
                                        campaign.handleExitChoice(i);
                                        campaign.clearPendingExit();
                                        currentState = GameState::MAP_MODE; });
-                yPos += 60;
+                yPos += windowSize.y * 0.06f;
             }
         }
 
@@ -406,59 +416,59 @@ int main()
                 // Check battle end first
                 if (!battle->isBattleActive())
                 {
-                    battleTexts.emplace_back("BATTLE", font, 36, sf::Vector2f(250, 20), sf::Color::Yellow);
-                    battleTexts.emplace_back(battle->getBattleStatus(), font, 18, sf::Vector2f(50, 60), sf::Color::White);
-                    battleTexts.emplace_back(battle->getTurnOrderString(), font, 18, sf::Vector2f(450, 60), sf::Color::White);
+                    battleTexts.emplace_back("BATTLE", font, static_cast<unsigned int>(36 * (windowSize.y / 768.0f)), sf::Vector2f(windowSize.x * 0.25f, windowSize.y * 0.02f), sf::Color::Yellow);
+                    battleTexts.emplace_back(battle->getBattleStatus(), font, static_cast<unsigned int>(18 * (windowSize.y / 768.0f)), sf::Vector2f(windowSize.x * 0.05f, windowSize.y * 0.06f), sf::Color::White);
+                    battleTexts.emplace_back(battle->getTurnOrderString(), font, static_cast<unsigned int>(18 * (windowSize.y / 768.0f)), sf::Vector2f(windowSize.x * 0.45f, windowSize.y * 0.06f), sf::Color::White);
                     if (battle->isPlayerVictory())
                     {
-                        battleTexts.emplace_back("VICTORY!", font, 56, sf::Vector2f(250, 250), sf::Color::Green);
-                        battleMenu.addButton("Continue", sf::Vector2f(300, 400), sf::Vector2f(120, 60), [&]()
+                        battleTexts.emplace_back("VICTORY!", font, static_cast<unsigned int>(56 * (windowSize.y / 768.0f)), sf::Vector2f(windowSize.x * 0.25f, windowSize.y * 0.25f), sf::Color::Green);
+                        battleMenu.addButton("Continue", sf::Vector2f(windowSize.x * 0.3f, windowSize.y * 0.4f), sf::Vector2f(windowSize.x * 0.12f, windowSize.y * 0.06f), [&]()
                                              {
-                            // Award experience
-                            int totalExp = 0;
-                            for (const auto &pos : battle->getEnemyPositions()) {
-                                if (pos.entity) totalExp += static_cast<Enemy*>(pos.entity)->getExperienceValue();
-                            }
-                            int expPerPlayer = totalExp / campaign.getPlayerParty().size();
-                            for (Player *player : campaign.getPlayerParty()) {
-                                if (player->getCurrentHealthPoint() > 0) {
-                                    player->setReceivedExperience(player->getReceivedExperience() + expPerPlayer);
-                                    player->upLevel();
-                                    cout << player->getName() << " receives " << expPerPlayer << " experience!\n";
-                                }
-                            }
-                            // Check if this was the final boss battle
-                            if (campaign.getCurrentLocation().isFinalBossLocation) {
-                                campaign.setGameCompleted(true);
-                            }
-                            campaign.clearPendingBattle();
-                            currentState = GameState::MAP_MODE;
-                            battleState = BattleState::MAIN_MENU; });
+                             // Award experience
+                             int totalExp = 0;
+                             for (const auto &pos : battle->getEnemyPositions()) {
+                                 if (pos.entity) totalExp += static_cast<Enemy*>(pos.entity)->getExperienceValue();
+                             }
+                             int expPerPlayer = totalExp / campaign.getPlayerParty().size();
+                             for (Player *player : campaign.getPlayerParty()) {
+                                 if (player->getCurrentHealthPoint() > 0) {
+                                     player->setReceivedExperience(player->getReceivedExperience() + expPerPlayer);
+                                     player->upLevel();
+                                     cout << player->getName() << " receives " << expPerPlayer << " experience!\n";
+                                 }
+                             }
+                             // Check if this was the final boss battle
+                             if (campaign.getCurrentLocation().isFinalBossLocation) {
+                                 campaign.setGameCompleted(true);
+                             }
+                             campaign.clearPendingBattle();
+                             currentState = GameState::MAP_MODE;
+                             battleState = BattleState::MAIN_MENU; });
                     }
                     else
                     {
-                        battleTexts.emplace_back("DEFEAT!", font, 56, sf::Vector2f(250, 250), sf::Color::Red);
-                        battleMenu.addButton("Continue", sf::Vector2f(300, 400), sf::Vector2f(120, 60), [&]()
+                        battleTexts.emplace_back("DEFEAT!", font, static_cast<unsigned int>(56 * (windowSize.y / 768.0f)), sf::Vector2f(windowSize.x * 0.25f, windowSize.y * 0.25f), sf::Color::Red);
+                        battleMenu.addButton("Continue", sf::Vector2f(windowSize.x * 0.3f, windowSize.y * 0.4f), sf::Vector2f(windowSize.x * 0.12f, windowSize.y * 0.06f), [&]()
                                              {
-                            campaign.clearPendingBattle();
-                            currentState = GameState::MAP_MODE;
-                            battleState = BattleState::MAIN_MENU; });
+                             campaign.clearPendingBattle();
+                             currentState = GameState::MAP_MODE;
+                             battleState = BattleState::MAIN_MENU; });
                     }
                 }
                 else
                 {
                     // Display battlefield
-                    battleTexts.emplace_back("BATTLE", font, 30, sf::Vector2f(250, 20), sf::Color::Yellow);
-                    battleTexts.emplace_back(battle->getBattleStatus(), font, 18, sf::Vector2f(50, 60), sf::Color::White);
-                    float yPos = 500;
+                    battleTexts.emplace_back("BATTLE", font, static_cast<unsigned int>(30 * (windowSize.y / 768.0f)), sf::Vector2f(windowSize.x * 0.25f, windowSize.y * 0.02f), sf::Color::Yellow);
+                    battleTexts.emplace_back(battle->getBattleStatus(), font, static_cast<unsigned int>(18 * (windowSize.y / 768.0f)), sf::Vector2f(windowSize.x * 0.05f, windowSize.y * 0.06f), sf::Color::White);
+                    float yPos = windowSize.y * 0.5f;
 
                     // Current turn entity
                     Entity *currentEntity = battle->getCurrentTurnEntity();
                     if (currentEntity)
                     {
                         string turnText = "Current Turn: " + currentEntity->getName() + " (Stamina: " + to_string(currentEntity->getCurrentStamina()) + "/" + to_string(currentEntity->getMaxStamina()) + ")";
-                        battleTexts.emplace_back(turnText, font, 24, sf::Vector2f(50, yPos + 20), sf::Color::Cyan);
-                        yPos += 50;
+                        battleTexts.emplace_back(turnText, font, static_cast<unsigned int>(24 * (windowSize.y / 768.0f)), sf::Vector2f(windowSize.x * 0.05f, yPos + windowSize.y * 0.02f), sf::Color::Cyan);
+                        yPos += windowSize.y * 0.05f;
 
                         // Check if player entity
                         bool isPlayer = false;
@@ -476,22 +486,24 @@ int main()
                             // Player turn - show action buttons
                             if (battleState == BattleState::MAIN_MENU)
                             {
-                                battleMenu.addButton("Attack", sf::Vector2f(50, yPos), sf::Vector2f(120, 50), [&]()
+                                float buttonWidth = windowSize.x * 0.12f;
+                                float buttonHeight = windowSize.y * 0.05f;
+                                battleMenu.addButton("Attack", sf::Vector2f(windowSize.x * 0.05f, yPos), sf::Vector2f(buttonWidth, buttonHeight), [&]()
                                                      { battleState = BattleState::SELECT_TARGET_ATTACK; });
-                                battleMenu.addButton("Use Ability", sf::Vector2f(180, yPos), sf::Vector2f(140, 50), [&]()
+                                battleMenu.addButton("Use Ability", sf::Vector2f(windowSize.x * 0.18f, yPos), sf::Vector2f(windowSize.x * 0.14f, buttonHeight), [&]()
                                                      { battleState = BattleState::SELECT_ABILITY; });
-                                battleMenu.addButton("Move", sf::Vector2f(330, yPos), sf::Vector2f(100, 50), [&]()
+                                battleMenu.addButton("Move", sf::Vector2f(windowSize.x * 0.33f, yPos), sf::Vector2f(windowSize.x * 0.1f, buttonHeight), [&]()
                                                      { battleState = BattleState::SELECT_POSITION_MOVE; });
-                                battleMenu.addButton("Skip Turn", sf::Vector2f(440, yPos), sf::Vector2f(120, 50), [&]()
+                                battleMenu.addButton("Skip Turn", sf::Vector2f(windowSize.x * 0.44f, yPos), sf::Vector2f(buttonWidth, buttonHeight), [&]()
                                                      {
-                                // Skip turn
-                                currentEntity->setCurrentStamina(0);
-                                battleState = BattleState::MAIN_MENU; });
-                                battleMenu.addButton("End Turn", sf::Vector2f(570, yPos), sf::Vector2f(120, 50), [&]()
+                                 // Skip turn
+                                 currentEntity->setCurrentStamina(0);
+                                 battleState = BattleState::MAIN_MENU; });
+                                battleMenu.addButton("End Turn", sf::Vector2f(windowSize.x * 0.57f, yPos), sf::Vector2f(buttonWidth, buttonHeight), [&]()
                                                      {
-                                // End turn
-                                battle->nextTurn();
-                                battleState = BattleState::MAIN_MENU; });
+                                 // End turn
+                                 battle->nextTurn();
+                                 battleState = BattleState::MAIN_MENU; });
                             }
                             else if (battleState == BattleState::SELECT_TARGET_ATTACK)
                             {
@@ -499,24 +511,24 @@ int main()
                                 vector<pair<Entity *, int>> targets = battle->getAvailableTargetsForCurrent();
                                 if (!targets.empty())
                                 {
-                                    battleTexts.emplace_back("Select Target to Attack:", font, 20, sf::Vector2f(50, yPos), sf::Color::White);
-                                    yPos += 35;
+                                    battleTexts.emplace_back("Select Target to Attack:", font, static_cast<unsigned int>(20 * (windowSize.y / 768.0f)), sf::Vector2f(windowSize.x * 0.05f, yPos), sf::Color::White);
+                                    yPos += windowSize.y * 0.035f;
                                     for (size_t i = 0; i < targets.size(); ++i)
                                     {
                                         string targetText = to_string(i + 1) + ". " + targets[i].first->getName() + " (HP: " + to_string(targets[i].first->getCurrentHealthPoint()) + ")";
-                                        battleMenu.addButton(targetText, sf::Vector2f(50, yPos), sf::Vector2f(350, 40), [&, i, targets]()
+                                        battleMenu.addButton(targetText, sf::Vector2f(windowSize.x * 0.05f, yPos), sf::Vector2f(windowSize.x * 0.35f, windowSize.y * 0.04f), [&, i, targets]()
                                                              {
                                             battle->attack(currentEntity, targets[i].first);
                                             battleState = BattleState::MAIN_MENU; });
-                                        yPos += 45;
+                                        yPos += windowSize.y * 0.045f;
                                     }
                                 }
                                 else
                                 {
-                                    battleTexts.emplace_back("No targets available for attack!", font, 20, sf::Vector2f(50, yPos), sf::Color::Red);
-                                    yPos += 35;
+                                    battleTexts.emplace_back("No targets available for attack!", font, static_cast<unsigned int>(20 * (windowSize.y / 768.0f)), sf::Vector2f(windowSize.x * 0.05f, yPos), sf::Color::Red);
+                                    yPos += windowSize.y * 0.035f;
                                 }
-                                battleMenu.addButton("Back", sf::Vector2f(50, yPos), sf::Vector2f(100, 40), [&]()
+                                battleMenu.addButton("Back", sf::Vector2f(windowSize.x * 0.05f, yPos), sf::Vector2f(windowSize.x * 0.1f, windowSize.y * 0.04f), [&]()
                                                      { battleState = BattleState::MAIN_MENU; });
                             }
                             else if (battleState == BattleState::SELECT_ABILITY)
@@ -526,40 +538,40 @@ int main()
                                 const vector<AbilityType> &abilities = player->getAvailableAbilities();
                                 if (!abilities.empty())
                                 {
-                                    battleTexts.emplace_back("Select Ability:", font, 20, sf::Vector2f(50, yPos), sf::Color::White);
-                                    yPos += 35;
+                                    battleTexts.emplace_back("Select Ability:", font, static_cast<unsigned int>(20 * (windowSize.y / 768.0f)), sf::Vector2f(windowSize.x * 0.05f, yPos), sf::Color::White);
+                                    yPos += windowSize.y * 0.035f;
                                     for (size_t i = 0; i < abilities.size(); ++i)
                                     {
                                         const AbilityInfo &info = HeroFactory::getAbilityInfo(abilities[i]);
                                         string abilityText = to_string(i + 1) + ". " + info.name;
-                                        battleMenu.addButton(abilityText, sf::Vector2f(50, yPos), sf::Vector2f(300, 40), [&, i, abilities]()
+                                        battleMenu.addButton(abilityText, sf::Vector2f(windowSize.x * 0.05f, yPos), sf::Vector2f(windowSize.x * 0.3f, windowSize.y * 0.04f), [&, i, abilities]()
                                                              {
                                             selectedAbility = abilities[i];
                                             battleState = BattleState::CONFIRM_ABILITY; });
-                                        yPos += 50;
+                                        yPos += windowSize.y * 0.05f;
                                     }
                                 }
                                 else
                                 {
-                                    battleTexts.emplace_back("No abilities available!", font, 20, sf::Vector2f(50, yPos), sf::Color::Red);
-                                    yPos += 35;
+                                    battleTexts.emplace_back("No abilities available!", font, static_cast<unsigned int>(20 * (windowSize.y / 768.0f)), sf::Vector2f(windowSize.x * 0.05f, yPos), sf::Color::Red);
+                                    yPos += windowSize.y * 0.035f;
                                 }
-                                battleMenu.addButton("Back", sf::Vector2f(50, yPos), sf::Vector2f(100, 40), [&]()
+                                battleMenu.addButton("Back", sf::Vector2f(windowSize.x * 0.05f, yPos), sf::Vector2f(windowSize.x * 0.1f, windowSize.y * 0.04f), [&]()
                                                      { battleState = BattleState::MAIN_MENU; });
                             }
                             else if (battleState == BattleState::CONFIRM_ABILITY)
                             {
                                 // Show ability description and confirm
                                 const AbilityInfo &info = HeroFactory::getAbilityInfo(selectedAbility);
-                                battleTexts.emplace_back("Confirm Ability: " + info.name, font, 22, sf::Vector2f(50, yPos), sf::Color::Yellow);
-                                yPos += 35;
-                                battleTexts.emplace_back("Description: " + info.description, font, 18, sf::Vector2f(50, yPos), sf::Color::White);
-                                yPos += 25;
-                                battleTexts.emplace_back("Effect: " + info.effect, font, 18, sf::Vector2f(50, yPos), sf::Color::White);
-                                yPos += 35;
-                                battleMenu.addButton("Confirm", sf::Vector2f(50, yPos), sf::Vector2f(120, 50), [&]()
+                                battleTexts.emplace_back("Confirm Ability: " + info.name, font, static_cast<unsigned int>(22 * (windowSize.y / 768.0f)), sf::Vector2f(windowSize.x * 0.05f, yPos), sf::Color::Yellow);
+                                yPos += windowSize.y * 0.035f;
+                                battleTexts.emplace_back("Description: " + info.description, font, static_cast<unsigned int>(18 * (windowSize.y / 768.0f)), sf::Vector2f(windowSize.x * 0.05f, yPos), sf::Color::White);
+                                yPos += windowSize.y * 0.025f;
+                                battleTexts.emplace_back("Effect: " + info.effect, font, static_cast<unsigned int>(18 * (windowSize.y / 768.0f)), sf::Vector2f(windowSize.x * 0.05f, yPos), sf::Color::White);
+                                yPos += windowSize.y * 0.035f;
+                                battleMenu.addButton("Confirm", sf::Vector2f(windowSize.x * 0.05f, yPos), sf::Vector2f(windowSize.x * 0.12f, windowSize.y * 0.05f), [&]()
                                                      { battleState = BattleState::SELECT_TARGET_ABILITY; });
-                                battleMenu.addButton("Back", sf::Vector2f(180, yPos), sf::Vector2f(100, 40), [&]()
+                                battleMenu.addButton("Back", sf::Vector2f(windowSize.x * 0.18f, yPos), sf::Vector2f(windowSize.x * 0.1f, windowSize.y * 0.04f), [&]()
                                                      { battleState = BattleState::SELECT_ABILITY; });
                             }
                             else if (battleState == BattleState::SELECT_TARGET_ABILITY)
@@ -568,62 +580,62 @@ int main()
                                 vector<pair<Entity *, int>> targets = battle->getAvailableTargetsForCurrent();
                                 if (!targets.empty())
                                 {
-                                    battleTexts.emplace_back("Select Target for Ability:", font, 20, sf::Vector2f(50, yPos), sf::Color::White);
-                                    yPos += 35;
+                                    battleTexts.emplace_back("Select Target for Ability:", font, static_cast<unsigned int>(20 * (windowSize.y / 768.0f)), sf::Vector2f(windowSize.x * 0.05f, yPos), sf::Color::White);
+                                    yPos += windowSize.y * 0.035f;
                                     for (size_t i = 0; i < targets.size(); ++i)
                                     {
                                         string targetText = to_string(i + 1) + ". " + targets[i].first->getName();
-                                        battleMenu.addButton(targetText, sf::Vector2f(50, yPos), sf::Vector2f(250, 40), [&, i, targets]()
+                                        battleMenu.addButton(targetText, sf::Vector2f(windowSize.x * 0.05f, yPos), sf::Vector2f(windowSize.x * 0.25f, windowSize.y * 0.04f), [&, i, targets]()
                                                              {
                                             battle->useAbility(currentEntity, selectedAbility);
                                             battleState = BattleState::MAIN_MENU; });
-                                        yPos += 45;
+                                        yPos += windowSize.y * 0.045f;
                                     }
                                 }
                                 else
                                 {
                                     // Use ability without target
-                                    battleMenu.addButton("Use Ability", sf::Vector2f(50, yPos), sf::Vector2f(150, 40), [&]()
+                                    battleMenu.addButton("Use Ability", sf::Vector2f(windowSize.x * 0.05f, yPos), sf::Vector2f(windowSize.x * 0.15f, windowSize.y * 0.04f), [&]()
                                                          {
                                         battle->useAbility(currentEntity, selectedAbility);
                                         battleState = BattleState::MAIN_MENU; });
-                                    yPos += 45;
+                                    yPos += windowSize.y * 0.045f;
                                 }
-                                battleMenu.addButton("Back", sf::Vector2f(50, yPos), sf::Vector2f(100, 40), [&]()
+                                battleMenu.addButton("Back", sf::Vector2f(windowSize.x * 0.05f, yPos), sf::Vector2f(windowSize.x * 0.1f, windowSize.y * 0.04f), [&]()
                                                      { battleState = BattleState::CONFIRM_ABILITY; });
                             }
                             else if (battleState == BattleState::SELECT_POSITION_MOVE)
                             {
                                 // Show position buttons
-                                battleTexts.emplace_back("Select Position to Move:", font, 20, sf::Vector2f(50, yPos), sf::Color::White);
-                                yPos += 35;
+                                battleTexts.emplace_back("Select Position to Move:", font, static_cast<unsigned int>(20 * (windowSize.y / 768.0f)), sf::Vector2f(windowSize.x * 0.05f, yPos), sf::Color::White);
+                                yPos += windowSize.y * 0.035f;
                                 for (int pos = 0; pos < 4; ++pos)
                                 {
                                     string posText = "Position " + to_string(pos + 1);
-                                    battleMenu.addButton(posText, sf::Vector2f(50.0f + static_cast<float>(pos) * 120.0f, yPos), sf::Vector2f(110, 40), [&, pos]()
+                                    battleMenu.addButton(posText, sf::Vector2f(windowSize.x * 0.05f + static_cast<float>(pos) * windowSize.x * 0.12f, yPos), sf::Vector2f(windowSize.x * 0.11f, windowSize.y * 0.04f), [&, pos]()
                                                          {
                                         battle->movePosition(currentEntity, pos);
                                         battleState = BattleState::MAIN_MENU; });
                                 }
-                                battleMenu.addButton("Back", sf::Vector2f(50, yPos + 50), sf::Vector2f(100, 40), [&]()
+                                battleMenu.addButton("Back", sf::Vector2f(windowSize.x * 0.05f, yPos + windowSize.y * 0.05f), sf::Vector2f(windowSize.x * 0.1f, windowSize.y * 0.04f), [&]()
                                                      { battleState = BattleState::MAIN_MENU; });
                             }
                         }
                         else
                         {
                             // AI turn - simulate
-                            battleTexts.emplace_back("AI Turn - Press Next to continue", font, 20, sf::Vector2f(50, yPos), sf::Color::Yellow);
-                            battleMenu.addButton("Next", sf::Vector2f(50, yPos + 35), sf::Vector2f(100, 40), [&]()
+                            battleTexts.emplace_back("AI Turn - Press Next to continue", font, static_cast<unsigned int>(20 * (windowSize.y / 768.0f)), sf::Vector2f(windowSize.x * 0.05f, yPos), sf::Color::Yellow);
+                            battleMenu.addButton("Next", sf::Vector2f(windowSize.x * 0.05f, yPos + windowSize.y * 0.035f), sf::Vector2f(windowSize.x * 0.1f, windowSize.y * 0.04f), [&]()
                                                  {
-                                // Simple AI: attack if possible, else skip turn
-                                vector<pair<Entity *, int>> targets = battle->getAvailableTargetsForCurrent();
-                                if (!targets.empty()) {
-                                    int targetIndex = rand() % targets.size();
-                                    battle->attack(currentEntity, targets[targetIndex].first);
-                                } else {
-                                    battle->nextTurn();
-                                } });
-                            battleMenu.addButton("End AI Turn", sf::Vector2f(160, yPos + 35), sf::Vector2f(120, 40), [&]()
+                                 // Simple AI: attack if possible, else skip turn
+                                 vector<pair<Entity *, int>> targets = battle->getAvailableTargetsForCurrent();
+                                 if (!targets.empty()) {
+                                     int targetIndex = rand() % targets.size();
+                                     battle->attack(currentEntity, targets[targetIndex].first);
+                                 } else {
+                                     battle->nextTurn();
+                                 } });
+                            battleMenu.addButton("End AI Turn", sf::Vector2f(windowSize.x * 0.16f, yPos + windowSize.y * 0.035f), sf::Vector2f(windowSize.x * 0.12f, windowSize.y * 0.04f), [&]()
                                                  { battle->nextTurn(); });
                         }
                     }
@@ -632,8 +644,8 @@ int main()
             else
             {
                 // Fallback
-                battleTexts.emplace_back("Battle system error.", font, 24, sf::Vector2f(200, 100), sf::Color::Red);
-                battleMenu.addButton("Continue", sf::Vector2f(300, 200), sf::Vector2f(100, 50), [&]()
+                battleTexts.emplace_back("Battle system error.", font, static_cast<unsigned int>(24 * (windowSize.y / 768.0f)), sf::Vector2f(windowSize.x * 0.2f, windowSize.y * 0.1f), sf::Color::Red);
+                battleMenu.addButton("Continue", sf::Vector2f(windowSize.x * 0.3f, windowSize.y * 0.2f), sf::Vector2f(windowSize.x * 0.1f, windowSize.y * 0.05f), [&]()
                                      {
                     campaign.clearPendingBattle();
                     currentState = GameState::MAP_MODE; });
@@ -646,18 +658,18 @@ int main()
             inventoryMenu.clear();
             inventoryTexts.clear();
 
-            inventoryTexts.emplace_back("Party Inventory", font, 30, sf::Vector2f(250, 50), sf::Color::Yellow);
+            inventoryTexts.emplace_back("Party Inventory", font, static_cast<unsigned int>(30 * (windowSize.y / 768.0f)), sf::Vector2f(windowSize.x * 0.25f, windowSize.y * 0.05f), sf::Color::Yellow);
 
             const auto &partyInv = campaign.getPartyInventory();
-            float yPos = 100;
+            float yPos = windowSize.y * 0.1f;
             for (size_t i = 0; i < partyInv.size(); ++i)
             {
-                inventoryTexts.emplace_back(std::to_string(i + 1) + ". " + partyInv[i].getName(), font, 20, sf::Vector2f(50, yPos), sf::Color::White);
-                yPos += 25;
+                inventoryTexts.emplace_back(std::to_string(i + 1) + ". " + partyInv[i].getName(), font, static_cast<unsigned int>(20 * (windowSize.y / 768.0f)), sf::Vector2f(windowSize.x * 0.05f, yPos), sf::Color::White);
+                yPos += windowSize.y * 0.025f;
             }
 
             // Close button
-            inventoryMenu.addButton("Close", sf::Vector2f(350, 500), sf::Vector2f(100, 50), [&]()
+            inventoryMenu.addButton("Close", sf::Vector2f(windowSize.x * 0.35f, windowSize.y * 0.5f), sf::Vector2f(windowSize.x * 0.1f, windowSize.y * 0.05f), [&]()
                                     { currentState = GameState::MAP_MODE; });
         }
 
@@ -692,24 +704,24 @@ int main()
             if (campaign.isGameCompleted())
             {
                 // Victory screen
-                sf::Text victoryTitle("VICTORY!", font, 56);
-                victoryTitle.setPosition(250, 200);
+                sf::Text victoryTitle("VICTORY!", font, static_cast<unsigned int>(56 * (windowSize.y / 768.0f)));
+                victoryTitle.setPosition(windowSize.x * 0.25f, windowSize.y * 0.2f);
                 victoryTitle.setFillColor(sf::Color::Green);
                 window.draw(victoryTitle);
 
-                sf::Text victoryText("You have defeated the Lord of Darkness and saved the world!", font, 24);
-                victoryText.setPosition(150, 300);
+                sf::Text victoryText("You have defeated the Lord of Darkness and saved the world!", font, static_cast<unsigned int>(24 * (windowSize.y / 768.0f)));
+                victoryText.setPosition(windowSize.x * 0.15f, windowSize.y * 0.3f);
                 victoryText.setFillColor(sf::Color::White);
                 window.draw(victoryText);
 
                 // Exit button
-                sf::RectangleShape exitButton(sf::Vector2f(100, 50));
-                exitButton.setPosition(350, 400);
+                sf::RectangleShape exitButton(sf::Vector2f(windowSize.x * 0.1f, windowSize.y * 0.05f));
+                exitButton.setPosition(windowSize.x * 0.35f, windowSize.y * 0.4f);
                 exitButton.setFillColor(sf::Color::Red);
                 window.draw(exitButton);
 
-                sf::Text exitText("Exit", font, 20);
-                exitText.setPosition(375, 410);
+                sf::Text exitText("Exit", font, static_cast<unsigned int>(20 * (windowSize.y / 768.0f)));
+                exitText.setPosition(windowSize.x * 0.375f, windowSize.y * 0.41f);
                 exitText.setFillColor(sf::Color::White);
                 window.draw(exitText);
 
@@ -717,7 +729,7 @@ int main()
                 if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
                 {
                     sf::Vector2i mousePos = sf::Mouse::getPosition(window);
-                    sf::FloatRect exitRect(350, 400, 100, 50);
+                    sf::FloatRect exitRect(windowSize.x * 0.35f, windowSize.y * 0.4f, windowSize.x * 0.1f, windowSize.y * 0.05f);
                     if (exitRect.contains(static_cast<sf::Vector2f>(mousePos)))
                     {
                         window.close();
@@ -728,26 +740,26 @@ int main()
             {
                 // Display map
                 std::string mapStr = campaign.getGameMap().getMapString();
-                sf::Text mapText(mapStr, font, 14);
-                mapText.setPosition(10, 10);
+                sf::Text mapText(mapStr, font, static_cast<unsigned int>(14 * (windowSize.y / 768.0f)));
+                mapText.setPosition(windowSize.x * 0.01f, windowSize.y * 0.01f);
                 mapText.setFillColor(sf::Color::White);
                 window.draw(mapText);
 
                 // Display location info
                 std::string locationInfo = "Location: " + campaign.getCurrentLocation().name + "\nDifficulty: " + std::to_string(campaign.getCurrentDifficulty());
-                sf::Text infoText(locationInfo, font, 16);
-                infoText.setPosition(10, 500);
+                sf::Text infoText(locationInfo, font, static_cast<unsigned int>(16 * (windowSize.y / 768.0f)));
+                infoText.setPosition(windowSize.x * 0.01f, windowSize.y * 0.5f);
                 infoText.setFillColor(sf::Color::Yellow);
                 window.draw(infoText);
 
                 // Inventory button in corner
-                sf::RectangleShape invButton(sf::Vector2f(100, 40));
-                invButton.setPosition(700, 10);
+                sf::RectangleShape invButton(sf::Vector2f(windowSize.x * 0.1f, windowSize.y * 0.04f));
+                invButton.setPosition(windowSize.x * 0.7f, windowSize.y * 0.01f);
                 invButton.setFillColor(sf::Color::Blue);
                 window.draw(invButton);
 
-                sf::Text invText("Inventory", font, 16);
-                invText.setPosition(710, 15);
+                sf::Text invText("Inventory", font, static_cast<unsigned int>(16 * (windowSize.y / 768.0f)));
+                invText.setPosition(windowSize.x * 0.71f, windowSize.y * 0.015f);
                 invText.setFillColor(sf::Color::White);
                 window.draw(invText);
             }

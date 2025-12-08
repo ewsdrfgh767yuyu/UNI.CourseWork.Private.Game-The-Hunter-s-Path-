@@ -87,15 +87,19 @@ Menu::Menu(sf::RenderWindow &window, const sf::Font &font) : window(window), fon
 
 void Menu::addButton(const std::string &text, const sf::Vector2f &position, const sf::Vector2f &size, std::function<void()> callback)
 {
-    buttons.emplace_back(text, font, 28, position, size);
+    sf::Vector2u windowSize = window.getSize();
+    unsigned int fontSize = static_cast<unsigned int>(28 * (windowSize.y / 768.0f));
+    buttons.emplace_back(text, font, fontSize, position, size);
     buttons.back().setCallback(callback);
     totalHeight = std::max(totalHeight, position.y + size.y);
 }
 
 void Menu::addText(const std::string &text, unsigned int characterSize, const sf::Vector2f &position, sf::Color color)
 {
-    texts.emplace_back(text, font, characterSize, position, color);
-    totalHeight = std::max(totalHeight, position.y + static_cast<float>(characterSize));
+    sf::Vector2u windowSize = window.getSize();
+    unsigned int scaledSize = static_cast<unsigned int>(characterSize * (windowSize.y / 768.0f));
+    texts.emplace_back(text, font, scaledSize, position, color);
+    totalHeight = std::max(totalHeight, position.y + static_cast<float>(scaledSize));
 }
 
 void Menu::setScrollable(bool scrollable, float maxHeight)
