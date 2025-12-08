@@ -47,7 +47,7 @@ void HeroFactory::initializeTemplates()
 
     // LONER - unique class without party
     heroTemplates[HeroClass::LONER] = {
-        "Loner", "Legendary hero going alone against the whole world. Enhanced stats, but no allies", HeroClass::LONER, ProgressionType::TRANSCENDENCE, 200, 25, 10, 8, 4, 18, 1, AbilityType::BERSERK, {AbilityType::BERSERK, AbilityType::CHARGE, AbilityType::SHIELD_WALL, AbilityType::HEALING_WAVE, AbilityType::TELEPORT}, true, 0.5 // Maximum variance - can deal a lot or almost nothing
+        "Loner", "Legendary hero going alone against the whole world. Enhanced stats, but no allies", HeroClass::LONER, ProgressionType::TRANSCENDENCE, 200, 25, 10, 8, 4, 18, 1, AbilityType::BERSERK, {AbilityType::BERSERK, AbilityType::CHARGE, AbilityType::SHIELD_WALL, AbilityType::HEALING_WAVE, AbilityType::FLAME_BURST}, true, 0.5 // Maximum variance - can deal a lot or almost nothing
     };
 }
 
