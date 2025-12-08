@@ -1,44 +1,24 @@
-# TODO - Map Random Prototype Selection and Event Randomization
+# TODO: Redesign Game for Full-Screen Mode
 
-## Objective
+## Step 1: Modify Window Creation
 
-Implement multiple map prototypes for each map type (forest, city, castle, cave) and randomize map selection and event types on 'R' positions.
+- Change main.cpp to create full-screen window instead of fixed 800x1000 size
+- Use sf::VideoMode::getDesktopMode() for full-screen resolution
 
-## Tasks
+## Step 2: Update GUI Classes for Relative Positioning
 
-1. Add user-provided map prototypes (4 variants per map type) as static const 15x15 char arrays in Map.cpp.
+- [x] Modify GUI.h and GUI.cpp to support relative positioning (percentages of window size)
+- [x] Add methods to Button and TextDisplay for setting positions/sizes relative to window
+- [x] Update Menu class to handle relative coordinates
+ т
+## Step 3: Update main.cpp Positions and Sizes
 
-2. Add enum or constants for map types (FOREST, CITY, CASTLE, CAVE) if not present.
+- Replace all hardcoded positions and sizes with relative calculations
+- Update button positions, text positions, and other UI elements to use window percentages
+- Adjust font sizes to scale with window size
 
-3. Update Map::generate() to:
-   - randomly select a map type
-   - randomly select one of the 4 prototypes of that type
-   - load prototype with new helper function
+## Step 4: Test and Adjust Scaling
 
-4. Implement helper function:
-   - parsePrototype(const char[15][15])
-   - convert prototype chars to NodeType grid
-   - For 'R' cells, randomly assign NodeType::BATTLE, NodeType::TREASURE, or NodeType::EVENT
-
-5. Enforce castle rules:
-   - exactly one boss (D)
-   - at least one battle (B) node leading to boss
-   - no exits (V)
-
-6. Retain player start (I) location from prototype.
-
-7. Adjust connectNodes or ensureConnectivity if needed after loading prototype
-
-8. Test map generation randomization and event assignment.
-
-## Files to edit
-
-- Map.cpp
-- Map.h
-
-## Next steps
-
-- Implement prototypes data arrays and parsing
-- Modify generate() logic
-- Add random event assignment on 'R'
-- Handle castle-specific rules
+- Compile and run the game in full-screen mode
+- Verify all buttons and text scale properly
+- Make any necessary adjustments for readability and usability

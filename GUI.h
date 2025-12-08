@@ -38,7 +38,7 @@ class Menu
 {
 public:
     Menu(sf::RenderWindow &window, const sf::Font &font);
-    void addButton(const std::string &text, const sf::Vector2f &position, const sf::Vector2f &size, std::function<void()> callback);
+    void addButton(const std::string &text, const sf::Vector2f &position, const sf::Vector2f &size, std::function<void()> callback, unsigned int fontSize = 0);
     void addText(const std::string &text, unsigned int characterSize, const sf::Vector2f &position, sf::Color color = sf::Color::White);
     void handleEvent(const sf::Event &event);
     void draw();

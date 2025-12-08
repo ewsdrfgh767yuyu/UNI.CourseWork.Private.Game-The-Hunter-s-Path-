@@ -85,10 +85,13 @@ void TextDisplay::setPosition(const sf::Vector2f &position)
 
 Menu::Menu(sf::RenderWindow &window, const sf::Font &font) : window(window), font(font) {}
 
-void Menu::addButton(const std::string &text, const sf::Vector2f &position, const sf::Vector2f &size, std::function<void()> callback)
+void Menu::addButton(const std::string &text, const sf::Vector2f &position, const sf::Vector2f &size, std::function<void()> callback, unsigned int fontSize)
 {
     sf::Vector2u windowSize = window.getSize();
-    unsigned int fontSize = static_cast<unsigned int>(28 * (windowSize.y / 768.0f));
+    if (fontSize == 0)
+    {
+        fontSize = static_cast<unsigned int>(28 * (windowSize.y / 768.0f));
+    }
     buttons.emplace_back(text, font, fontSize, position, size);
     buttons.back().setCallback(callback);
     totalHeight = std::max(totalHeight, position.y + size.y);

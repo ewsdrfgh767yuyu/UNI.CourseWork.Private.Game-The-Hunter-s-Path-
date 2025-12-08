@@ -95,17 +95,20 @@ int main()
     // Character selection
     Menu characterSelectionMenu(window, font);
     const auto &presets = HeroFactory::getPartyPresets();
+    float buttonWidthCS = windowSize.x * 0.2f;
+    float buttonHeightCS = windowSize.y * 0.06f;
+    unsigned int fontSizeCS = static_cast<unsigned int>(20 * (windowSize.y / 768.0f));
     float yPos = windowSize.y * 0.15f;
     for (size_t i = 0; i < presets.size(); ++i)
     {
-        characterSelectionMenu.addButton(presets[i].name, sf::Vector2f(windowSize.x * 0.1f, yPos), sf::Vector2f(buttonWidth, buttonHeight), [&, i]()
+        characterSelectionMenu.addButton(presets[i].name, sf::Vector2f((windowSize.x - buttonWidthCS) / 2, yPos), sf::Vector2f(buttonWidthCS, buttonHeightCS), [&, i]()
                                          {
                                              selectedPresetIndex = i;
-                                             currentState = GameState::CHARACTER_CONFIRMATION; });
+                                             currentState = GameState::CHARACTER_CONFIRMATION; }, fontSizeCS);
         yPos += buttonSpacing;
     }
-    characterSelectionMenu.addButton("Back", sf::Vector2f(windowSize.x * 0.35f, yPos), sf::Vector2f(windowSize.x * 0.1f, buttonHeight), [&]()
-                                     { currentState = GameState::MAIN_MENU; });
+    characterSelectionMenu.addButton("Back", sf::Vector2f((windowSize.x - windowSize.x * 0.08f) / 2, yPos), sf::Vector2f(windowSize.x * 0.08f, buttonHeightCS), [&]()
+                                     { currentState = GameState::MAIN_MENU; }, fontSizeCS);
     characterSelectionMenu.setScrollable(true, windowSize.y * 0.5f);
 
     // Character confirmation
