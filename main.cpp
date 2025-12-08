@@ -433,7 +433,6 @@ int main()
                 if (!battle->isBattleActive())
                 {
                     battleTexts.emplace_back("BATTLE", font, static_cast<unsigned int>(36 * (windowSize.y / 768.0f)), sf::Vector2f(windowSize.x * 0.25f, windowSize.y * 0.02f), sf::Color::Yellow);
-                    battleTexts.emplace_back(battle->getBattleStatus(), font, static_cast<unsigned int>(18 * (windowSize.y / 768.0f)), sf::Vector2f(windowSize.x * 0.05f, windowSize.y * 0.06f), sf::Color::White);
                     battleTexts.emplace_back(battle->getTurnOrderString(), font, static_cast<unsigned int>(18 * (windowSize.y / 768.0f)), sf::Vector2f(windowSize.x * 0.45f, windowSize.y * 0.06f), sf::Color::White);
                     if (battle->isPlayerVictory())
                     {
