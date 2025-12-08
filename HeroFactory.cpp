@@ -54,165 +54,145 @@ void HeroFactory::initializeTemplates()
 void HeroFactory::initializePartyPresets()
 {
     // Preset 1: Lone - Legendary hero
-    partyPresets.push_back({
-        "Legendary Lone Hero",
-        "In dark times, when the shadows of the Lord of Darkness engulfed the kingdoms, a lone wanderer, marked by ancient curses and blessings, decided to stand against evil. His path is one of despair and greatness, where one sword decides the fate of the world.",
-        {{HeroClass::LONER, "Legend"}}
-    });
+    partyPresets.push_back({"Legendary Lone Hero",
+                            "In dark times, when the shadows of the Lord of Darkness engulfed the kingdoms, a lone wanderer, marked by ancient curses and blessings, decided to stand against evil. His path is one of despair and greatness, where one sword decides the fate of the world.",
+                            {{HeroClass::LONER, "Legend"}}});
 
     // Preset 2: Warrior and Mage - Classic pair
-    partyPresets.push_back({
-        "Brothers in Arms",
-        "Lotric, the unyielding warrior from the ruined castle, and Lorian, his mage brother, lost everything to the invasion of the forces of Darkness. Together they swore to avenge the Lord, whose servants burned their home and destroyed their family.",
-        {{HeroClass::WARRIOR, "Lotric"}, {HeroClass::MAGE, "Lorian"}}
-    });
+    partyPresets.push_back({"Brothers in Arms",
+                            "Lotric, the unyielding warrior from the ruined castle, and Lorian, his mage brother, lost everything to the invasion of the forces of Darkness. Together they swore to avenge the Lord, whose servants burned their home and destroyed their family.",
+                            {{HeroClass::WARRIOR, "Lotric"}, {HeroClass::MAGE, "Lorian"}}});
 
     // Preset 3: Barbarian and Rogue - Wild pair
-    partyPresets.push_back({
-        "Wild Avengers",
-        "Krag, barbarian from the northern lands, saw hordes of undead destroy his tribe. Laslo, cunning rogue from the slums, lost his sister in captivity to the Lord's servants. Together they sow chaos in the enemy ranks, avenging the lost.",
-        {{HeroClass::BARBARIAN, "Krag"}, {HeroClass::ROGUE, "Laslo"}}
-    });
+    partyPresets.push_back({"Wild Avengers",
+                            "Krag, barbarian from the northern lands, saw hordes of undead destroy his tribe. Laslo, cunning rogue from the slums, lost his sister in captivity to the Lord's servants. Together they sow chaos in the enemy ranks, avenging the lost.",
+                            {{HeroClass::BARBARIAN, "Krag"}, {HeroClass::ROGUE, "Laslo"}}});
 
     // Preset 4: Barbarian, Rogue and Druid - Full trio
-    partyPresets.push_back({
-        "Guardians of the Ancient Forest",
-        "When the Lord of Darkness began poisoning the sacred forests, Krag, Laslo and Kendrick united. The barbarian carries the fury of nature, the rogue the cunning of shadows, and the druid the wisdom of ancient spirits. Their mission is to restore the balance of the world.",
-        {{HeroClass::BARBARIAN, "Krag"}, {HeroClass::ROGUE, "Laslo"}, {HeroClass::DRUID, "Kendrick"}}
-    });
+    partyPresets.push_back({"Guardians of the Ancient Forest",
+                            "When the Lord of Darkness began poisoning the sacred forests, Krag, Laslo and Kendrick united. The barbarian carries the fury of nature, the rogue the cunning of shadows, and the druid the wisdom of ancient spirits. Their mission is to restore the balance of the world.",
+                            {{HeroClass::BARBARIAN, "Krag"}, {HeroClass::ROGUE, "Laslo"}, {HeroClass::DRUID, "Kendrick"}}});
 
     // Preset 5: Paladin and Ranger - Defensive pair
-    partyPresets.push_back({
-        "Holy Wanderers",
-        "Eldrin, paladin of a forgotten order, lost faith when the Lord destroyed his temple. Talia, ranger from the elven forests, saw darkness devour her homeland. Together they carry the light of hope through the darkness.",
-        {{HeroClass::PALADIN, "Eldrin"}, {HeroClass::RANGER, "Talia"}}
-    });
+    partyPresets.push_back({"Holy Wanderers",
+                            "Eldrin, paladin of a forgotten order, lost faith when the Lord destroyed his temple. Talia, ranger from the elven forests, saw darkness devour her homeland. Together they carry the light of hope through the darkness.",
+                            {{HeroClass::PALADIN, "Eldrin"}, {HeroClass::RANGER, "Talia"}}});
 
     // Preset 6: Mage and Warlock - Magical power
-    partyPresets.push_back({
-        "Masters of Forbidden Knowledge",
-        "Azrael and Morrigan, two mages from the ancient academy, witnessed the fall of their teachers to the power of the Lord of Darkness. One draws strength from pure magic, the other from dark deals. Their path leads to the final battle for the soul of magic.",
-        {{HeroClass::MAGE, "Azrael"}, {HeroClass::WARLOCK, "Morrigan"}}
-    });
+    partyPresets.push_back({"Masters of Forbidden Knowledge",
+                            "Azrael and Morrigan, two mages from the ancient academy, witnessed the fall of their teachers to the power of the Lord of Darkness. One draws strength from pure magic, the other from dark deals. Their path leads to the final battle for the soul of magic.",
+                            {{HeroClass::MAGE, "Azrael"}, {HeroClass::WARLOCK, "Morrigan"}}});
 
     // Preset 7: Warrior, Mage and Druid - Classic trio
-    partyPresets.push_back({
-        "Three Guardians of the Kingdom",
-        "Harold, the last knight of the fallen kingdom, Merilin, the court sorceress, and Sylvana, druid of the ancient circle - three whose fates intertwined in the fire of war. The Lord of Darkness destroyed their world, and now they go to restore it.",
-        {{HeroClass::WARRIOR, "Harold"}, {HeroClass::MAGE, "Merilin"}, {HeroClass::DRUID, "Sylvana"}}
-    });
+    partyPresets.push_back({"Three Guardians of the Kingdom",
+                            "Harold, the last knight of the fallen kingdom, Merilin, the court sorceress, and Sylvana, druid of the ancient circle - three whose fates intertwined in the fire of war. The Lord of Darkness destroyed their world, and now they go to restore it.",
+                            {{HeroClass::WARRIOR, "Harold"}, {HeroClass::MAGE, "Merilin"}, {HeroClass::DRUID, "Sylvana"}}});
 
     // Preset 8: Rogue and Ranger - Stealthy pair
-    partyPresets.push_back({
-        "Shadows of Forgotten Forests",
-        "Shadow, master thief from the underworld, and Huntress, ranger from the mysterious forests, united after the Lord kidnapped their loved ones. They glide through the shadows, sowing death among the servants of Darkness.",
-        {{HeroClass::ROGUE, "Shadow"}, {HeroClass::RANGER, "Huntress"}}
-    });
+    partyPresets.push_back({"Shadows of Forgotten Forests",
+                            "Shadow, master thief from the underworld, and Huntress, ranger from the mysterious forests, united after the Lord kidnapped their loved ones. They glide through the shadows, sowing death among the servants of Darkness.",
+                            {{HeroClass::ROGUE, "Shadow"}, {HeroClass::RANGER, "Huntress"}}});
 
     // Preset 9: Paladin, Barbarian and Warlock - Balanced trio
-    partyPresets.push_back({
-        "Sacred Fury",
-        "Galahad, paladin rejected by his order for too radical methods; Grom, barbarian exiled from his tribe for uncontrollable rage; Sandro, warlock who sold his soul for power. The Lord of Darkness is their common enemy, uniting the outcasts.",
-        {{HeroClass::PALADIN, "Galahad"}, {HeroClass::BARBARIAN, "Grom"}, {HeroClass::WARLOCK, "Sandro"}}
-    });
+    partyPresets.push_back({"Sacred Fury",
+                            "Galahad, paladin rejected by his order for too radical methods; Grom, barbarian exiled from his tribe for uncontrollable rage; Sandro, warlock who sold his soul for power. The Lord of Darkness is their common enemy, uniting the outcasts.",
+                            {{HeroClass::PALADIN, "Galahad"}, {HeroClass::BARBARIAN, "Grom"}, {HeroClass::WARLOCK, "Sandro"}}});
 
     // Preset 10: Full quartet - Warrior, Mage, Rogue, Druid
-    partyPresets.push_back({
-        "Legendary Quartet",
-        "Arthur, noble warrior; Merlin, wise mage; Robin, cunning rogue; Morgana, mysterious druid. Prophecy foretold their meeting in the hour of greatest need. The Lord of Darkness awakened ancient evil, and only this quartet can stop it.",
-        {{HeroClass::WARRIOR, "Arthur"}, {HeroClass::MAGE, "Merlin"}, {HeroClass::ROGUE, "Robin"}, {HeroClass::DRUID, "Morgana"}}
-    });
+    partyPresets.push_back({"Legendary Quartet",
+                            "Arthur, noble warrior; Merlin, wise mage; Robin, cunning rogue; Morgana, mysterious druid. Prophecy foretold their meeting in the hour of greatest need. The Lord of Darkness awakened ancient evil, and only this quartet can stop it.",
+                            {{HeroClass::WARRIOR, "Arthur"}, {HeroClass::MAGE, "Merlin"}, {HeroClass::ROGUE, "Robin"}, {HeroClass::DRUID, "Morgana"}}});
 }
 
 void HeroFactory::initializeAbilities()
 {
     abilityDatabase[AbilityType::CHARGE] = {
         AbilityType::CHARGE, "Charge", "Instant movement to target with powerful attack",
-        5, "Damage +50%, 30% chance to stun (-2 initiative) for 1 turn"};
+        5, "Мгновенно перемещается к цели и наносит мощный удар. Урон увеличивается на 50%, 30% шанс оглушить цель (инициатива -2) на 1 ход."};
 
     abilityDatabase[AbilityType::SHIELD_WALL] = {
         AbilityType::SHIELD_WALL, "Shield Wall", "Creates a powerful barrier blocking damage",
-        3, "Defense +5, blocks 80% damage for 2 turns"};
+        3, "Создает мощный барьер, блокирующий урон. Защита +5, блокирует 80% урона на 2 хода."};
 
     abilityDatabase[AbilityType::BERSERK] = {
         AbilityType::BERSERK, "Berserk", "Enters rage, increasing strength",
-        5, "Damage +5, defense -2 for 3 turns"};
+        5, "Входит в ярость, увеличивая силу. Урон +5, защита -2 на 3 хода."};
 
     abilityDatabase[AbilityType::BATTLE_CRY] = {
         AbilityType::BATTLE_CRY, "Battle Cry", "Inspires allies and intimidates enemies",
-        3, "Allies: +2 attack and defense for 2 turns, Enemies: -2 attack and initiative for 2 turns"};
+        3, "Вдохновляет союзников и запугивает врагов. Союзники: атака и защита +2 на 2 хода, Враги: атака и инициатива -2 на 2 хода."};
 
     abilityDatabase[AbilityType::HEALING_WAVE] = {
         AbilityType::HEALING_WAVE, "Healing Wave", "Heals all allies with a wave of healing energy",
-        4, "Heal 50 HP to all allies"};
+        4, "Исцеляет всех союзников волной целительной энергии. Восстанавливает 50 HP всем союзникам."};
 
     abilityDatabase[AbilityType::COMMAND] = {
         AbilityType::COMMAND, "Command", "Gives an order, boosting allies' morale",
-        3, "Allies: +2 initiative, +1 damage for 2 turns"};
+        3, "Отдает приказ, повышая боевой дух союзников. Союзники: инициатива +2, урон +1 на 2 хода."};
 
     abilityDatabase[AbilityType::FROST_ARMOR] = {
         AbilityType::FROST_ARMOR, "Frost Armor", "Covers with ice armor, slowing enemies",
-        3, "Defense +5 for 3 turns, enemies: -2 initiative for 2 turns"};
+        3, "Покрывает ледяной броней, замедляя врагов. Защита +5 на 3 хода, враги: инициатива -2 на 2 хода."};
 
     abilityDatabase[AbilityType::STEALTH] = {
         AbilityType::STEALTH, "Stealth", "Blends with shadows for surprise attack",
-        4, "Invisible, next attack: x2 damage"};
+        4, "Сливается с тенями для внезапной атаки. Невидим, следующая атака: урон x2."};
 
     abilityDatabase[AbilityType::SHADOW_STEP] = {
         AbilityType::SHADOW_STEP, "Shadow Step", "Teleports through shadows for surprise strike",
-        3, "Teleport to target, damage x2 (ignores defense)"};
+        3, "Телепортируется сквозь тени для внезапного удара. Телепорт к цели, урон x2 (игнорирует защиту)."};
 
     abilityDatabase[AbilityType::POISON] = {
         AbilityType::POISON, "Poison", "Poisons target with damage over time",
-        4, "Target takes 8 damage at start of each turn for 3 turns"};
+        4, "Отравляет цель уроном со временем. Цель получает 8 урона в начале каждого хода на 3 хода."};
 
     abilityDatabase[AbilityType::INVISIBLE] = {
         AbilityType::INVISIBLE, "Invisible", "Becomes completely invisible",
-        2, "Invisible until next attack or ability"};
+        2, "Становится полностью невидимым. Невидим до следующей атаки или способности."};
 
     abilityDatabase[AbilityType::ARCANE_MISSILE] = {
         AbilityType::ARCANE_MISSILE, "Arcane Missile", "Launches a powerful magic missile",
-        5, "Damage 15-25, ignores target's defense"};
+        5, "Запускает мощную магическую ракету. Урон 15-25, игнорирует защиту цели."};
 
     abilityDatabase[AbilityType::TELEPORT] = {
         AbilityType::TELEPORT, "Teleport", "Instantly moves to a specified point",
-        3, "Move to any free position"};
+        3, "Мгновенно перемещается в указанную точку. Перемещение на любую свободную позицию."};
 
     abilityDatabase[AbilityType::CHAIN_LIGHTNING] = {
         AbilityType::CHAIN_LIGHTNING, "Chain Lightning", "Calls lightning striking multiple targets",
-        4, "20 damage to 3 nearest enemies"};
+        4, "Призывает молнию, поражающую несколько целей. 20 урона 3 ближайшим врагам."};
 
     abilityDatabase[AbilityType::FLAME_BURST] = {
         AbilityType::FLAME_BURST, "Flame Burst", "Creates a flame explosion around self",
-        3, "25 damage to all enemies"};
+        3, "Создает огненный взрыв вокруг себя. 25 урона всем врагам."};
 
     abilityDatabase[AbilityType::BLOOD_RITUAL] = {
         AbilityType::BLOOD_RITUAL, "Blood Ritual", "Sacrifices blood for demonic power",
-        3, "Sacrifice 30 HP, damage +50% for 3 turns"};
+        3, "Жертвует кровью за демоническую силу. Жертвует 30 HP, урон +50% на 3 хода."};
 
     abilityDatabase[AbilityType::LIFE_STEAL] = {
         AbilityType::LIFE_STEAL, "Life Steal", "Steals life force from enemies",
-        4, "Restore 50% of damage dealt"};
+        4, "Крадет жизненную силу у врагов. Восстанавливает 50% нанесенного урона."};
 
     abilityDatabase[AbilityType::FEAR] = {
         AbilityType::FEAR, "Fear", "Instills terror, reducing enemies' combat ability",
-        3, "Enemies: initiative -2, damage -3 for 2 turns"};
+        3, "Внушает ужас, снижая боеспособность врагов. Враги: инициатива -2, урон -3 на 2 хода."};
 
     abilityDatabase[AbilityType::HEAL] = {
         AbilityType::HEAL, "Heal", "Restores health instantly",
-        4, "Restore 40 HP"};
+        4, "Восстанавливает здоровье мгновенно. Восстанавливает 40 HP."};
 
     abilityDatabase[AbilityType::REGENERATION] = {
         AbilityType::REGENERATION, "Regeneration", "Restores health naturally",
-        5, "Restore 30 HP at start of turn"};
+        5, "Восстанавливает здоровье естественным образом. Восстанавливает 30 HP в начале хода."};
 
     abilityDatabase[AbilityType::FLYING] = {
         AbilityType::FLYING, "Flying", "Takes off and moves through air",
-        4, "Move to any position"};
+        4, "Взлетает и перемещается по воздуху. Перемещение на любую позицию."};
 
     abilityDatabase[AbilityType::FIRE_DAMAGE] = {
         AbilityType::FIRE_DAMAGE, "Fire Damage", "Attacks deal additional fire damage",
-        4, "Additional damage 30% of base per attack"};
+        4, "Атаки наносят дополнительный огненный урон. Дополнительный урон 30% от базового за атаку."};
 }
 
 std::vector<HeroClass> HeroFactory::getAvailableClasses()
