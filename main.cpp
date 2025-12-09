@@ -67,6 +67,7 @@ int main()
     AbilityType selectedAbility = AbilityType::NONE;
     int selectedTargetIndex = -1;
     int selectedPosition = -1;
+    std::string pendingExpMessage;
 
     // Main menu
     Menu mainMenu(window, font);
@@ -440,11 +441,7 @@ int main()
                         battleMenu.addButton("Continue", sf::Vector2f(windowSize.x * 0.3f, windowSize.y * 0.4f), sf::Vector2f(windowSize.x * 0.12f, windowSize.y * 0.06f), [&]()
                                              {
                              // Award experience
-                             int totalExp = 0;
-                             for (const auto &pos : battle->getEnemyPositions()) {
-                                 if (pos.entity) totalExp += static_cast<Enemy*>(pos.entity)->getExperienceValue();
-                             }
-                             int expPerPlayer = totalExp / campaign.getPlayerParty().size();
+                             int expPerPlayer = campaign.getPendingExperience() / campaign.getPlayerParty().size();
                              for (Player *player : campaign.getPlayerParty()) {
                                  if (player->getCurrentHealthPoint() > 0) {
                                      player->setReceivedExperience(player->getReceivedExperience() + expPerPlayer);
@@ -452,11 +449,14 @@ int main()
                                      cout << player->getName() << " receives " << expPerPlayer << " experience!\n";
                                  }
                              }
+                             // Set experience gained message
+                             pendingExpMessage = "Experience gained: " + std::to_string(expPerPlayer) + " per player";
                              // Check if this was the final boss battle
                              if (campaign.getCurrentLocation().isFinalBossLocation) {
                                  campaign.setGameCompleted(true);
                              }
                              campaign.clearPendingBattle();
+                             campaign.clearPendingExperience();
                              currentState = GameState::MAP_MODE;
                              battleState = BattleState::MAIN_MENU; });
                     }
@@ -766,6 +766,34 @@ int main()
                 infoText.setPosition(windowSize.x * 0.01f, windowSize.y * 0.5f);
                 infoText.setFillColor(sf::Color::Yellow);
                 window.draw(infoText);
+
+                // Display party status
+                std::string partyStatus = "Party Status:\n";
+                const auto &party = campaign.getPlayerParty();
+                for (Player *player : party)
+                {
+                    if (player)
+                    {
+                        partyStatus += player->getName() + " (Lv." + std::to_string(player->getLevel()) + ") - " +
+                                       std::to_string(player->getReceivedExperience()) + "/" +
+                                       std::to_string(player->getRequiredExperience()) + " EXP\n";
+                    }
+                }
+                sf::Text partyText(partyStatus, font, static_cast<unsigned int>(14 * (windowSize.y / 768.0f)));
+                partyText.setPosition(windowSize.x * 0.01f, windowSize.y * 0.55f);
+                partyText.setFillColor(sf::Color::Cyan);
+                window.draw(partyText);
+
+                // Display pending experience message if any
+                if (!pendingExpMessage.empty())
+                {
+                    sf::Text expText(pendingExpMessage, font, static_cast<unsigned int>(20 * (windowSize.y / 768.0f)));
+                    expText.setPosition(windowSize.x * 0.3f, windowSize.y * 0.7f);
+                    expText.setFillColor(sf::Color::Yellow);
+                    window.draw(expText);
+                    // Clear message after displaying
+                    pendingExpMessage.clear();
+                }
 
                 // Inventory button in corner
                 sf::RectangleShape invButton(sf::Vector2f(windowSize.x * 0.1f, windowSize.y * 0.04f));

@@ -19,7 +19,8 @@ CampaignSystem::~CampaignSystem()
 {
     cout << "[DEBUG] CampaignSystem destructor called\n";
     cleanupParty();
-    if (pendingTreasure) {
+    if (pendingTreasure)
+    {
         delete pendingTreasure;
         pendingTreasure = nullptr;
     }
@@ -266,6 +267,13 @@ void CampaignSystem::handleBattleEvent(const CampaignEvent &event)
     {
         Enemy *enemy = EnemyFactory::createRandomEnemy(currentLocation.type, event.difficultyModifier);
         enemies.push_back(enemy);
+    }
+
+    // Calculate total experience
+    pendingExperience = 0;
+    for (Entity *enemy : enemies)
+    {
+        pendingExperience += static_cast<Enemy *>(enemy)->getExperienceValue();
     }
 
     // Convert Player* to Entity*

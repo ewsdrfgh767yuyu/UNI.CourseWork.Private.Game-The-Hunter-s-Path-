@@ -40,7 +40,7 @@ struct Location
     std::string name;
     std::string description;
     std::vector<LocationType> connections; // Connected locations
-    std::vector<CampaignEvent> events;             // Events in location
+    std::vector<CampaignEvent> events;     // Events in location
     bool isFinalBossLocation = false;      // Final boss flag
 };
 
@@ -56,10 +56,11 @@ private:
     bool gameCompleted = false;                 // Game completion flag
     std::map<Position, bool> visitedNodes;      // Visited nodes on map
     std::vector<Item> partyInventory;           // Shared party inventory
-    Item *pendingTreasure = nullptr;             // Pending treasure for GUI
+    Item *pendingTreasure = nullptr;            // Pending treasure for GUI
     CampaignEvent pendingEvent;                 // Pending event for GUI
     CampaignEvent pendingExit;                  // Pending exit for GUI
     bool pendingBattle = false;                 // Pending battle for GUI
+    int pendingExperience = 0;                  // Pending experience for GUI
     BattleSystem *currentBattle = nullptr;      // Current battle system for GUI
 
     // Helper methods
@@ -113,12 +114,34 @@ public:
     Item *getPendingTreasure() { return pendingTreasure; }
     const CampaignEvent &getPendingEvent() const { return pendingEvent; }
     const CampaignEvent &getPendingExit() const { return pendingExit; }
-    void clearPendingTreasure() { delete pendingTreasure; pendingTreasure = nullptr; }
-    void takePendingTreasure() { if (pendingTreasure) { partyInventory.push_back(*pendingTreasure); } clearPendingTreasure(); }
+    void clearPendingTreasure()
+    {
+        delete pendingTreasure;
+        pendingTreasure = nullptr;
+    }
+    void takePendingTreasure()
+    {
+        if (pendingTreasure)
+        {
+            partyInventory.push_back(*pendingTreasure);
+        }
+        clearPendingTreasure();
+    }
     void clearPendingEvent() { pendingEvent = CampaignEvent(); }
     void clearPendingExit() { pendingExit = CampaignEvent(); }
-    void clearPendingBattle() { pendingBattle = false; if (currentBattle) { delete currentBattle; currentBattle = nullptr; } }
+    void clearPendingBattle()
+    {
+        pendingBattle = false;
+        if (currentBattle)
+        {
+            delete currentBattle;
+            currentBattle = nullptr;
+        }
+    }
     void handleEventChoice(int choiceIndex);
     void handleExitChoice(int choiceIndex);
     BattleSystem *getCurrentBattle() { return currentBattle; }
+    int getPendingExperience() const { return pendingExperience; }
+    void setPendingExperience(int exp) { pendingExperience = exp; }
+    void clearPendingExperience() { pendingExperience = 0; }
 };

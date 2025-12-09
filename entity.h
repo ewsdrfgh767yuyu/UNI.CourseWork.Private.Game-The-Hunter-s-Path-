@@ -84,7 +84,7 @@ struct Effect
 	int duration; // в ходах
 	std::string name;
 
-	Effect(EffectType t, int v, int d, const std::string& n)
+	Effect(EffectType t, int v, int d, const std::string &n)
 		: type(t), value(v), duration(d), name(n) {}
 };
 
@@ -230,7 +230,7 @@ protected:
 	int m_current_stamina;
 	int m_initiative;
 	int m_attack_range;
-	double m_damage_variance; // Разброс урона (0.0 - без разброса, 1.0 - полный разброс)
+	double m_damage_variance;		// Разброс урона (0.0 - без разброса, 1.0 - полный разброс)
 	vector<Effect> m_activeEffects; // Активные эффекты
 
 public:
@@ -371,7 +371,7 @@ public:
 	}
 
 	// Методы эффектов
-	void addEffect(const Effect& effect)
+	void addEffect(const Effect &effect)
 	{
 		m_activeEffects.push_back(effect);
 		applyEffect(effect); // Применить эффект сразу
@@ -388,7 +388,7 @@ public:
 	void updateEffects()
 	{
 		// Применить эффекты в начале хода и уменьшить длительность
-		for (auto it = m_activeEffects.begin(); it != m_activeEffects.end(); )
+		for (auto it = m_activeEffects.begin(); it != m_activeEffects.end();)
 		{
 			applyEffect(*it);
 			it->duration--;
@@ -406,7 +406,7 @@ public:
 		}
 	}
 
-	void applyEffect(const Effect& effect)
+	void applyEffect(const Effect &effect)
 	{
 		switch (effect.type)
 		{
@@ -441,7 +441,7 @@ public:
 		}
 	}
 
-	void removeEffectStats(const Effect& effect)
+	void removeEffectStats(const Effect &effect)
 	{
 		switch (effect.type)
 		{
@@ -472,7 +472,7 @@ public:
 		}
 	}
 
-	const vector<Effect>& getActiveEffects() const { return m_activeEffects; }
+	const vector<Effect> &getActiveEffects() const { return m_activeEffects; }
 
 	// Методы действий
 	int attack(int recipient_protection)
@@ -532,44 +532,46 @@ public:
 
 	void spendStamina()
 	{
-	    if (m_current_stamina > 0)
-	    {
-	        m_current_stamina--;
-	    }
-	    else
-	    {
-	        throw invalid_argument("Negative stamina");
-	    }
+		if (m_current_stamina > 0)
+		{
+			m_current_stamina--;
+		}
+		else
+		{
+			throw invalid_argument("Negative stamina");
+		}
 	}
 
 	// Прогрессбар здоровья
 	string getHealthBarString() const
 	{
-	    int barWidth = 20;
-	    int filled = 0;
-	    if (m_max_healthpoint > 0)
-	    {
-	        filled = (m_current_healthpoint * barWidth) / m_max_healthpoint;
-	    }
-	    if (filled < 0) filled = 0;
-	    if (filled > barWidth) filled = barWidth;
+		int barWidth = 20;
+		int filled = 0;
+		if (m_max_healthpoint > 0)
+		{
+			filled = (m_current_healthpoint * barWidth) / m_max_healthpoint;
+		}
+		if (filled < 0)
+			filled = 0;
+		if (filled > barWidth)
+			filled = barWidth;
 
-	    string bar = "[";
-	    for (int i = 0; i < filled; ++i)
-	    {
-	        bar += "#";
-	    }
-	    for (int i = filled; i < barWidth; ++i)
-	    {
-	        bar += ".";
-	    }
-	    bar += "] " + to_string(m_current_healthpoint) + "/" + to_string(m_max_healthpoint) + " HP";
-	    return bar;
+		string bar = "[";
+		for (int i = 0; i < filled; ++i)
+		{
+			bar += "#";
+		}
+		for (int i = filled; i < barWidth; ++i)
+		{
+			bar += ".";
+		}
+		bar += "] " + to_string(m_current_healthpoint) + "/" + to_string(m_max_healthpoint) + " HP";
+		return bar;
 	}
 
 	void displayHealthBar() const
 	{
-	    cout << getHealthBarString() << "\n";
+		cout << getHealthBarString() << "\n";
 	}
 };
 
@@ -598,7 +600,7 @@ private:
 
 	void increaseRequiredExperience()
 	{
-		int required_experience = static_cast<int>(250 * pow((m_level + 1), 1.8));
+		int required_experience = 250;
 		m_required_experience = required_experience;
 	}
 
@@ -660,6 +662,9 @@ public:
 			{EquipmentSlot::NECK, Item("None", "No item", ItemType::ACCESSORY, EquipmentSlot::NECK, {})},
 			{EquipmentSlot::RING1, Item("None", "No item", ItemType::ACCESSORY, EquipmentSlot::RING1, {})},
 			{EquipmentSlot::RING2, Item("None", "No item", ItemType::ACCESSORY, EquipmentSlot::RING2, {})}};
+
+		// Calculate required experience for current level
+		increaseRequiredExperience();
 	}
 
 	// Геттеры
@@ -810,63 +815,65 @@ public:
 
 	void useConsumable(int inventoryIndex)
 	{
-	    if (inventoryIndex < 0 || inventoryIndex >= m_inventory.size())
-	    {
-	        throw out_of_range("Invalid inventory index");
-	    }
+		if (inventoryIndex < 0 || inventoryIndex >= m_inventory.size())
+		{
+			throw out_of_range("Invalid inventory index");
+		}
 
-	    Item item = m_inventory[inventoryIndex];
-	    if (item.getType() != ItemType::CONSUMABLE)
-	    {
-	        cout << "This item is not consumable.\n";
-	        return;
-	    }
+		Item item = m_inventory[inventoryIndex];
+		if (item.getType() != ItemType::CONSUMABLE)
+		{
+			cout << "This item is not consumable.\n";
+			return;
+		}
 
-	    int healthRestore = item.getStat("health_restore");
-	    if (healthRestore > 0)
-	    {
-	        heal(healthRestore);
-	    }
+		int healthRestore = item.getStat("health_restore");
+		if (healthRestore > 0)
+		{
+			heal(healthRestore);
+		}
 
-	    int staminaRestore = item.getStat("stamina_restore");
-	    if (staminaRestore > 0)
-	    {
-	        setCurrentStamina(min(getMaxStamina(), getCurrentStamina() + staminaRestore));
-	    }
+		int staminaRestore = item.getStat("stamina_restore");
+		if (staminaRestore > 0)
+		{
+			setCurrentStamina(min(getMaxStamina(), getCurrentStamina() + staminaRestore));
+		}
 
-	    m_inventory.erase(m_inventory.begin() + inventoryIndex);
+		m_inventory.erase(m_inventory.begin() + inventoryIndex);
 
-	    cout << "Used: " << item.getName() << "\n";
+		cout << "Used: " << item.getName() << "\n";
 	}
 
 	// Прогрессбар опыта
 	string getExperienceBarString() const
 	{
-	    int barWidth = 20;
-	    int filled = 0;
-	    if (m_required_experience > 0)
-	    {
-	        filled = (m_received_experience * barWidth) / m_required_experience;
-	    }
-	    if (filled < 0) filled = 0;
-	    if (filled > barWidth) filled = barWidth;
+		int barWidth = 20;
+		int filled = 0;
+		if (m_required_experience > 0)
+		{
+			filled = (m_received_experience * barWidth) / m_required_experience;
+		}
+		if (filled < 0)
+			filled = 0;
+		if (filled > barWidth)
+			filled = barWidth;
 
-	    string bar = "[";
-	    for (int i = 0; i < filled; ++i)
-	    {
-	        bar += "*";
-	    }
-	    for (int i = filled; i < barWidth; ++i)
-	    {
-	        bar += ".";
-	    }
-	    bar += "] " + to_string(m_received_experience) + "/" + to_string(m_required_experience) + " EXP (Lv." + to_string(m_level) + ")";
-	    return bar;
+		string bar = "[";
+		for (int i = 0; i < filled; ++i)
+		{
+			bar += "*";
+		}
+		for (int i = filled; i < barWidth; ++i)
+		{
+			bar += ".";
+		}
+		bar += "] " + to_string(m_received_experience) + "/" + to_string(m_required_experience) + " EXP (Lv." + to_string(m_level) + ")";
+		return bar;
 	}
 
 	void displayExperienceBar() const
 	{
-	    cout << getExperienceBarString() << "\n";
+		cout << getExperienceBarString() << "\n";
 	}
 
 	void upLevel()
