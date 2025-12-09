@@ -635,6 +635,7 @@ private:
 		std::cout << "[DEBUG] Player " << m_name << " stats recalculated\n";
 	}
 
+public:
 	static map<EquipmentSlot, string> slotNames;
 
 public:
@@ -680,6 +681,32 @@ public:
 		auto it = m_ability_levels.find(ability);
 		return it != m_ability_levels.end() ? it->second : 0;
 	}
+
+	// Base stats getters
+	int getBaseMaxHP() const { return m_base_max_hp; }
+	int getBaseDamage() const { return m_base_damage; }
+	int getBaseDefense() const { return m_base_defense; }
+	int getBaseAttack() const { return m_base_attack; }
+	int getBaseMaxStamina() const { return m_base_max_stamina; }
+	int getBaseInitiative() const { return m_base_initiative; }
+
+	// Equipment bonuses
+	std::map<std::string, int> getEquipmentBonuses() const
+	{
+		std::map<std::string, int> bonuses;
+		for (const auto &item : m_equipment)
+		{
+			bonuses["health"] += item.second.getStat("health");
+			bonuses["damage"] += item.second.getStat("damage");
+			bonuses["defense"] += item.second.getStat("defense");
+			bonuses["attack"] += item.second.getStat("attack");
+			bonuses["stamina"] += item.second.getStat("stamina");
+			bonuses["initiative"] += item.second.getStat("initiative");
+		}
+		return bonuses;
+	}
+
+	const std::map<EquipmentSlot, Item> &getEquipment() const { return m_equipment; }
 
 	// Сеттеры
 	void setLevel(int level)

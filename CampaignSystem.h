@@ -97,6 +97,7 @@ public:
     // Methods for getting information
     const std::vector<Player *> &getPlayerParty() const { return playerParty; }
     const std::vector<Item> &getPartyInventory() const { return partyInventory; }
+    std::vector<Item> &getPartyInventoryMutable() { return partyInventory; }
     const Location &getCurrentLocation() const { return currentLocation; }
     const Location &getLocation(LocationType type) const { return locations.at(type); }
     int getCurrentDifficulty() const { return currentDifficulty; }

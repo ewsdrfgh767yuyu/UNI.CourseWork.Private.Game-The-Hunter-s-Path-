@@ -69,6 +69,7 @@ int main()
     int selectedTargetIndex = -1;
     int selectedPosition = -1;
     std::string pendingExpMessage;
+    int selectedHeroIndex = -1;
 
     // Main menu
     Menu mainMenu(window, font);
@@ -241,6 +242,7 @@ int main()
                     if (invButtonRect.contains(static_cast<sf::Vector2f>(mousePos)))
                     {
                         currentState = GameState::INVENTORY;
+                        selectedHeroIndex = -1;
                     }
                 }
                 break;
@@ -560,6 +562,8 @@ int main()
                                 }
                                 battleMenu.addButton("Back", sf::Vector2f(windowSize.x * 0.05f, yPos), sf::Vector2f(windowSize.x * 0.1f, windowSize.y * 0.04f), [&]()
                                                      { battleState = BattleState::MAIN_MENU; });
+                                battleMenu.setScrollable(true, windowSize.y * 0.5f);
+                                battleMenu.setScrollable(true, windowSize.y * 0.5f);
                             }
                             else if (battleState == BattleState::SELECT_ABILITY)
                             {
@@ -633,6 +637,7 @@ int main()
                                 }
                                 battleMenu.addButton("Back", sf::Vector2f(windowSize.x * 0.05f, yPos), sf::Vector2f(windowSize.x * 0.1f, windowSize.y * 0.04f), [&]()
                                                      { battleState = BattleState::CONFIRM_ABILITY; });
+                                battleMenu.setScrollable(true, windowSize.y * 0.5f);
                             }
                             else if (battleState == BattleState::SELECT_POSITION_MOVE)
                             {
@@ -688,19 +693,104 @@ int main()
             inventoryMenu.clear();
             inventoryTexts.clear();
 
-            inventoryTexts.emplace_back("Party Inventory", font, static_cast<unsigned int>(30 * (windowSize.y / 768.0f)), sf::Vector2f(windowSize.x * 0.25f, windowSize.y * 0.05f), sf::Color::Yellow);
-
-            const auto &partyInv = campaign.getPartyInventory();
-            float yPos = windowSize.y * 0.1f;
-            for (size_t i = 0; i < partyInv.size(); ++i)
+            if (selectedHeroIndex == -1)
             {
-                inventoryTexts.emplace_back(std::to_string(i + 1) + ". " + partyInv[i].getName(), font, static_cast<unsigned int>(20 * (windowSize.y / 768.0f)), sf::Vector2f(windowSize.x * 0.05f, yPos), sf::Color::White);
-                yPos += windowSize.y * 0.025f;
+                // Show hero selection
+                inventoryTexts.emplace_back("Select Hero", font, static_cast<unsigned int>(30 * (windowSize.y / 768.0f)), sf::Vector2f(windowSize.x * 0.25f, windowSize.y * 0.05f), sf::Color::Yellow);
+                const auto &party = campaign.getPlayerParty();
+                float yPos = windowSize.y * 0.1f;
+                for (size_t i = 0; i < party.size(); ++i)
+                {
+                    inventoryMenu.addButton(party[i]->getName(), sf::Vector2f(windowSize.x * 0.1f, yPos), sf::Vector2f(windowSize.x * 0.3f, windowSize.y * 0.05f), [&, i]()
+                                            { selectedHeroIndex = i; });
+                    yPos += windowSize.y * 0.06f;
+                }
+                inventoryMenu.addButton("Back", sf::Vector2f(windowSize.x * 0.35f, windowSize.y * 0.5f), sf::Vector2f(windowSize.x * 0.1f, windowSize.y * 0.05f), [&]()
+                                        { currentState = GameState::MAP_MODE; });
             }
+            else
+            {
+                // Show hero details
+                Player *hero = campaign.getPlayerParty()[selectedHeroIndex];
+                inventoryTexts.emplace_back("Hero: " + hero->getName(), font, static_cast<unsigned int>(30 * (windowSize.y / 768.0f)), sf::Vector2f(windowSize.x * 0.05f, windowSize.y * 0.05f), sf::Color::Yellow);
 
-            // Close button
-            inventoryMenu.addButton("Close", sf::Vector2f(windowSize.x * 0.35f, windowSize.y * 0.5f), sf::Vector2f(windowSize.x * 0.1f, windowSize.y * 0.05f), [&]()
-                                    { currentState = GameState::MAP_MODE; });
+                // Stats
+                auto bonuses = hero->getEquipmentBonuses();
+                float yPos = windowSize.y * 0.1f;
+                inventoryTexts.emplace_back("Stats:", font, static_cast<unsigned int>(24 * (windowSize.y / 768.0f)), sf::Vector2f(windowSize.x * 0.05f, yPos), sf::Color::Cyan);
+                yPos += windowSize.y * 0.03f;
+                inventoryTexts.emplace_back("HP: " + std::to_string(hero->getBaseMaxHP()) + " + " + std::to_string(bonuses["health"]) + " = " + std::to_string(hero->getMaxHealthPoint()), font, static_cast<unsigned int>(18 * (windowSize.y / 768.0f)), sf::Vector2f(windowSize.x * 0.05f, yPos), sf::Color::White);
+                yPos += windowSize.y * 0.025f;
+                inventoryTexts.emplace_back("Damage: " + std::to_string(hero->getBaseDamage()) + " + " + std::to_string(bonuses["damage"]) + " = " + std::to_string(hero->getDamage()), font, static_cast<unsigned int>(18 * (windowSize.y / 768.0f)), sf::Vector2f(windowSize.x * 0.05f, yPos), sf::Color::White);
+                yPos += windowSize.y * 0.025f;
+                inventoryTexts.emplace_back("Defense: " + std::to_string(hero->getBaseDefense()) + " + " + std::to_string(bonuses["defense"]) + " = " + std::to_string(hero->getDefense()), font, static_cast<unsigned int>(18 * (windowSize.y / 768.0f)), sf::Vector2f(windowSize.x * 0.05f, yPos), sf::Color::White);
+                yPos += windowSize.y * 0.025f;
+                inventoryTexts.emplace_back("Attack: " + std::to_string(hero->getBaseAttack()) + " + " + std::to_string(bonuses["attack"]) + " = " + std::to_string(hero->getAttack()), font, static_cast<unsigned int>(18 * (windowSize.y / 768.0f)), sf::Vector2f(windowSize.x * 0.05f, yPos), sf::Color::White);
+                yPos += windowSize.y * 0.025f;
+                inventoryTexts.emplace_back("Stamina: " + std::to_string(hero->getBaseMaxStamina()) + " + " + std::to_string(bonuses["stamina"]) + " = " + std::to_string(hero->getMaxStamina()), font, static_cast<unsigned int>(18 * (windowSize.y / 768.0f)), sf::Vector2f(windowSize.x * 0.05f, yPos), sf::Color::White);
+                yPos += windowSize.y * 0.025f;
+                inventoryTexts.emplace_back("Initiative: " + std::to_string(hero->getBaseInitiative()) + " + " + std::to_string(bonuses["initiative"]) + " = " + std::to_string(hero->getInitiative()), font, static_cast<unsigned int>(18 * (windowSize.y / 768.0f)), sf::Vector2f(windowSize.x * 0.05f, yPos), sf::Color::White);
+                yPos += windowSize.y * 0.04f;
+
+                // Equipment
+                inventoryTexts.emplace_back("Equipment:", font, static_cast<unsigned int>(24 * (windowSize.y / 768.0f)), sf::Vector2f(windowSize.x * 0.05f, yPos), sf::Color::Cyan);
+                yPos += windowSize.y * 0.03f;
+                const auto &equipment = hero->getEquipment();
+                for (const auto &slot : equipment)
+                {
+                    std::string slotName = Player::slotNames.at(slot.first);
+                    std::string itemName = slot.second.getName();
+                    inventoryTexts.emplace_back(slotName + ": " + itemName, font, static_cast<unsigned int>(18 * (windowSize.y / 768.0f)), sf::Vector2f(windowSize.x * 0.05f, yPos), sf::Color::White);
+                    // Add unequip button if not None
+                    if (itemName != "None")
+                    {
+                        inventoryMenu.addButton("Unequip", sf::Vector2f(windowSize.x * 0.4f, yPos), sf::Vector2f(windowSize.x * 0.1f, windowSize.y * 0.03f), [&, slot]()
+                                                { hero->unequipItem(slot.first); });
+                    }
+                    yPos += windowSize.y * 0.025f;
+                }
+                yPos += windowSize.y * 0.04f;
+
+                // Inventory
+                inventoryTexts.emplace_back("Inventory:", font, static_cast<unsigned int>(24 * (windowSize.y / 768.0f)), sf::Vector2f(windowSize.x * 0.05f, yPos), sf::Color::Cyan);
+                yPos += windowSize.y * 0.03f;
+                const auto &inv = hero->getInventory();
+                for (size_t i = 0; i < inv.size(); ++i)
+                {
+                    inventoryTexts.emplace_back(std::to_string(i + 1) + ". " + inv[i].getName(), font, static_cast<unsigned int>(18 * (windowSize.y / 768.0f)), sf::Vector2f(windowSize.x * 0.05f, yPos), sf::Color::White);
+                    // Add equip button if equippable
+                    if (inv[i].getSlot() != EquipmentSlot::NONE)
+                    {
+                        inventoryMenu.addButton("Equip", sf::Vector2f(windowSize.x * 0.4f, yPos), sf::Vector2f(windowSize.x * 0.08f, windowSize.y * 0.03f), [&, i]()
+                                                { hero->equipItem(i); });
+                    }
+                    // Add use button if consumable
+                    if (inv[i].getType() == ItemType::CONSUMABLE)
+                    {
+                        inventoryMenu.addButton("Use", sf::Vector2f(windowSize.x * 0.5f, yPos), sf::Vector2f(windowSize.x * 0.08f, windowSize.y * 0.03f), [&, i]()
+                                                { hero->useConsumable(i); });
+                    }
+                    yPos += windowSize.y * 0.025f;
+                }
+                yPos += windowSize.y * 0.04f;
+
+                // Party inventory
+                inventoryTexts.emplace_back("Party Inventory:", font, static_cast<unsigned int>(24 * (windowSize.y / 768.0f)), sf::Vector2f(windowSize.x * 0.05f, yPos), sf::Color::Cyan);
+                yPos += windowSize.y * 0.03f;
+                const auto &partyInv = campaign.getPartyInventory();
+                for (size_t i = 0; i < partyInv.size(); ++i)
+                {
+                    inventoryTexts.emplace_back(std::to_string(i + 1) + ". " + partyInv[i].getName(), font, static_cast<unsigned int>(18 * (windowSize.y / 768.0f)), sf::Vector2f(windowSize.x * 0.05f, yPos), sf::Color::White);
+                    inventoryMenu.addButton("Take", sf::Vector2f(windowSize.x * 0.4f, yPos), sf::Vector2f(windowSize.x * 0.08f, windowSize.y * 0.03f), [&, i]()
+                                            { hero->addItem(partyInv[i]); campaign.getPartyInventoryMutable().erase(campaign.getPartyInventoryMutable().begin() + i); });
+                    yPos += windowSize.y * 0.025f;
+                }
+
+                // Back button
+                inventoryMenu.addButton("Back to Heroes", sf::Vector2f(windowSize.x * 0.35f, windowSize.y * 0.9f), sf::Vector2f(windowSize.x * 0.15f, windowSize.y * 0.05f), [&]()
+                                        { selectedHeroIndex = -1; });
+                inventoryMenu.setScrollable(true, windowSize.y * 0.9f);
+            }
         }
 
         switch (currentState)
