@@ -730,6 +730,7 @@ int main()
             currentState = GameState::MAP_MODE;
             break;
         case GameState::MAP_MODE:
+        {
             // Display map
             std::string mapStr = campaign.getGameMap().getMapString();
             sf::Text mapText(mapStr, font, static_cast<unsigned int>(14 * (windowSize.y / 768.0f)));
@@ -783,6 +784,7 @@ int main()
             invText.setFillColor(sf::Color::White);
             window.draw(invText);
             break;
+        }
         case GameState::TREASURE:
             for (auto &text : treasureTexts)
             {
