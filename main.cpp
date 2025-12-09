@@ -24,7 +24,8 @@ enum class GameState
     EVENT,
     EXIT,
     BATTLE,
-    INVENTORY
+    INVENTORY,
+    VICTORY
 };
 
 enum class BattleState
@@ -258,6 +259,18 @@ int main()
             case GameState::INVENTORY:
                 inventoryMenu.handleEvent(event);
                 break;
+            case GameState::VICTORY:
+                // Handle exit button click
+                if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
+                {
+                    sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+                    sf::FloatRect exitRect(windowSize.x * 0.35f, windowSize.y * 0.4f, windowSize.x * 0.1f, windowSize.y * 0.05f);
+                    if (exitRect.contains(static_cast<sf::Vector2f>(mousePos)))
+                    {
+                        window.close();
+                    }
+                }
+                break;
             }
         }
 
@@ -454,10 +467,12 @@ int main()
                              // Check if this was the final boss battle
                              if (campaign.getCurrentLocation().isFinalBossLocation) {
                                  campaign.setGameCompleted(true);
+                                 currentState = GameState::VICTORY;
+                             } else {
+                                 currentState = GameState::MAP_MODE;
                              }
                              campaign.clearPendingBattle();
                              campaign.clearPendingExperience();
-                             currentState = GameState::MAP_MODE;
                              battleState = BattleState::MAIN_MENU; });
                     }
                     else
@@ -715,97 +730,58 @@ int main()
             currentState = GameState::MAP_MODE;
             break;
         case GameState::MAP_MODE:
-            // Check if game is completed
-            if (campaign.isGameCompleted())
+            // Display map
+            std::string mapStr = campaign.getGameMap().getMapString();
+            sf::Text mapText(mapStr, font, static_cast<unsigned int>(14 * (windowSize.y / 768.0f)));
+            mapText.setPosition(windowSize.x * 0.01f, windowSize.y * 0.01f);
+            mapText.setFillColor(sf::Color::White);
+            window.draw(mapText);
+
+            // Display location info
+            std::string locationInfo = "Location: " + campaign.getCurrentLocation().name + "\nDifficulty: " + std::to_string(campaign.getCurrentDifficulty());
+            sf::Text infoText(locationInfo, font, static_cast<unsigned int>(16 * (windowSize.y / 768.0f)));
+            infoText.setPosition(windowSize.x * 0.01f, windowSize.y * 0.5f);
+            infoText.setFillColor(sf::Color::Yellow);
+            window.draw(infoText);
+
+            // Display party status
+            std::string partyStatus = "Party Status:\n";
+            const auto &party = campaign.getPlayerParty();
+            for (Player *player : party)
             {
-                // Victory screen
-                sf::Text victoryTitle("VICTORY!", font, static_cast<unsigned int>(56 * (windowSize.y / 768.0f)));
-                victoryTitle.setPosition(windowSize.x * 0.25f, windowSize.y * 0.2f);
-                victoryTitle.setFillColor(sf::Color::Green);
-                window.draw(victoryTitle);
-
-                sf::Text victoryText("You have defeated the Lord of Darkness and saved the world!", font, static_cast<unsigned int>(24 * (windowSize.y / 768.0f)));
-                victoryText.setPosition(windowSize.x * 0.15f, windowSize.y * 0.3f);
-                victoryText.setFillColor(sf::Color::White);
-                window.draw(victoryText);
-
-                // Exit button
-                sf::RectangleShape exitButton(sf::Vector2f(windowSize.x * 0.1f, windowSize.y * 0.05f));
-                exitButton.setPosition(windowSize.x * 0.35f, windowSize.y * 0.4f);
-                exitButton.setFillColor(sf::Color::Red);
-                window.draw(exitButton);
-
-                sf::Text exitText("Exit", font, static_cast<unsigned int>(20 * (windowSize.y / 768.0f)));
-                exitText.setPosition(windowSize.x * 0.375f, windowSize.y * 0.41f);
-                exitText.setFillColor(sf::Color::White);
-                window.draw(exitText);
-
-                // Handle exit button click
-                if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
+                if (player)
                 {
-                    sf::Vector2i mousePos = sf::Mouse::getPosition(window);
-                    sf::FloatRect exitRect(windowSize.x * 0.35f, windowSize.y * 0.4f, windowSize.x * 0.1f, windowSize.y * 0.05f);
-                    if (exitRect.contains(static_cast<sf::Vector2f>(mousePos)))
-                    {
-                        window.close();
-                    }
+                    partyStatus += player->getName() + " (Lv." + std::to_string(player->getLevel()) + ") - " +
+                                   std::to_string(player->getReceivedExperience()) + "/" +
+                                   std::to_string(player->getRequiredExperience()) + " EXP\n";
                 }
             }
-            else
+            sf::Text partyText(partyStatus, font, static_cast<unsigned int>(14 * (windowSize.y / 768.0f)));
+            partyText.setPosition(windowSize.x * 0.01f, windowSize.y * 0.55f);
+            partyText.setFillColor(sf::Color::Cyan);
+            window.draw(partyText);
+
+            // Display pending experience message if any
+            if (!pendingExpMessage.empty())
             {
-                // Display map
-                std::string mapStr = campaign.getGameMap().getMapString();
-                sf::Text mapText(mapStr, font, static_cast<unsigned int>(14 * (windowSize.y / 768.0f)));
-                mapText.setPosition(windowSize.x * 0.01f, windowSize.y * 0.01f);
-                mapText.setFillColor(sf::Color::White);
-                window.draw(mapText);
-
-                // Display location info
-                std::string locationInfo = "Location: " + campaign.getCurrentLocation().name + "\nDifficulty: " + std::to_string(campaign.getCurrentDifficulty());
-                sf::Text infoText(locationInfo, font, static_cast<unsigned int>(16 * (windowSize.y / 768.0f)));
-                infoText.setPosition(windowSize.x * 0.01f, windowSize.y * 0.5f);
-                infoText.setFillColor(sf::Color::Yellow);
-                window.draw(infoText);
-
-                // Display party status
-                std::string partyStatus = "Party Status:\n";
-                const auto &party = campaign.getPlayerParty();
-                for (Player *player : party)
-                {
-                    if (player)
-                    {
-                        partyStatus += player->getName() + " (Lv." + std::to_string(player->getLevel()) + ") - " +
-                                       std::to_string(player->getReceivedExperience()) + "/" +
-                                       std::to_string(player->getRequiredExperience()) + " EXP\n";
-                    }
-                }
-                sf::Text partyText(partyStatus, font, static_cast<unsigned int>(14 * (windowSize.y / 768.0f)));
-                partyText.setPosition(windowSize.x * 0.01f, windowSize.y * 0.55f);
-                partyText.setFillColor(sf::Color::Cyan);
-                window.draw(partyText);
-
-                // Display pending experience message if any
-                if (!pendingExpMessage.empty())
-                {
-                    sf::Text expText(pendingExpMessage, font, static_cast<unsigned int>(20 * (windowSize.y / 768.0f)));
-                    expText.setPosition(windowSize.x * 0.3f, windowSize.y * 0.7f);
-                    expText.setFillColor(sf::Color::Yellow);
-                    window.draw(expText);
-                    // Clear message after displaying
-                    pendingExpMessage.clear();
-                }
-
-                // Inventory button in corner
-                sf::RectangleShape invButton(sf::Vector2f(windowSize.x * 0.1f, windowSize.y * 0.04f));
-                invButton.setPosition(windowSize.x * 0.7f, windowSize.y * 0.01f);
-                invButton.setFillColor(sf::Color::Blue);
-                window.draw(invButton);
-
-                sf::Text invText("Inventory", font, static_cast<unsigned int>(16 * (windowSize.y / 768.0f)));
-                invText.setPosition(windowSize.x * 0.71f, windowSize.y * 0.015f);
-                invText.setFillColor(sf::Color::White);
-                window.draw(invText);
+                sf::Text expText(pendingExpMessage, font, static_cast<unsigned int>(20 * (windowSize.y / 768.0f)));
+                expText.setPosition(windowSize.x * 0.3f, windowSize.y * 0.7f);
+                expText.setFillColor(sf::Color::Yellow);
+                window.draw(expText);
+                // Clear message after displaying
+                pendingExpMessage.clear();
             }
+
+            // Inventory button in corner
+            sf::RectangleShape invButton(sf::Vector2f(windowSize.x * 0.1f, windowSize.y * 0.04f));
+            invButton.setPosition(windowSize.x * 0.7f, windowSize.y * 0.01f);
+            invButton.setFillColor(sf::Color::Blue);
+            window.draw(invButton);
+
+            sf::Text invText("Inventory", font, static_cast<unsigned int>(16 * (windowSize.y / 768.0f)));
+            invText.setPosition(windowSize.x * 0.71f, windowSize.y * 0.015f);
+            invText.setFillColor(sf::Color::White);
+            window.draw(invText);
             break;
         case GameState::TREASURE:
             for (auto &text : treasureTexts)
@@ -841,6 +817,29 @@ int main()
                 text.draw(window);
             }
             inventoryMenu.draw();
+            break;
+        case GameState::VICTORY:
+            // Victory screen
+            sf::Text victoryTitle("VICTORY!", font, static_cast<unsigned int>(56 * (windowSize.y / 768.0f)));
+            victoryTitle.setPosition(windowSize.x * 0.25f, windowSize.y * 0.2f);
+            victoryTitle.setFillColor(sf::Color::Green);
+            window.draw(victoryTitle);
+
+            sf::Text victoryText("You have defeated the Lord of Darkness and saved the world!", font, static_cast<unsigned int>(24 * (windowSize.y / 768.0f)));
+            victoryText.setPosition(windowSize.x * 0.15f, windowSize.y * 0.3f);
+            victoryText.setFillColor(sf::Color::White);
+            window.draw(victoryText);
+
+            // Exit button
+            sf::RectangleShape exitButton(sf::Vector2f(windowSize.x * 0.1f, windowSize.y * 0.05f));
+            exitButton.setPosition(windowSize.x * 0.35f, windowSize.y * 0.4f);
+            exitButton.setFillColor(sf::Color::Red);
+            window.draw(exitButton);
+
+            sf::Text exitText("Exit", font, static_cast<unsigned int>(20 * (windowSize.y / 768.0f)));
+            exitText.setPosition(windowSize.x * 0.375f, windowSize.y * 0.41f);
+            exitText.setFillColor(sf::Color::White);
+            window.draw(exitText);
             break;
         }
 
