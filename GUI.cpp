@@ -5,7 +5,11 @@ Button::Button(const std::string &text, const sf::Font &font, unsigned int chara
 {
     shape.setPosition(position);
     shape.setFillColor(sf::Color::Blue);
-    this->text.setPosition(position.x + 10, position.y + 10);
+    // Центрируем текст в кнопке
+    sf::Vector2f center = position + size / 2.0f;
+    sf::FloatRect textBounds = this->text.getLocalBounds();
+    this->text.setOrigin(textBounds.left + textBounds.width / 2.0f, textBounds.top + textBounds.height / 2.0f);
+    this->text.setPosition(center);
     this->text.setFillColor(sf::Color::White);
 }
 
