@@ -38,7 +38,7 @@ struct AbilityInfo
     AbilityType type = AbilityType::NONE;
     std::string name = "";
     std::string description = "";
-    int maxLevel = 0;
+    int staminaCost = 0;
     std::string effect = "";
     bool isAreaEffect = false;
 };

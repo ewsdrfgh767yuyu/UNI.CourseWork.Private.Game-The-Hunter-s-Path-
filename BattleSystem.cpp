@@ -1091,8 +1091,16 @@ bool BattleSystem::useAbility(Entity *user, AbilityType ability)
         return false;
     if (user->getCurrentHealthPoint() <= 0)
         return false;
-    if (user->getCurrentStamina() <= 0)
+
+    // Get ability info
+    const AbilityInfo &info = HeroFactory::getAbilityInfo(ability);
+
+    // Check stamina
+    if (user->getCurrentStamina() < info.staminaCost)
+    {
+        cout << "Недостаточно стамины для использования способности " << info.name << "! Требуется " << info.staminaCost << ", имеется " << user->getCurrentStamina() << ".\n";
         return false;
+    }
 
     // Check if ability is available for user
     bool isPlayer = false;
@@ -1487,7 +1495,7 @@ bool BattleSystem::useAbility(Entity *user, AbilityType ability)
     }
 
     // Трата стамины
-    user->spendStamina();
+    user->spendStamina(info.staminaCost);
 
     return true;
 }

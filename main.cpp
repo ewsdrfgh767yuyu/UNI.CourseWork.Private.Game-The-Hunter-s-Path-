@@ -337,7 +337,7 @@ int main()
                 for (AbilityType abilityType : tmpl.availableAbilities)
                 {
                     const AbilityInfo &ability = HeroFactory::getAbilityInfo(abilityType);
-                    characterConfirmationMenu.addText(sf::String(ability.name + ":"), static_cast<unsigned int>(16 * (windowSize.y / 768.0f)), sf::Vector2f(statXOffset, yPos), sf::Color::Yellow);
+                    characterConfirmationMenu.addText(sf::String(ability.name + " (" + std::to_string(ability.staminaCost) + "):"), static_cast<unsigned int>(16 * (windowSize.y / 768.0f)), sf::Vector2f(statXOffset, yPos), sf::Color::Yellow);
                     yPos += windowSize.y * 0.025f;
                     characterConfirmationMenu.addText(sf::String(ability.effect), static_cast<unsigned int>(12 * (windowSize.y / 768.0f)), sf::Vector2f(abilityXOffset, yPos), sf::Color::Green);
                     size_t lineCount = 1;
@@ -554,7 +554,7 @@ int main()
                                     for (size_t i = 0; i < targets.size(); ++i)
                                     {
                                         string targetText = to_string(i + 1) + ". " + targets[i].first->getName() + " (HP: " + to_string(targets[i].first->getCurrentHealthPoint()) + ")";
-                                        battleMenu.addButton(targetText, sf::Vector2f(windowSize.x * 0.05f, yPos), sf::Vector2f(windowSize.x * 0.35f, windowSize.y * 0.04f), [&, i, targets]()
+                                        battleMenu.addButton(targetText, sf::Vector2f((windowSize.x - windowSize.x * 0.35f) / 2, yPos), sf::Vector2f(windowSize.x * 0.35f, windowSize.y * 0.04f), [&, i, targets]()
                                                              {
                                             battle->attack(currentEntity, targets[i].first);
                                             battleState = BattleState::MAIN_MENU; });
@@ -566,7 +566,7 @@ int main()
                                     battleTexts.emplace_back("No targets available for attack!", font, static_cast<unsigned int>(20 * (windowSize.y / 768.0f)), sf::Vector2f(windowSize.x * 0.05f, yPos), sf::Color::Red);
                                     yPos += windowSize.y * 0.035f;
                                 }
-                                battleMenu.addButton("Back", sf::Vector2f(windowSize.x * 0.05f, yPos), sf::Vector2f(windowSize.x * 0.1f, windowSize.y * 0.04f), [&]()
+                                battleMenu.addButton("Back", sf::Vector2f((windowSize.x - windowSize.x * 0.1f) / 2, yPos), sf::Vector2f(windowSize.x * 0.1f, windowSize.y * 0.04f), [&]()
                                                      { battleState = BattleState::MAIN_MENU; });
                                 battleMenu.setScrollable(true, windowSize.y * 0.5f);
                                 battleMenu.setScrollable(true, windowSize.y * 0.5f);
@@ -583,8 +583,8 @@ int main()
                                     for (size_t i = 0; i < abilities.size(); ++i)
                                     {
                                         const AbilityInfo &info = HeroFactory::getAbilityInfo(abilities[i]);
-                                        string abilityText = to_string(i + 1) + ". " + info.name;
-                                        battleMenu.addButton(abilityText, sf::Vector2f(windowSize.x * 0.05f, yPos), sf::Vector2f(windowSize.x * 0.3f, windowSize.y * 0.04f), [&, i, abilities]()
+                                        string abilityText = to_string(i + 1) + ". " + info.name + " (" + to_string(info.staminaCost) + ")";
+                                        battleMenu.addButton(abilityText, sf::Vector2f((windowSize.x - windowSize.x * 0.3f) / 2, yPos), sf::Vector2f(windowSize.x * 0.3f, windowSize.y * 0.04f), [&, i, abilities]()
                                                              {
                                             selectedAbility = abilities[i];
                                             battleState = BattleState::CONFIRM_ABILITY; });
@@ -596,14 +596,14 @@ int main()
                                     battleTexts.emplace_back("No abilities available!", font, static_cast<unsigned int>(20 * (windowSize.y / 768.0f)), sf::Vector2f(windowSize.x * 0.05f, yPos), sf::Color::Red);
                                     yPos += windowSize.y * 0.035f;
                                 }
-                                battleMenu.addButton("Back", sf::Vector2f(windowSize.x * 0.05f, yPos), sf::Vector2f(windowSize.x * 0.1f, windowSize.y * 0.04f), [&]()
+                                battleMenu.addButton("Back", sf::Vector2f((windowSize.x - windowSize.x * 0.1f) / 2, yPos), sf::Vector2f(windowSize.x * 0.1f, windowSize.y * 0.04f), [&]()
                                                      { battleState = BattleState::MAIN_MENU; });
                             }
                             else if (battleState == BattleState::CONFIRM_ABILITY)
                             {
                                 // Show ability description and confirm
                                 const AbilityInfo &info = HeroFactory::getAbilityInfo(selectedAbility);
-                                battleTexts.emplace_back("Confirm Ability: " + info.name, font, static_cast<unsigned int>(22 * (windowSize.y / 768.0f)), sf::Vector2f(windowSize.x * 0.05f, yPos), sf::Color::Yellow);
+                                battleTexts.emplace_back("Confirm Ability: " + info.name + " (" + to_string(info.staminaCost) + ")", font, static_cast<unsigned int>(22 * (windowSize.y / 768.0f)), sf::Vector2f(windowSize.x * 0.05f, yPos), sf::Color::Yellow);
                                 yPos += windowSize.y * 0.035f;
                                 battleTexts.emplace_back("Description: " + info.description, font, static_cast<unsigned int>(18 * (windowSize.y / 768.0f)), sf::Vector2f(windowSize.x * 0.05f, yPos), sf::Color::White);
                                 yPos += windowSize.y * 0.025f;
@@ -637,7 +637,7 @@ int main()
                                     for (size_t i = 0; i < targets.size(); ++i)
                                     {
                                         string targetText = to_string(i + 1) + ". " + targets[i].first->getName();
-                                        battleMenu.addButton(targetText, sf::Vector2f(windowSize.x * 0.05f, yPos), sf::Vector2f(windowSize.x * 0.25f, windowSize.y * 0.04f), [&, i, targets]()
+                                        battleMenu.addButton(targetText, sf::Vector2f((windowSize.x - windowSize.x * 0.25f) / 2, yPos), sf::Vector2f(windowSize.x * 0.25f, windowSize.y * 0.04f), [&, i, targets]()
                                                              {
                                             battle->useAbility(currentEntity, selectedAbility);
                                             battleState = BattleState::MAIN_MENU; });
@@ -647,13 +647,13 @@ int main()
                                 else
                                 {
                                     // Use ability without target
-                                    battleMenu.addButton("Use Ability", sf::Vector2f(windowSize.x * 0.05f, yPos), sf::Vector2f(windowSize.x * 0.15f, windowSize.y * 0.04f), [&]()
+                                    battleMenu.addButton("Use Ability", sf::Vector2f((windowSize.x - windowSize.x * 0.15f) / 2, yPos), sf::Vector2f(windowSize.x * 0.15f, windowSize.y * 0.04f), [&]()
                                                          {
                                         battle->useAbility(currentEntity, selectedAbility);
                                         battleState = BattleState::MAIN_MENU; });
                                     yPos += windowSize.y * 0.045f;
                                 }
-                                battleMenu.addButton("Back", sf::Vector2f(windowSize.x * 0.05f, yPos), sf::Vector2f(windowSize.x * 0.1f, windowSize.y * 0.04f), [&]()
+                                battleMenu.addButton("Back", sf::Vector2f((windowSize.x - windowSize.x * 0.1f) / 2, yPos), sf::Vector2f(windowSize.x * 0.1f, windowSize.y * 0.04f), [&]()
                                                      { battleState = BattleState::CONFIRM_ABILITY; });
                                 battleMenu.setScrollable(true, windowSize.y * 0.5f);
                             }

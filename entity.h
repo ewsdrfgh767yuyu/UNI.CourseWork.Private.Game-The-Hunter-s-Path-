@@ -532,13 +532,18 @@ public:
 
 	void spendStamina()
 	{
-		if (m_current_stamina > 0)
+		spendStamina(1);
+	}
+
+	void spendStamina(int amount)
+	{
+		if (m_current_stamina >= amount)
 		{
-			m_current_stamina--;
+			m_current_stamina -= amount;
 		}
 		else
 		{
-			throw invalid_argument("Negative stamina");
+			throw invalid_argument("Not enough stamina");
 		}
 	}
 

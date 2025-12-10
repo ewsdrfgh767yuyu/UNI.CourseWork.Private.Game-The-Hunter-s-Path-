@@ -108,7 +108,7 @@ void HeroFactory::initializeAbilities()
 {
     abilityDatabase[AbilityType::CHARGE] = {
         AbilityType::CHARGE, "Charge", "Instant movement to target with powerful attack",
-        5, "Instantly moves to target and deals powerful strike.\nDamage increases by 50%, 30% chance to stun target (initiative -2) for 1 turn.", false};
+        2, "Instantly moves to target and deals powerful strike.\nDamage increases by 50%, 30% chance to stun target (initiative -2) for 1 turn.", false};
 
     abilityDatabase[AbilityType::SHIELD_WALL] = {
         AbilityType::SHIELD_WALL, "Shield Wall", "Creates a powerful barrier blocking damage",
@@ -140,7 +140,7 @@ void HeroFactory::initializeAbilities()
 
     abilityDatabase[AbilityType::SHADOW_STEP] = {
         AbilityType::SHADOW_STEP, "Shadow Step", "Teleports through shadows for surprise strike",
-        3, "Teleports through shadows for surprise strike.\nTeleport to target, damage x2 (ignores defense).", false};
+        2, "Teleports through shadows for surprise strike.\nTeleport to target, damage x2 (ignores defense).", false};
 
     abilityDatabase[AbilityType::POISON] = {
         AbilityType::POISON, "Poison", "Poisons target with damage over time",
