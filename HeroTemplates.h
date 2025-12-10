@@ -40,6 +40,7 @@ struct AbilityInfo
     std::string description = "";
     int maxLevel = 0;
     std::string effect = "";
+    bool isAreaEffect = false;
 };
 
 // Factory for creating heroes

@@ -614,7 +614,14 @@ int main()
                                 float buttonX = windowSize.x * 0.4f;
                                 float spacing = windowSize.y * 0.01f;
                                 battleMenu.addButton("Confirm", sf::Vector2f(buttonX, yPos), sf::Vector2f(buttonWidth, buttonHeight), [&]()
-                                                     { battleState = BattleState::SELECT_TARGET_ABILITY; });
+                                                     {
+                                                         const AbilityInfo &info = HeroFactory::getAbilityInfo(selectedAbility);
+                                                         if (info.isAreaEffect) {
+                                                             battle->useAbility(currentEntity, selectedAbility);
+                                                             battleState = BattleState::MAIN_MENU;
+                                                         } else {
+                                                             battleState = BattleState::SELECT_TARGET_ABILITY;
+                                                         } });
                                 yPos += buttonHeight + spacing;
                                 battleMenu.addButton("Back", sf::Vector2f(buttonX, yPos), sf::Vector2f(buttonWidth, buttonHeight), [&]()
                                                      { battleState = BattleState::SELECT_ABILITY; });
