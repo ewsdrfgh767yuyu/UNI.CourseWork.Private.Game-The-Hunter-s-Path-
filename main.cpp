@@ -492,7 +492,7 @@ int main()
                     // Display battlefield
                     battleTexts.emplace_back("BATTLE", font, static_cast<unsigned int>(30 * (windowSize.y / 768.0f)), sf::Vector2f(windowSize.x * 0.25f, windowSize.y * 0.02f), sf::Color::Yellow);
                     battleTexts.emplace_back(battle->getBattleStatus(), font, static_cast<unsigned int>(18 * (windowSize.y / 768.0f)), sf::Vector2f(windowSize.x * 0.05f, windowSize.y * 0.06f), sf::Color::White);
-                    float yPos = windowSize.y * 0.5f;
+                    float yPos = windowSize.y * 0.6f;
 
                     // Current turn entity
                     Entity *currentEntity = battle->getCurrentTurnEntity();
@@ -518,20 +518,26 @@ int main()
                             // Player turn - show action buttons
                             if (battleState == BattleState::MAIN_MENU)
                             {
-                                float buttonWidth = windowSize.x * 0.12f;
+                                float buttonWidth = windowSize.x * 0.2f;
                                 float buttonHeight = windowSize.y * 0.05f;
-                                battleMenu.addButton("Attack", sf::Vector2f(windowSize.x * 0.05f, yPos), sf::Vector2f(buttonWidth, buttonHeight), [&]()
+                                float buttonX = windowSize.x * 0.4f;
+                                float spacing = windowSize.y * 0.01f;
+                                battleMenu.addButton("Attack", sf::Vector2f(buttonX, yPos), sf::Vector2f(buttonWidth, buttonHeight), [&]()
                                                      { battleState = BattleState::SELECT_TARGET_ATTACK; });
-                                battleMenu.addButton("Use Ability", sf::Vector2f(windowSize.x * 0.18f, yPos), sf::Vector2f(windowSize.x * 0.14f, buttonHeight), [&]()
+                                yPos += buttonHeight + spacing;
+                                battleMenu.addButton("Use Ability", sf::Vector2f(buttonX, yPos), sf::Vector2f(buttonWidth, buttonHeight), [&]()
                                                      { battleState = BattleState::SELECT_ABILITY; });
-                                battleMenu.addButton("Move", sf::Vector2f(windowSize.x * 0.33f, yPos), sf::Vector2f(windowSize.x * 0.1f, buttonHeight), [&]()
+                                yPos += buttonHeight + spacing;
+                                battleMenu.addButton("Move", sf::Vector2f(buttonX, yPos), sf::Vector2f(buttonWidth, buttonHeight), [&]()
                                                      { battleState = BattleState::SELECT_POSITION_MOVE; });
-                                battleMenu.addButton("Skip Turn", sf::Vector2f(windowSize.x * 0.44f, yPos), sf::Vector2f(buttonWidth, buttonHeight), [&]()
+                                yPos += buttonHeight + spacing;
+                                battleMenu.addButton("Skip Turn", sf::Vector2f(buttonX, yPos), sf::Vector2f(buttonWidth, buttonHeight), [&]()
                                                      {
                                  // Skip turn
                                  currentEntity->setCurrentStamina(0);
                                  battleState = BattleState::MAIN_MENU; });
-                                battleMenu.addButton("End Turn", sf::Vector2f(windowSize.x * 0.57f, yPos), sf::Vector2f(buttonWidth, buttonHeight), [&]()
+                                yPos += buttonHeight + spacing;
+                                battleMenu.addButton("End Turn", sf::Vector2f(buttonX, yPos), sf::Vector2f(buttonWidth, buttonHeight), [&]()
                                                      {
                                  // End turn
                                  battle->nextTurn();
@@ -603,9 +609,14 @@ int main()
                                 yPos += windowSize.y * 0.025f;
                                 battleTexts.emplace_back(sf::String("Effect: " + info.effect), font, static_cast<unsigned int>(18 * (windowSize.y / 768.0f)), sf::Vector2f(windowSize.x * 0.05f, yPos), sf::Color::White);
                                 yPos += windowSize.y * 0.035f;
-                                battleMenu.addButton("Confirm", sf::Vector2f(windowSize.x * 0.05f, yPos), sf::Vector2f(windowSize.x * 0.12f, windowSize.y * 0.05f), [&]()
+                                float buttonWidth = windowSize.x * 0.2f;
+                                float buttonHeight = windowSize.y * 0.05f;
+                                float buttonX = windowSize.x * 0.4f;
+                                float spacing = windowSize.y * 0.01f;
+                                battleMenu.addButton("Confirm", sf::Vector2f(buttonX, yPos), sf::Vector2f(buttonWidth, buttonHeight), [&]()
                                                      { battleState = BattleState::SELECT_TARGET_ABILITY; });
-                                battleMenu.addButton("Back", sf::Vector2f(windowSize.x * 0.18f, yPos), sf::Vector2f(windowSize.x * 0.1f, windowSize.y * 0.04f), [&]()
+                                yPos += buttonHeight + spacing;
+                                battleMenu.addButton("Back", sf::Vector2f(buttonX, yPos), sf::Vector2f(buttonWidth, buttonHeight), [&]()
                                                      { battleState = BattleState::SELECT_ABILITY; });
                             }
                             else if (battleState == BattleState::SELECT_TARGET_ABILITY)
@@ -644,15 +655,20 @@ int main()
                                 // Show position buttons
                                 battleTexts.emplace_back("Select Position to Move:", font, static_cast<unsigned int>(20 * (windowSize.y / 768.0f)), sf::Vector2f(windowSize.x * 0.05f, yPos), sf::Color::White);
                                 yPos += windowSize.y * 0.035f;
+                                float buttonWidth = windowSize.x * 0.2f;
+                                float buttonHeight = windowSize.y * 0.04f;
+                                float buttonX = windowSize.x * 0.4f;
+                                float spacing = windowSize.y * 0.01f;
                                 for (int pos = 0; pos < 4; ++pos)
                                 {
                                     string posText = "Position " + to_string(pos + 1);
-                                    battleMenu.addButton(posText, sf::Vector2f(windowSize.x * 0.05f + static_cast<float>(pos) * windowSize.x * 0.12f, yPos), sf::Vector2f(windowSize.x * 0.11f, windowSize.y * 0.04f), [&, pos]()
+                                    battleMenu.addButton(posText, sf::Vector2f(buttonX, yPos), sf::Vector2f(buttonWidth, buttonHeight), [&, pos]()
                                                          {
-                                        battle->movePosition(currentEntity, pos);
-                                        battleState = BattleState::MAIN_MENU; });
+                                         battle->movePosition(currentEntity, pos);
+                                         battleState = BattleState::MAIN_MENU; });
+                                    yPos += buttonHeight + spacing;
                                 }
-                                battleMenu.addButton("Back", sf::Vector2f(windowSize.x * 0.05f, yPos + windowSize.y * 0.05f), sf::Vector2f(windowSize.x * 0.1f, windowSize.y * 0.04f), [&]()
+                                battleMenu.addButton("Back", sf::Vector2f(buttonX, yPos), sf::Vector2f(buttonWidth, buttonHeight), [&]()
                                                      { battleState = BattleState::MAIN_MENU; });
                             }
                         }
@@ -660,7 +676,12 @@ int main()
                         {
                             // AI turn - simulate
                             battleTexts.emplace_back("AI Turn - Press Next to continue", font, static_cast<unsigned int>(20 * (windowSize.y / 768.0f)), sf::Vector2f(windowSize.x * 0.05f, yPos), sf::Color::Yellow);
-                            battleMenu.addButton("Next", sf::Vector2f(windowSize.x * 0.05f, yPos + windowSize.y * 0.035f), sf::Vector2f(windowSize.x * 0.1f, windowSize.y * 0.04f), [&]()
+                            float buttonWidth = windowSize.x * 0.2f;
+                            float buttonHeight = windowSize.y * 0.04f;
+                            float buttonX = windowSize.x * 0.4f;
+                            float spacing = windowSize.y * 0.01f;
+                            float aiYPos = yPos + windowSize.y * 0.035f;
+                            battleMenu.addButton("Next", sf::Vector2f(buttonX, aiYPos), sf::Vector2f(buttonWidth, buttonHeight), [&]()
                                                  {
                                  // Simple AI: attack if possible, else skip turn
                                  vector<pair<Entity *, int>> targets = battle->getAvailableTargetsForCurrent();
@@ -670,7 +691,8 @@ int main()
                                  } else {
                                      battle->nextTurn();
                                  } });
-                            battleMenu.addButton("End AI Turn", sf::Vector2f(windowSize.x * 0.16f, yPos + windowSize.y * 0.035f), sf::Vector2f(windowSize.x * 0.12f, windowSize.y * 0.04f), [&]()
+                            aiYPos += buttonHeight + spacing;
+                            battleMenu.addButton("End AI Turn", sf::Vector2f(buttonX, aiYPos), sf::Vector2f(buttonWidth, buttonHeight), [&]()
                                                  { battle->nextTurn(); });
                         }
                     }
