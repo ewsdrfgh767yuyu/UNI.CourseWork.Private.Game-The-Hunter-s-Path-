@@ -600,8 +600,8 @@ private:
 
 	void increaseRequiredExperience()
 	{
-		int required_experience = 250;
-		m_required_experience = required_experience;
+		// Progressive experience requirement: base 250 + 25 per level (4 times less)
+		m_required_experience = 250 + (m_level - 1) * 25;
 	}
 
 	void recalculateStats()
@@ -910,6 +910,15 @@ public:
 			std::cout << "[DEBUG] Player " << m_name << " leveling up from " << m_level << " to " << m_level + 1 << "\n";
 			setReceivedExperience(m_received_experience - m_required_experience);
 			setLevel(m_level + 1);
+
+			// Increase base stats on level up
+			m_base_max_hp += 10;
+			m_base_damage += 1;
+			m_base_defense += 1;
+			m_base_attack += 1;
+			m_base_initiative += 1;
+			m_base_max_stamina += 1;
+
 			increaseRequiredExperience();
 
 			recalculateStats();
