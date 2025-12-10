@@ -568,7 +568,17 @@ void CampaignSystem::handleNodeEvent(NodeType nodeType)
     }
     case NodeType::EVENT:
     {
-        CampaignEvent eventEvent{EventType::TEXT_EVENT, "You have discovered a strange phenomenon...", {"Investigate", "Ignore"}, {EventType::TREASURE, EventType::BATTLE}, nullptr, 0};
+        // Mysterious event that leads to investigation
+        std::string eventDescriptions[] = {
+            "You hear a strange noise coming from the shadows. It sounds like something is lurking nearby...",
+            "In the distance, you see an unusual glow emanating from a hidden grove. What could it be?",
+            "The wind carries whispers of ancient secrets, and you spot a mysterious rune on the ground.",
+            "A faint echo of footsteps echoes through the ruins, but no one is visible. Something is amiss...",
+            "You notice a peculiar shimmer in the air, like a veil between worlds is thinning."};
+        int descIndex = rand() % 5;
+        std::vector<std::string> choices = {"Investigate", "Approach"};
+        std::vector<EventType> outcomes = {EventType::BATTLE, EventType::TREASURE};
+        CampaignEvent eventEvent{EventType::TEXT_EVENT, eventDescriptions[descIndex], choices, outcomes, nullptr, 0};
         handleTextEvent(eventEvent);
         break;
     }
@@ -595,62 +605,121 @@ void CampaignSystem::handleNodeEvent(NodeType nodeType)
     }
     case NodeType::FOREST:
     {
-        // Point of interest: Forest - random event
-        int randEvent = rand() % 3;
+        // Point of interest: Forest - random event with literary descriptions
+        int randEvent = rand() % 4;
         if (randEvent == 0)
         {
-            CampaignEvent battleEvent{EventType::BATTLE, "In the forest, you stumbled upon wild beasts!", {}, {}, nullptr, currentDifficulty};
+            std::string battleDescs[] = {
+                "The rustle of leaves foretells danger - wild beasts of the forest are out hunting!",
+                "Ancient trees whisper of intruders, and here they are: packs of wolves and bears!",
+                "Deep in the thicket, roars echo - forest predators defend their territory."};
+            int descIdx = rand() % 3;
+            CampaignEvent battleEvent{EventType::BATTLE, battleDescs[descIdx], {}, {}, nullptr, currentDifficulty};
             handleBattleEvent(battleEvent);
         }
         else if (randEvent == 1)
         {
+            std::string treasureDescs[] = {
+                "Among the roots of an ancient oak, you find an elven amulet shimmering in the moonlight.",
+                "In a stream fed by forest springs, a crystal of pure water gleams.",
+                "On the branches of a sacred tree hangs the fruit of eternal youth, a gift of nature."};
+            int descIdx = rand() % 3;
             Item randomItem = ItemFactory::createRandomItem();
-            CampaignEvent treasureEvent{EventType::TREASURE, "You found an ancient artifact in the forest!", {}, {}, new Item(randomItem), 0};
+            CampaignEvent treasureEvent{EventType::TREASURE, treasureDescs[descIdx], {}, {}, new Item(randomItem), 0};
             handleTreasureEvent(treasureEvent);
+        }
+        else if (randEvent == 2)
+        {
+            // Battle variant
+            CampaignEvent battleEvent{EventType::BATTLE, "Forest spirits summon guardians - ancient ents awaken!", {}, {}, nullptr, currentDifficulty};
+            handleBattleEvent(battleEvent);
         }
         else
         {
-            CampaignEvent eventEvent{EventType::TEXT_EVENT, "You heard the whisper of the trees...", {"Listen", "Ignore"}, {EventType::TREASURE, EventType::BATTLE}, nullptr, 0};
-            handleTextEvent(eventEvent);
+            // Treasure variant
+            Item randomItem = ItemFactory::createRandomItemOfType(ItemType::ACCESSORY);
+            CampaignEvent treasureEvent{EventType::TREASURE, "In the thicket, you find a forgotten altar with a magical artifact.", {}, {}, new Item(randomItem), 0};
+            handleTreasureEvent(treasureEvent);
         }
         break;
     }
     case NodeType::CAVE:
     {
-        // Point of interest: Cave - more battles
-        int randEvent = rand() % 3;
-        if (randEvent < 2)
+        // Point of interest: Cave - underground mysteries
+        int randEvent = rand() % 4;
+        if (randEvent == 0)
         {
-            CampaignEvent battleEvent{EventType::BATTLE, "Monsters jumped out of the cave!", {}, {}, nullptr, currentDifficulty};
+            std::string battleDescs[] = {
+                "Footsteps echo from the cave darkness - troglodytes and their pets attack!",
+                "Water drops echo in the grotto - goblins are setting up an ambush!",
+                "Red eyes glow deep in the tunnel - earth elementals rise up!"};
+            int descIdx = rand() % 3;
+            CampaignEvent battleEvent{EventType::BATTLE, battleDescs[descIdx], {}, {}, nullptr, currentDifficulty};
+            handleBattleEvent(battleEvent);
+        }
+        else if (randEvent == 1)
+        {
+            std::string treasureDescs[] = {
+                "In a crystal cave, you find a precious stone pulsing with inner energy.",
+                "Among the stalactites gleams an ancient crystal holding secrets of the underworld.",
+                "In an abandoned mine, you unearthed a magical gem capable of controlling the elements."};
+            int descIdx = rand() % 3;
+            Item randomItem = ItemFactory::createRandomItem();
+            CampaignEvent treasureEvent{EventType::TREASURE, treasureDescs[descIdx], {}, {}, new Item(randomItem), 0};
+            handleTreasureEvent(treasureEvent);
+        }
+        else if (randEvent == 2)
+        {
+            // Battle variant
+            CampaignEvent battleEvent{EventType::BATTLE, "Cave guardians awaken - giant spiders and scorpions!", {}, {}, nullptr, currentDifficulty};
             handleBattleEvent(battleEvent);
         }
         else
         {
-            Item randomItem = ItemFactory::createRandomItem();
-            CampaignEvent treasureEvent{EventType::TREASURE, "You found a crystal in the cave!", {}, {}, new Item(randomItem), 0};
+            // Treasure variant
+            Item randomItem = ItemFactory::createRandomItemOfType(ItemType::WEAPON);
+            CampaignEvent treasureEvent{EventType::TREASURE, "In a secret chamber, you find ancient weapons forgotten through the ages.", {}, {}, new Item(randomItem), 0};
             handleTreasureEvent(treasureEvent);
         }
         break;
     }
     case NodeType::DEAD_CITY:
     {
-        // Point of interest: Dead City - more events
-        int randEvent = rand() % 3;
+        // Point of interest: Dead City - haunted ruins
+        int randEvent = rand() % 4;
         if (randEvent == 0)
         {
-            CampaignEvent battleEvent{EventType::BATTLE, "Ghosts of the city attack!", {}, {}, nullptr, currentDifficulty};
+            std::string battleDescs[] = {
+                "Ghostly silhouettes materialize - the dead citizens of the city rise up!",
+                "Echoes of footsteps in empty streets - skeletons and zombies emerge from graves!",
+                "The city's curse strikes - the undead awaken to new life."};
+            int descIdx = rand() % 3;
+            CampaignEvent battleEvent{EventType::BATTLE, battleDescs[descIdx], {}, {}, nullptr, currentDifficulty};
             handleBattleEvent(battleEvent);
         }
         else if (randEvent == 1)
         {
+            std::string treasureDescs[] = {
+                "In the palace ruins, you find a royal crown holding echoes of past glory.",
+                "Among the dusty ruins gleams a golden amulet that protected ancient rulers.",
+                "In the city's forgotten treasury, you unearthed a magical artifact full of dark energy."};
+            int descIdx = rand() % 3;
             Item randomItem = ItemFactory::createRandomItem();
-            CampaignEvent treasureEvent{EventType::TREASURE, "You found forgotten relics!", {}, {}, new Item(randomItem), 0};
+            CampaignEvent treasureEvent{EventType::TREASURE, treasureDescs[descIdx], {}, {}, new Item(randomItem), 0};
             handleTreasureEvent(treasureEvent);
+        }
+        else if (randEvent == 2)
+        {
+            // Battle variant
+            CampaignEvent battleEvent{EventType::BATTLE, "Spirits of the past give no rest - vampires and liches attack!", {}, {}, nullptr, currentDifficulty};
+            handleBattleEvent(battleEvent);
         }
         else
         {
-            CampaignEvent eventEvent{EventType::TEXT_EVENT, "The city whispers its secrets...", {"Investigate", "Leave"}, {EventType::TREASURE, EventType::BATTLE}, nullptr, 0};
-            handleTextEvent(eventEvent);
+            // Treasure variant
+            Item randomItem = ItemFactory::createRandomItemOfType(ItemType::ARMOR);
+            CampaignEvent treasureEvent{EventType::TREASURE, "In the dungeons of the dead city, you find the armor of an ancient hero.", {}, {}, new Item(randomItem), 0};
+            handleTreasureEvent(treasureEvent);
         }
         break;
     }
@@ -873,25 +942,46 @@ void CampaignSystem::manageInventory(Player *player)
 
 void CampaignSystem::handleEventChoice(int choiceIndex)
 {
-    if (choiceIndex < 0 || choiceIndex >= static_cast<int>(pendingEvent.outcomes.size()))
+    if (choiceIndex < 0 || choiceIndex >= static_cast<int>(pendingEvent.choices.size()))
         return;
 
-    EventType outcome = pendingEvent.outcomes[choiceIndex];
+    EventType outcome;
+    std::string consequenceDescription;
+    if (choiceIndex == 0) // Investigate
+    {
+        // Randomly choose between battle or treasure
+        outcome = (rand() % 2 == 0) ? EventType::BATTLE : EventType::TREASURE;
+        consequenceDescription = (outcome == EventType::BATTLE) ? "Upon investigating, you discover hostile creatures guarding the source of the disturbance!" : "Your investigation reveals a hidden cache of valuable items!";
+    }
+    else if (choiceIndex == 1) // Approach
+    {
+        // Approach gives treasure
+        outcome = EventType::TREASURE;
+        consequenceDescription = "As you approach cautiously, you find a trove of treasures waiting to be claimed!";
+    }
+    else
+    {
+        return; // Invalid choice
+    }
+
     switch (outcome)
     {
     case EventType::BATTLE:
-        handleBattleEvent(CampaignEvent{EventType::BATTLE, "Your choice led to a battle!", {}, {}, nullptr, currentDifficulty});
+        handleBattleEvent(CampaignEvent{EventType::BATTLE, consequenceDescription, {}, {}, nullptr, currentDifficulty});
         break;
     case EventType::TREASURE:
     {
-        Item randomAccessory = ItemFactory::createRandomItemOfType(ItemType::ACCESSORY);
-        handleTreasureEvent(CampaignEvent{EventType::TREASURE, "Your choice brought a reward!", {}, {}, new Item(randomAccessory), 0});
+        Item randomItem = ItemFactory::createRandomItem();
+        handleTreasureEvent(CampaignEvent{EventType::TREASURE, consequenceDescription, {}, {}, new Item(randomItem), 0});
         break;
     }
     default:
         // No action
         break;
     }
+
+    // Clear the pending event after handling
+    clearPendingEvent();
 }
 
 void CampaignSystem::handleExitChoice(int choiceIndex)
