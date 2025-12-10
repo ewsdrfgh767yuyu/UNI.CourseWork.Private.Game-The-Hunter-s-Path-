@@ -184,7 +184,7 @@ void HeroFactory::initializeAbilities()
 
     abilityDatabase[AbilityType::REGENERATION] = {
         AbilityType::REGENERATION, "Regeneration", "Restores health naturally",
-        4, "Restores health naturally. Restores 30 HP at the start of each turn.", false};
+        1, "Restores health naturally. Restores 30 HP at the start of each turn.", false};
 
     abilityDatabase[AbilityType::FLYING] = {
         AbilityType::FLYING, "Flying", "Takes off and moves through air",

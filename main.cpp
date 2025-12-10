@@ -25,7 +25,8 @@ enum class GameState
     EXIT,
     BATTLE,
     INVENTORY,
-    VICTORY
+    VICTORY,
+    DEFEAT
 };
 
 enum class BattleState
@@ -262,14 +263,26 @@ int main()
                 inventoryMenu.handleEvent(event);
                 break;
             case GameState::VICTORY:
-                // Handle exit button click
+                // Handle main menu button click
                 if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
                 {
                     sf::Vector2i mousePos = sf::Mouse::getPosition(window);
-                    sf::FloatRect exitRect(windowSize.x * 0.35f, windowSize.y * 0.4f, windowSize.x * 0.1f, windowSize.y * 0.05f);
-                    if (exitRect.contains(static_cast<sf::Vector2f>(mousePos)))
+                    sf::FloatRect mainMenuRect(windowSize.x * 0.35f, windowSize.y * 0.4f, windowSize.x * 0.1f, windowSize.y * 0.05f);
+                    if (mainMenuRect.contains(static_cast<sf::Vector2f>(mousePos)))
                     {
-                        window.close();
+                        currentState = GameState::MAIN_MENU;
+                    }
+                }
+                break;
+            case GameState::DEFEAT:
+                // Handle main menu button click
+                if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
+                {
+                    sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+                    sf::FloatRect mainMenuRect(windowSize.x * 0.35f, windowSize.y * 0.4f, windowSize.x * 0.1f, windowSize.y * 0.05f);
+                    if (mainMenuRect.contains(static_cast<sf::Vector2f>(mousePos)))
+                    {
+                        currentState = GameState::MAIN_MENU;
                     }
                 }
                 break;
@@ -480,11 +493,11 @@ int main()
                     else
                     {
                         battleTexts.emplace_back("DEFEAT!", font, static_cast<unsigned int>(56 * (windowSize.y / 768.0f)), sf::Vector2f(windowSize.x * 0.25f, windowSize.y * 0.25f), sf::Color::Red);
-                        battleMenu.addButton("Continue", sf::Vector2f(windowSize.x * 0.3f, windowSize.y * 0.4f), sf::Vector2f(windowSize.x * 0.12f, windowSize.y * 0.06f), [&]()
+                        battleMenu.addButton("Main Menu", sf::Vector2f(windowSize.x * 0.3f, windowSize.y * 0.4f), sf::Vector2f(windowSize.x * 0.12f, windowSize.y * 0.06f), [&]()
                                              {
-                             campaign.clearPendingBattle();
-                             currentState = GameState::MAP_MODE;
-                             battleState = BattleState::MAIN_MENU; });
+                              campaign.clearPendingBattle();
+                              currentState = GameState::DEFEAT;
+                              battleState = BattleState::MAIN_MENU; });
                     }
                 }
                 else
@@ -697,11 +710,19 @@ int main()
                                 float aiYPos = yPos + windowSize.y * 0.035f;
                                 battleMenu.addButton("Next", sf::Vector2f(buttonX, aiYPos), sf::Vector2f(buttonWidth, buttonHeight), [&]()
                                                      {
-                                     // Simple AI: attack if possible, else skip turn
+                                     // Simple AI: attack if possible, else use ability if available, else skip turn
                                      vector<pair<Entity *, int>> targets = battle->getAvailableTargetsForCurrent();
                                      if (!targets.empty()) {
                                          int targetIndex = rand() % targets.size();
                                          battle->attack(currentEntity, targets[targetIndex].first);
+                                     } else if (currentEntity->getAbility() != AbilityType::NONE) {
+                                         // Try to use ability if no attack targets
+                                         const AbilityInfo &info = HeroFactory::getAbilityInfo(currentEntity->getAbility());
+                                         if (currentEntity->getCurrentStamina() >= info.staminaCost) {
+                                             battle->useAbility(currentEntity, currentEntity->getAbility());
+                                         } else {
+                                             battle->nextTurn();
+                                         }
                                      } else {
                                          battle->nextTurn();
                                      } });
@@ -948,6 +969,7 @@ int main()
             inventoryMenu.draw();
             break;
         case GameState::VICTORY:
+        {
             // Victory screen
             sf::Text victoryTitle("VICTORY!", font, static_cast<unsigned int>(56 * (windowSize.y / 768.0f)));
             victoryTitle.setPosition(windowSize.x * 0.25f, windowSize.y * 0.2f);
@@ -959,17 +981,43 @@ int main()
             victoryText.setFillColor(sf::Color::White);
             window.draw(victoryText);
 
-            // Exit button
-            sf::RectangleShape exitButton(sf::Vector2f(windowSize.x * 0.1f, windowSize.y * 0.05f));
-            exitButton.setPosition(windowSize.x * 0.35f, windowSize.y * 0.4f);
-            exitButton.setFillColor(sf::Color::Red);
-            window.draw(exitButton);
+            // Main Menu button
+            sf::RectangleShape mainMenuButton(sf::Vector2f(windowSize.x * 0.1f, windowSize.y * 0.05f));
+            mainMenuButton.setPosition(windowSize.x * 0.35f, windowSize.y * 0.4f);
+            mainMenuButton.setFillColor(sf::Color::Blue);
+            window.draw(mainMenuButton);
 
-            sf::Text exitText("Exit", font, static_cast<unsigned int>(20 * (windowSize.y / 768.0f)));
-            exitText.setPosition(windowSize.x * 0.375f, windowSize.y * 0.41f);
-            exitText.setFillColor(sf::Color::White);
-            window.draw(exitText);
+            sf::Text mainMenuText("Main Menu", font, static_cast<unsigned int>(20 * (windowSize.y / 768.0f)));
+            mainMenuText.setPosition(windowSize.x * 0.355f, windowSize.y * 0.41f);
+            mainMenuText.setFillColor(sf::Color::White);
+            window.draw(mainMenuText);
             break;
+        }
+        case GameState::DEFEAT:
+        {
+            // Defeat screen
+            sf::Text defeatTitle("DEFEAT!", font, static_cast<unsigned int>(56 * (windowSize.y / 768.0f)));
+            defeatTitle.setPosition(windowSize.x * 0.25f, windowSize.y * 0.2f);
+            defeatTitle.setFillColor(sf::Color::Red);
+            window.draw(defeatTitle);
+
+            sf::Text defeatText("All your heroes have fallen in battle. Try again!", font, static_cast<unsigned int>(24 * (windowSize.y / 768.0f)));
+            defeatText.setPosition(windowSize.x * 0.15f, windowSize.y * 0.3f);
+            defeatText.setFillColor(sf::Color::White);
+            window.draw(defeatText);
+
+            // Main Menu button
+            sf::RectangleShape defeatMainMenuButton(sf::Vector2f(windowSize.x * 0.1f, windowSize.y * 0.05f));
+            defeatMainMenuButton.setPosition(windowSize.x * 0.35f, windowSize.y * 0.4f);
+            defeatMainMenuButton.setFillColor(sf::Color::Blue);
+            window.draw(defeatMainMenuButton);
+
+            sf::Text defeatMainMenuText("Main Menu", font, static_cast<unsigned int>(20 * (windowSize.y / 768.0f)));
+            defeatMainMenuText.setPosition(windowSize.x * 0.355f, windowSize.y * 0.41f);
+            defeatMainMenuText.setFillColor(sf::Color::White);
+            window.draw(defeatMainMenuText);
+            break;
+        }
         }
 
         window.display();
