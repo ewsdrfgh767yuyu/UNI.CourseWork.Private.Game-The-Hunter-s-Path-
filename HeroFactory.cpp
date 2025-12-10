@@ -108,7 +108,7 @@ void HeroFactory::initializeAbilities()
 {
     abilityDatabase[AbilityType::CHARGE] = {
         AbilityType::CHARGE, "Charge", "Instant movement to target with powerful attack",
-        2, "Instantly moves to target and deals powerful strike.\nDamage increases by 50%, 30% chance to stun target (initiative -2) for 1 turn.", false};
+        2, "Instantly moves to target and deals powerful strike.\nDamage increases by 75%, 30% chance to stun target (initiative -2) for 1 turn.", false};
 
     abilityDatabase[AbilityType::SHIELD_WALL] = {
         AbilityType::SHIELD_WALL, "Shield Wall", "Creates a powerful barrier blocking damage",
@@ -116,35 +116,35 @@ void HeroFactory::initializeAbilities()
 
     abilityDatabase[AbilityType::BERSERK] = {
         AbilityType::BERSERK, "Berserk", "Enters rage, increasing strength",
-        5, "Enters rage, increasing strength. Damage +5, defense -2 for 3 turns.", false};
+        4, "Enters rage, increasing strength. Damage +8, defense -2 for 3 turns.", false};
 
     abilityDatabase[AbilityType::BATTLE_CRY] = {
         AbilityType::BATTLE_CRY, "Battle Cry", "Inspires allies and intimidates enemies",
-        3, "Inspires allies and intimidates enemies.\nAllies: attack and defense +2 for 2 turns,\nEnemies: attack and initiative -2 for 2 turns.", true};
+        3, "Inspires allies and intimidates enemies.\nAllies: attack and defense +3 for 2 turns,\nEnemies: attack and initiative -3 for 2 turns.", true};
 
     abilityDatabase[AbilityType::HEALING_WAVE] = {
         AbilityType::HEALING_WAVE, "Healing Wave", "Heals all allies with a wave of healing energy",
-        4, "Heals all allies with a wave of healing energy. Restores 50 HP to all allies.", true};
+        3, "Heals all allies with a wave of healing energy. Restores 60 HP to all allies.", true};
 
     abilityDatabase[AbilityType::COMMAND] = {
         AbilityType::COMMAND, "Command", "Gives an order, boosting allies' morale",
-        3, "Gives an order, boosting allies' morale. Allies: initiative +2, damage +1 for 2 turns.", false};
+        3, "Gives an order, boosting allies' morale. Allies: initiative +3, damage +2 for 2 turns.", false};
 
     abilityDatabase[AbilityType::FROST_ARMOR] = {
         AbilityType::FROST_ARMOR, "Frost Armor", "Covers with ice armor, slowing enemies",
-        3, "Covers with ice armor, slowing enemies.\nDefense +5 for 3 turns, enemies: initiative -2 for 2 turns.", true};
+        2, "Covers with ice armor, slowing enemies.\nDefense +7 for 3 turns, enemies: initiative -2 for 2 turns.", true};
 
     abilityDatabase[AbilityType::STEALTH] = {
         AbilityType::STEALTH, "Stealth", "Blends with shadows for surprise attack",
-        4, "Blends with shadows for surprise attack. Invisible, next attack: damage x2.", false};
+        3, "Blends with shadows for surprise attack. Invisible, next attack: damage x2.", false};
 
     abilityDatabase[AbilityType::SHADOW_STEP] = {
         AbilityType::SHADOW_STEP, "Shadow Step", "Teleports through shadows for surprise strike",
-        2, "Teleports through shadows for surprise strike.\nTeleport to target, damage x2 (ignores defense).", false};
+        2, "Teleports through shadows for surprise strike.\nTeleport to target, damage x2.5 (ignores defense).", false};
 
     abilityDatabase[AbilityType::POISON] = {
         AbilityType::POISON, "Poison", "Poisons target with damage over time",
-        4, "Poisons target with damage over time. Target takes 8 damage at the start of each turn for 3 turns.", true};
+        3, "Poisons target with damage over time. Target takes 6 damage at the start of each turn for 3 turns.", true};
 
     abilityDatabase[AbilityType::INVISIBLE] = {
         AbilityType::INVISIBLE, "Invisible", "Becomes completely invisible",
@@ -152,51 +152,51 @@ void HeroFactory::initializeAbilities()
 
     abilityDatabase[AbilityType::ARCANE_MISSILE] = {
         AbilityType::ARCANE_MISSILE, "Arcane Missile", "Launches a powerful magic missile",
-        5, "Launches a powerful magic missile. Damage 15-25, ignores target's defense.", false};
+        3, "Launches a powerful magic missile. Damage 20-35, ignores target's defense.", false};
 
     abilityDatabase[AbilityType::TELEPORT] = {
         AbilityType::TELEPORT, "Teleport", "Instantly moves to a specified point",
-        3, "Instantly moves to a specified point. Move to any free position.", false};
+        2, "Instantly moves to a specified point. Move to any free position.", false};
 
     abilityDatabase[AbilityType::CHAIN_LIGHTNING] = {
         AbilityType::CHAIN_LIGHTNING, "Chain Lightning", "Calls lightning striking multiple targets",
-        4, "Calls lightning striking multiple targets. 20 damage to 3 nearest enemies.", true};
+        3, "Calls lightning striking multiple targets. 15 damage to 3 nearest enemies.", true};
 
     abilityDatabase[AbilityType::FLAME_BURST] = {
         AbilityType::FLAME_BURST, "Flame Burst", "Creates a flame explosion around self",
-        3, "Creates a flame explosion around self. 25 damage to all enemies.", true};
+        2, "Creates a flame explosion around self. 18 damage to all enemies.", true};
 
     abilityDatabase[AbilityType::BLOOD_RITUAL] = {
         AbilityType::BLOOD_RITUAL, "Blood Ritual", "Sacrifices blood for demonic power",
-        3, "Sacrifices blood for demonic power. Sacrifices 30 HP, damage +50% for 3 turns.", false};
+        2, "Sacrifices blood for demonic power. Sacrifices 30 HP, damage +75% for 3 turns.", false};
 
     abilityDatabase[AbilityType::LIFE_STEAL] = {
         AbilityType::LIFE_STEAL, "Life Steal", "Steals life force from enemies",
-        4, "Steals life force from enemies. Restores 50% of damage dealt.", false};
+        3, "Steals life force from enemies. Deals 30 damage, restores 50% of damage dealt.", false};
 
     abilityDatabase[AbilityType::FEAR] = {
         AbilityType::FEAR, "Fear", "Instills terror, reducing enemies' combat ability",
-        3, "Instills terror, reducing enemies' combat ability. Enemies: initiative -2, damage -3 for 2 turns.", true};
+        2, "Instills terror, reducing enemies' combat ability. Enemies: initiative -2, damage -4 for 2 turns.", true};
 
     abilityDatabase[AbilityType::HEAL] = {
         AbilityType::HEAL, "Heal", "Restores health instantly",
-        4, "Restores health instantly. Restores 40 HP.", false};
+        3, "Restores health instantly. Restores 40 HP.", false};
 
     abilityDatabase[AbilityType::REGENERATION] = {
         AbilityType::REGENERATION, "Regeneration", "Restores health naturally",
-        5, "Restores health naturally. Restores 30 HP at the start of each turn.", false};
+        4, "Restores health naturally. Restores 30 HP at the start of each turn.", false};
 
     abilityDatabase[AbilityType::FLYING] = {
         AbilityType::FLYING, "Flying", "Takes off and moves through air",
-        4, "Takes off and moves through air. Move to any position.", false};
+        3, "Takes off and moves through air. Move to any position.", false};
 
     abilityDatabase[AbilityType::FIRE_DAMAGE] = {
         AbilityType::FIRE_DAMAGE, "Fire Damage", "Attacks deal additional fire damage",
-        4, "Attacks deal additional fire damage. Additional damage 30% of base per attack.", true};
+        3, "Attacks deal additional fire damage. 10 damage to all enemies.", true};
 
     abilityDatabase[AbilityType::ICE_DAMAGE] = {
         AbilityType::ICE_DAMAGE, "Ice Damage", "Freezes with icy breath",
-        4, "Freezes with icy breath. Additional damage 25% of base, slows target.", true};
+        3, "Freezes with icy breath. 8 damage to all enemies, slows targets.", true};
 }
 
 std::vector<HeroClass> HeroFactory::getAvailableClasses()

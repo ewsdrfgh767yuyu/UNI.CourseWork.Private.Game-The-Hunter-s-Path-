@@ -1140,9 +1140,9 @@ bool BattleSystem::useAbility(Entity *user, AbilityType ability)
     case AbilityType::BERSERK:
     {
         // Increase damage and decrease defense
-        user->addEffect(Effect(EffectType::BUFF_DAMAGE, 5, 3, "Berserk"));
+        user->addEffect(Effect(EffectType::BUFF_DAMAGE, 8, 3, "Berserk"));
         user->addEffect(Effect(EffectType::DEBUFF_DEFENSE, 2, 3, "Berserk"));
-        cout << user->getName() << " enters berserk state! Damage +5, defense -2 for 3 turns.\n";
+        cout << user->getName() << " enters berserk state! Damage +8, defense -2 for 3 turns.\n";
         break;
     }
     case AbilityType::HEALING_WAVE:
@@ -1153,8 +1153,8 @@ bool BattleSystem::useAbility(Entity *user, AbilityType ability)
         {
             if (pos.entity && pos.entity->getCurrentHealthPoint() > 0)
             {
-                pos.entity->heal(50);
-                cout << pos.entity->getName() << " healed for 50 HP!\n";
+                pos.entity->heal(60);
+                cout << pos.entity->getName() << " healed for 60 HP!\n";
             }
         }
         break;
@@ -1175,8 +1175,8 @@ bool BattleSystem::useAbility(Entity *user, AbilityType ability)
             if (pos.entity && pos.entity->getCurrentHealthPoint() > 0)
             {
                 pos.entity->setInitiative(max(1, pos.entity->getInitiative() - 2));
-                pos.entity->setDamage(max(1, pos.entity->getDamage() - 3));
-                cout << pos.entity->getName() << " frightened! Initiative -2, damage -3.\n";
+                pos.entity->setDamage(max(1, pos.entity->getDamage() - 4));
+                cout << pos.entity->getName() << " frightened! Initiative -2, damage -4.\n";
             }
         }
         break;
@@ -1189,7 +1189,7 @@ bool BattleSystem::useAbility(Entity *user, AbilityType ability)
         {
             if (pos.entity && pos.entity->getCurrentHealthPoint() > 0)
             {
-                int fireDamage = 15;
+                int fireDamage = 10;
                 pos.entity->takeDamage(fireDamage);
                 cout << pos.entity->getName() << " получает " << fireDamage << " огненного урона!\n";
             }
@@ -1204,7 +1204,7 @@ bool BattleSystem::useAbility(Entity *user, AbilityType ability)
         {
             if (pos.entity && pos.entity->getCurrentHealthPoint() > 0)
             {
-                int iceDamage = 12;
+                int iceDamage = 8;
                 pos.entity->takeDamage(iceDamage);
                 pos.entity->setInitiative(max(1, pos.entity->getInitiative() - 3));
                 cout << pos.entity->getName() << " получает " << iceDamage << " ледяного урона и замедлен!\n";
@@ -1220,7 +1220,7 @@ bool BattleSystem::useAbility(Entity *user, AbilityType ability)
         {
             if (pos.entity && pos.entity->getCurrentHealthPoint() > 0)
             {
-                int lightningDamage = 25;
+                int lightningDamage = 35;
                 pos.entity->takeDamage(lightningDamage);
                 cout << pos.entity->getName() << " поражен молнией за " << lightningDamage << " урона!\n";
                 break; // Только один враг
@@ -1230,13 +1230,13 @@ bool BattleSystem::useAbility(Entity *user, AbilityType ability)
     }
     case AbilityType::POISON:
     {
-        // Яд: отравляем всех врагов (8 урона в начале каждого их хода на 3 хода)
+        // Яд: отравляем всех врагов (6 урона в начале каждого их хода на 3 хода)
         vector<BattlePosition> &opponents = isPlayer ? enemyPositions : playerPositions;
         for (auto &pos : opponents)
         {
             if (pos.entity && pos.entity->getCurrentHealthPoint() > 0)
             {
-                pos.entity->addEffect(Effect(EffectType::POISON_DAMAGE, 8, 3, "Яд"));
+                pos.entity->addEffect(Effect(EffectType::POISON_DAMAGE, 6, 3, "Яд"));
                 cout << pos.entity->getName() << " отравлен!\n";
             }
         }
@@ -1250,7 +1250,7 @@ bool BattleSystem::useAbility(Entity *user, AbilityType ability)
         {
             if (pos.entity && pos.entity->getCurrentHealthPoint() > 0)
             {
-                int stealDamage = 20;
+                int stealDamage = 30;
                 pos.entity->takeDamage(stealDamage);
                 user->heal(stealDamage / 2);
                 cout << user->getName() << " крадет " << stealDamage << " HP у " << pos.entity->getName() << "!\n";
@@ -1302,7 +1302,7 @@ bool BattleSystem::useAbility(Entity *user, AbilityType ability)
                 movePosition(user, targetPos);
 
                 // Атака с бонусом урона
-                int chargeDamage = static_cast<int>(user->getDamage() * 1.5); // +50% урон
+                int chargeDamage = static_cast<int>(user->getDamage() * 1.75); // +75% урон
                 pos.entity->takeDamage(chargeDamage);
 
                 // Шанс оглушения (снижение инициативы)
@@ -1329,7 +1329,7 @@ bool BattleSystem::useAbility(Entity *user, AbilityType ability)
     }
     case AbilityType::BATTLE_CRY:
     {
-        // Боевой клич: бафф союзников +2 атаки и защиты, страх врагов -2 атаки и инициативы
+        // Боевой клич: бафф союзников +3 атаки и защиты, страх врагов -3 атаки и инициативы
         vector<BattlePosition> &allies = isPlayer ? playerPositions : enemyPositions;
         vector<BattlePosition> &opponents = isPlayer ? enemyPositions : playerPositions;
 
@@ -1338,8 +1338,8 @@ bool BattleSystem::useAbility(Entity *user, AbilityType ability)
         {
             if (pos.entity && pos.entity->getCurrentHealthPoint() > 0)
             {
-                pos.entity->addEffect(Effect(EffectType::BUFF_DAMAGE, 2, 2, "Боевой клич"));
-                pos.entity->addEffect(Effect(EffectType::BUFF_DEFENSE, 2, 2, "Боевой клич"));
+                pos.entity->addEffect(Effect(EffectType::BUFF_DAMAGE, 3, 2, "Боевой клич"));
+                pos.entity->addEffect(Effect(EffectType::BUFF_DEFENSE, 3, 2, "Боевой клич"));
                 cout << pos.entity->getName() << " воодушевлен боевым кличем!\n";
             }
         }
@@ -1349,7 +1349,7 @@ bool BattleSystem::useAbility(Entity *user, AbilityType ability)
         {
             if (pos.entity && pos.entity->getCurrentHealthPoint() > 0)
             {
-                pos.entity->addEffect(Effect(EffectType::DEBUFF_DAMAGE, 2, 2, "Страх"));
+                pos.entity->addEffect(Effect(EffectType::DEBUFF_DAMAGE, 3, 2, "Страх"));
                 pos.entity->addEffect(Effect(EffectType::DEBUFF_INITIATIVE, 1, 2, "Страх"));
                 cout << pos.entity->getName() << " напуган боевым кличем!\n";
             }
@@ -1358,24 +1358,24 @@ bool BattleSystem::useAbility(Entity *user, AbilityType ability)
     }
     case AbilityType::COMMAND:
     {
-        // Команда: бафф союзников +2 инициатива, +1 урон
+        // Команда: бафф союзников +3 инициатива, +2 урон
         vector<BattlePosition> &allies = isPlayer ? playerPositions : enemyPositions;
         for (auto &pos : allies)
         {
             if (pos.entity && pos.entity->getCurrentHealthPoint() > 0)
             {
-                pos.entity->setInitiative(pos.entity->getInitiative() + 2);
-                pos.entity->setDamage(pos.entity->getDamage() + 1);
-                cout << pos.entity->getName() << " получает приказ! Инициатива +2, урон +1.\n";
+                pos.entity->setInitiative(pos.entity->getInitiative() + 3);
+                pos.entity->setDamage(pos.entity->getDamage() + 2);
+                cout << pos.entity->getName() << " получает приказ! Инициатива +3, урон +2.\n";
             }
         }
         break;
     }
     case AbilityType::FROST_ARMOR:
     {
-        // Ледяная броня: защита +5, замедление врагов
-        user->setDefense(user->getDefense() + 5);
-        cout << user->getName() << " покрывается ледяной броней! Защита +5.\n";
+        // Ледяная броня: защита +7, замедление врагов
+        user->setDefense(user->getDefense() + 7);
+        cout << user->getName() << " покрывается ледяной броней! Защита +7.\n";
 
         // Замедление врагов
         vector<BattlePosition> &opponents = isPlayer ? enemyPositions : playerPositions;
@@ -1410,7 +1410,7 @@ bool BattleSystem::useAbility(Entity *user, AbilityType ability)
                 movePosition(user, targetPos);
 
                 // Гарантированный удар (игнорируем защиту)
-                int shadowDamage = user->getDamage() * 2; // x2 урон
+                int shadowDamage = static_cast<int>(user->getDamage() * 2.5); // x2.5 урон
                 pos.entity->takeDamage(shadowDamage);
                 cout << user->getName() << " выныривает из тени и наносит " << shadowDamage << " урона!\n";
 
@@ -1427,13 +1427,13 @@ bool BattleSystem::useAbility(Entity *user, AbilityType ability)
     }
     case AbilityType::ARCANE_MISSILE:
     {
-        // Магический снаряд: урон 15-25, игнорирует защиту
+        // Магический снаряд: урон 20-35, игнорирует защиту
         vector<BattlePosition> &opponents = isPlayer ? enemyPositions : playerPositions;
         for (auto &pos : opponents)
         {
             if (pos.entity && pos.entity->getCurrentHealthPoint() > 0)
             {
-                int arcaneDamage = 15 + (rand() % 11); // 15-25
+                int arcaneDamage = 20 + (rand() % 16); // 20-35
                 pos.entity->takeDamage(arcaneDamage);
                 cout << user->getName() << " запускает магический снаряд за " << arcaneDamage << " урона!\n";
                 break; // Одна цель
@@ -1443,15 +1443,15 @@ bool BattleSystem::useAbility(Entity *user, AbilityType ability)
     }
     case AbilityType::CHAIN_LIGHTNING:
     {
-        // Цепная молния: урон 20, цепная реакция на 3 цели
+        // Цепная молния: урон 15, цепная реакция на 3 цели
         vector<BattlePosition> &opponents = isPlayer ? enemyPositions : playerPositions;
         int chainCount = 0;
         for (auto &pos : opponents)
         {
             if (pos.entity && pos.entity->getCurrentHealthPoint() > 0 && chainCount < 3)
             {
-                pos.entity->takeDamage(20);
-                cout << pos.entity->getName() << " поражен цепной молнией за 20 урона!\n";
+                pos.entity->takeDamage(15);
+                cout << pos.entity->getName() << " поражен цепной молнией за 15 урона!\n";
                 chainCount++;
             }
         }
@@ -1459,27 +1459,27 @@ bool BattleSystem::useAbility(Entity *user, AbilityType ability)
     }
     case AbilityType::FLAME_BURST:
     {
-        // Взрыв пламени: урон 25 по области 3x3
+        // Взрыв пламени: урон 18 по области 3x3
         // Упрощенная версия: урон всем врагам
         vector<BattlePosition> &opponents = isPlayer ? enemyPositions : playerPositions;
         for (auto &pos : opponents)
         {
             if (pos.entity && pos.entity->getCurrentHealthPoint() > 0)
             {
-                pos.entity->takeDamage(25);
-                cout << pos.entity->getName() << " получает 25 урона от взрыва пламени!\n";
+                pos.entity->takeDamage(18);
+                cout << pos.entity->getName() << " получает 18 урона от взрыва пламени!\n";
             }
         }
         break;
     }
     case AbilityType::BLOOD_RITUAL:
     {
-        // Кровавый ритуал: жертва 30 HP за урон +50% на 3 хода
+        // Кровавый ритуал: жертва 30 HP за урон +75% на 3 хода
         if (user->getCurrentHealthPoint() > 30)
         {
             user->takeDamage(30);
-            user->setDamage(static_cast<int>(user->getDamage() * 1.5));
-            cout << user->getName() << " проводит кровавый ритуал! Жертвует 30 HP, урон +50%.\n";
+            user->setDamage(static_cast<int>(user->getDamage() * 1.75));
+            cout << user->getName() << " проводит кровавый ритуал! Жертвует 30 HP, урон +75%.\n";
             // TODO: Реализовать таймер для снятия баффа через 3 хода
         }
         else
