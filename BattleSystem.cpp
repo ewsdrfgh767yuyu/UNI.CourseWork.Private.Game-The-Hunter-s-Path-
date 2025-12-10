@@ -674,7 +674,7 @@ string BattleSystem::getBattleStatus() const
     {
         if (pos.entity)
         {
-            Player* player = static_cast<Player*>(pos.entity);
+            Player *player = static_cast<Player *>(pos.entity);
             status += "  " + player->getName() + " (Lv." + to_string(player->getLevel()) + ")\n";
             status += "  " + player->getHealthBarString() + "\n";
             status += "  " + player->getExperienceBarString() + "\n";
@@ -686,7 +686,8 @@ string BattleSystem::getBattleStatus() const
                 for (size_t i = 0; i < effects.size(); ++i)
                 {
                     status += effects[i].name + " (" + to_string(effects[i].duration) + ")";
-                    if (i < effects.size() - 1) status += ", ";
+                    if (i < effects.size() - 1)
+                        status += ", ";
                 }
                 status += "\n";
             }
@@ -708,7 +709,8 @@ string BattleSystem::getBattleStatus() const
                 for (size_t i = 0; i < effects.size(); ++i)
                 {
                     status += effects[i].name + " (" + to_string(effects[i].duration) + ")";
-                    if (i < effects.size() - 1) status += ", ";
+                    if (i < effects.size() - 1)
+                        status += ", ";
                 }
                 status += "\n";
             }
@@ -824,6 +826,18 @@ void BattleSystem::nextTurn()
     {
         calculateTurnOrder();
         currentTurnIndex = 0;
+    }
+
+    // Пропускаем мертвых персонажей
+    while (currentTurnIndex < turnOrder.size() && turnOrder[currentTurnIndex] && turnOrder[currentTurnIndex]->getCurrentHealthPoint() <= 0)
+    {
+        cout << turnOrder[currentTurnIndex]->getName() << " is dead, skipping turn.\n";
+        currentTurnIndex++;
+        if (currentTurnIndex >= turnOrder.size())
+        {
+            calculateTurnOrder();
+            currentTurnIndex = 0;
+        }
     }
 
     // Регенерируем стамину для текущего персонажа, если он существует

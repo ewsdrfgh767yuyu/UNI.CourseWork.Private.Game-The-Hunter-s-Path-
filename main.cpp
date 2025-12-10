@@ -682,25 +682,33 @@ int main()
                         else
                         {
                             // AI turn - simulate
-                            battleTexts.emplace_back("AI Turn - Press Next to continue", font, static_cast<unsigned int>(20 * (windowSize.y / 768.0f)), sf::Vector2f(windowSize.x * 0.05f, yPos), sf::Color::Yellow);
-                            float buttonWidth = windowSize.x * 0.2f;
-                            float buttonHeight = windowSize.y * 0.04f;
-                            float buttonX = windowSize.x * 0.4f;
-                            float spacing = windowSize.y * 0.01f;
-                            float aiYPos = yPos + windowSize.y * 0.035f;
-                            battleMenu.addButton("Next", sf::Vector2f(buttonX, aiYPos), sf::Vector2f(buttonWidth, buttonHeight), [&]()
-                                                 {
-                                 // Simple AI: attack if possible, else skip turn
-                                 vector<pair<Entity *, int>> targets = battle->getAvailableTargetsForCurrent();
-                                 if (!targets.empty()) {
-                                     int targetIndex = rand() % targets.size();
-                                     battle->attack(currentEntity, targets[targetIndex].first);
-                                 } else {
-                                     battle->nextTurn();
-                                 } });
-                            aiYPos += buttonHeight + spacing;
-                            battleMenu.addButton("End AI Turn", sf::Vector2f(buttonX, aiYPos), sf::Vector2f(buttonWidth, buttonHeight), [&]()
-                                                 { battle->nextTurn(); });
+                            if (currentEntity->getCurrentStamina() <= 0)
+                            {
+                                // Automatically skip turn if no stamina
+                                battle->nextTurn();
+                            }
+                            else
+                            {
+                                battleTexts.emplace_back("AI Turn - Press Next to continue", font, static_cast<unsigned int>(20 * (windowSize.y / 768.0f)), sf::Vector2f(windowSize.x * 0.05f, yPos), sf::Color::Yellow);
+                                float buttonWidth = windowSize.x * 0.2f;
+                                float buttonHeight = windowSize.y * 0.04f;
+                                float buttonX = windowSize.x * 0.4f;
+                                float spacing = windowSize.y * 0.01f;
+                                float aiYPos = yPos + windowSize.y * 0.035f;
+                                battleMenu.addButton("Next", sf::Vector2f(buttonX, aiYPos), sf::Vector2f(buttonWidth, buttonHeight), [&]()
+                                                     {
+                                     // Simple AI: attack if possible, else skip turn
+                                     vector<pair<Entity *, int>> targets = battle->getAvailableTargetsForCurrent();
+                                     if (!targets.empty()) {
+                                         int targetIndex = rand() % targets.size();
+                                         battle->attack(currentEntity, targets[targetIndex].first);
+                                     } else {
+                                         battle->nextTurn();
+                                     } });
+                                aiYPos += buttonHeight + spacing;
+                                battleMenu.addButton("End AI Turn", sf::Vector2f(buttonX, aiYPos), sf::Vector2f(buttonWidth, buttonHeight), [&]()
+                                                     { battle->nextTurn(); });
+                            }
                         }
                     }
                 }
