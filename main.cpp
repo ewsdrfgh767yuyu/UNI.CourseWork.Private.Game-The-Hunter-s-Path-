@@ -258,6 +258,124 @@ int main()
                 break;
             case GameState::BATTLE:
                 battleMenu.handleEvent(event);
+                // Handle keyboard input for battle
+                if (event.type == sf::Event::KeyPressed)
+                {
+                    BattleSystem *battle = campaign.getCurrentBattle();
+                    if (battle)
+                    {
+                        Entity *currentEntity = battle->getCurrentTurnEntity();
+                        if (currentEntity)
+                        {
+                            // Check if player entity
+                            bool isPlayer = false;
+                            for (Player *p : campaign.getPlayerParty())
+                            {
+                                if (p == currentEntity)
+                                {
+                                    isPlayer = true;
+                                    break;
+                                }
+                            }
+
+                            if (isPlayer)
+                            {
+                                // Player controls
+                                if (battleState == BattleState::SELECT_ABILITY)
+                                {
+                                    // Number keys to select abilities
+                                    Player *player = static_cast<Player *>(currentEntity);
+                                    const vector<AbilityType> &abilities = player->getAvailableAbilities();
+                                    int keyNum = -1;
+                                    if (event.key.code >= sf::Keyboard::Num1 && event.key.code <= sf::Keyboard::Num9)
+                                    {
+                                        keyNum = event.key.code - sf::Keyboard::Num1;
+                                    }
+                                    else if (event.key.code >= sf::Keyboard::Numpad1 && event.key.code <= sf::Keyboard::Numpad9)
+                                    {
+                                        keyNum = event.key.code - sf::Keyboard::Numpad1;
+                                    }
+                                    if (keyNum >= 0 && keyNum < (int)abilities.size())
+                                    {
+                                        selectedAbility = abilities[keyNum];
+                                        battleState = BattleState::CONFIRM_ABILITY;
+                                    }
+                                }
+                                else if (battleState == BattleState::SELECT_TARGET_ATTACK)
+                                {
+                                    // Number keys to select attack targets
+                                    vector<pair<Entity *, int>> targets = battle->getAvailableTargetsForCurrent();
+                                    int keyNum = -1;
+                                    if (event.key.code >= sf::Keyboard::Num1 && event.key.code <= sf::Keyboard::Num9)
+                                    {
+                                        keyNum = event.key.code - sf::Keyboard::Num1;
+                                    }
+                                    else if (event.key.code >= sf::Keyboard::Numpad1 && event.key.code <= sf::Keyboard::Numpad9)
+                                    {
+                                        keyNum = event.key.code - sf::Keyboard::Numpad1;
+                                    }
+                                    if (keyNum >= 0 && keyNum < (int)targets.size())
+                                    {
+                                        battle->attack(currentEntity, targets[keyNum].first);
+                                        battleState = BattleState::MAIN_MENU;
+                                    }
+                                }
+                                else if (battleState == BattleState::SELECT_TARGET_ABILITY)
+                                {
+                                    // Number keys to select ability targets
+                                    vector<pair<Entity *, int>> targets = battle->getAvailableTargetsForCurrent();
+                                    int keyNum = -1;
+                                    if (event.key.code >= sf::Keyboard::Num1 && event.key.code <= sf::Keyboard::Num9)
+                                    {
+                                        keyNum = event.key.code - sf::Keyboard::Num1;
+                                    }
+                                    else if (event.key.code >= sf::Keyboard::Numpad1 && event.key.code <= sf::Keyboard::Numpad9)
+                                    {
+                                        keyNum = event.key.code - sf::Keyboard::Numpad1;
+                                    }
+                                    if (keyNum >= 0 && keyNum < (int)targets.size())
+                                    {
+                                        battle->useAbility(currentEntity, selectedAbility);
+                                        battleState = BattleState::MAIN_MENU;
+                                    }
+                                    else if (targets.empty())
+                                    {
+                                        // Use ability without target
+                                        battle->useAbility(currentEntity, selectedAbility);
+                                        battleState = BattleState::MAIN_MENU;
+                                    }
+                                }
+                                else if (battleState == BattleState::SELECT_POSITION_MOVE)
+                                {
+                                    // Number keys to select position (1-4)
+                                    int keyNum = -1;
+                                    if (event.key.code >= sf::Keyboard::Num1 && event.key.code <= sf::Keyboard::Num4)
+                                    {
+                                        keyNum = event.key.code - sf::Keyboard::Num1;
+                                    }
+                                    else if (event.key.code >= sf::Keyboard::Numpad1 && event.key.code <= sf::Keyboard::Numpad4)
+                                    {
+                                        keyNum = event.key.code - sf::Keyboard::Numpad1;
+                                    }
+                                    if (keyNum >= 0 && keyNum < 4)
+                                    {
+                                        battle->movePosition(currentEntity, keyNum);
+                                        battleState = BattleState::MAIN_MENU;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                // Enemy turn - space to skip
+                                if (event.key.code == sf::Keyboard::Space)
+                                {
+                                    // Skip enemy turn
+                                    battle->nextTurn();
+                                }
+                            }
+                        }
+                    }
+                }
                 break;
             case GameState::INVENTORY:
                 inventoryMenu.handleEvent(event);
