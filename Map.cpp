@@ -48,17 +48,18 @@ void Map::parsePrototype(const char *const *prototype)
             char c = prototype[y][x];
             if (c == 'R')
             {
-                // Randomly assign BATTLE, TREASURE, or EVENT
-                int randType = rng() % 3;
+                // Randomly assign BATTLE, TREASURE, or EVENT with increased treasure chance
+                int randType = rng() % 4;
                 switch (randType)
                 {
                 case 0:
-                    grid[y][x] = NodeType::BATTLE;
-                    break;
                 case 1:
-                    grid[y][x] = NodeType::TREASURE;
+                    grid[y][x] = NodeType::TREASURE; // 50% chance for treasure
                     break;
                 case 2:
+                    grid[y][x] = NodeType::BATTLE;
+                    break;
+                case 3:
                     grid[y][x] = NodeType::EVENT;
                     break;
                 }
@@ -145,12 +146,51 @@ void Map::generate()
 
     // Add 2-4 POI in random empty positions
     int numPOI = 2 + (rng() % 3); // 2-4 POI
+    std::vector<Position> poiCenters;
     for (int i = 0; i < numPOI && !emptyPositions.empty(); ++i)
     {
         int idx = rng() % emptyPositions.size();
         Position pos = emptyPositions[idx];
         grid[pos.y][pos.x] = poiType;
+        poiCenters.push_back(pos);
         emptyPositions.erase(emptyPositions.begin() + idx);
+    }
+
+    // Add random events/battles/treasures around POI centers
+    for (const auto &center : poiCenters)
+    {
+        // Find adjacent empty positions around the POI center
+        std::vector<Position> adjacentEmpties;
+        for (int dy = -2; dy <= 2; ++dy)
+        {
+            for (int dx = -2; dx <= 2; ++dx)
+            {
+                if (dx == 0 && dy == 0)
+                    continue; // Skip center
+                Position adj(center.x + dx, center.y + dy);
+                if (isValidPosition(adj.x, adj.y) && grid[adj.y][adj.x] == NodeType::EMPTY)
+                {
+                    adjacentEmpties.push_back(adj);
+                }
+            }
+        }
+
+        // Add 1-3 random nodes around each POI
+        int numNodes = 1 + (rng() % 3);
+        for (int j = 0; j < numNodes && !adjacentEmpties.empty(); ++j)
+        {
+            int idx = rng() % adjacentEmpties.size();
+            Position pos = adjacentEmpties[idx];
+            // 50% treasure, 25% battle, 25% event
+            int randType = rng() % 4;
+            if (randType < 2)
+                grid[pos.y][pos.x] = NodeType::TREASURE;
+            else if (randType == 2)
+                grid[pos.y][pos.x] = NodeType::BATTLE;
+            else
+                grid[pos.y][pos.x] = NodeType::EVENT;
+            adjacentEmpties.erase(adjacentEmpties.begin() + idx);
+        }
     }
 
     resetVisited();
@@ -599,8 +639,8 @@ void Map::placeSpecialNodes()
         }
     }
 
-    // Размещаем события и сокровища (4-6 штук) в оставшихся квадрантах
-    int eventCount = 4 + (rng() % 3); // 4-6 событий/сокровищ
+    // Размещаем события и сокровища (6-8 штук) в оставшихся квадрантах
+    int eventCount = 6 + (rng() % 3); // 6-8 событий/сокровищ
     for (int i = 0; i < eventCount; ++i)
     {
         int x, y;
@@ -631,8 +671,14 @@ void Map::placeSpecialNodes()
 
         if (validPosition)
         {
-            // 50% шанс на событие, 50% на сокровище
-            grid[y][x] = (rng() % 2 == 0) ? NodeType::EVENT : NodeType::TREASURE;
+            // 60% шанс на сокровище, 20% на бой, 20% на событие
+            int randType = rng() % 5;
+            if (randType < 3)
+                grid[y][x] = NodeType::TREASURE;
+            else if (randType == 3)
+                grid[y][x] = NodeType::BATTLE;
+            else
+                grid[y][x] = NodeType::EVENT;
             placedNodes.emplace_back(x, y);
         }
     }
